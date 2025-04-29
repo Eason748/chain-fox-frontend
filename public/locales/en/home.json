@@ -101,6 +101,7 @@
     "title": "Tokenomics",
     "subtitle": "Token distribution and allocation",
     "contractAddress": "Contract Address",
+    "clickToView": "Click to view on DexScreener",
     "distribution": {
       "public": {
         "title": "Public Distribution",
@@ -123,6 +124,7 @@
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Common questions about Chain Fox",
+    "clickToView": "Click to view on DexScreener",
     "items": {
       "replace_audit": {
         "question": "Can this replace human audits?",
@@ -150,7 +152,7 @@
       },
       "contract_address": {
         "question": "What is the Chain Fox contract address?",
-        "answer": "The official Chain Fox contract address is RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump. You can also find and copy it in the Tokenomics section above."
+        "answer": "The official Chain Fox contract address is RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump. You can also find it in the Tokenomics section above."
       }
     }
   },

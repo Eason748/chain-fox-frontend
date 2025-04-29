@@ -8,11 +8,8 @@ function TokenomicsSection() {
 
   const contractAddress = "RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump";
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(contractAddress).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+  const openDexScreener = () => {
+    window.open(`https://dexscreener.com/solana/${contractAddress}`, '_blank');
   };
 
   const tokenomicsData = [
@@ -127,41 +124,28 @@ function TokenomicsSection() {
               className="mt-6 pt-6 border-t border-white/10 text-center"
             >
               <div
-                className="inline-flex items-center px-4 py-2 bg-blue-900/30 backdrop-blur-sm rounded-full border border-blue-500/30 cursor-pointer hover:bg-blue-800/40 transition-colors duration-300 group"
-                onClick={copyToClipboard}
+                className="inline-flex flex-wrap items-center justify-center px-4 py-2 bg-blue-900/30 backdrop-blur-sm rounded-full border border-blue-500/30 cursor-pointer hover:bg-blue-800/40 transition-colors duration-300 group"
+                onClick={openDexScreener}
               >
-                <svg className="w-5 h-5 mr-2 text-blue-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-5 h-5 mr-2 text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M13 16H11V18H13V16Z" fill="currentColor" />
                   <path d="M13 12H11V14H13V12Z" fill="currentColor" />
                   <path d="M13 8H11V10H13V8Z" fill="currentColor" />
                   <path fillRule="evenodd" clipRule="evenodd" d="M4 4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4ZM6 4H18V20H6V4Z" fill="currentColor" />
                 </svg>
-                <div className="flex flex-col items-start">
-                  <span className="text-xs text-blue-300">{t('home:tokenomics.contractAddress')}</span>
-                  <span className="text-sm font-mono text-white select-all">{contractAddress}</span>
+                <div className="flex flex-col items-start overflow-hidden">
+                  <span className="text-xs text-blue-300 w-full">{t('home:tokenomics.contractAddress')}</span>
+                  <span className="text-sm font-mono text-white truncate max-w-[180px] sm:max-w-[250px] md:max-w-full">{contractAddress}</span>
                 </div>
-                <div className="ml-3 flex items-center">
-                  {copied ? (
-                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5 text-blue-400 opacity-70 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                    </svg>
-                  )}
+                <div className="ml-3 flex items-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
                 </div>
               </div>
-              {copied && (
-                <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="mt-2 text-xs text-green-400"
-                >
-                  {t('common:copied')}
-                </motion.div>
-              )}
+              <div className="mt-2 text-xs text-blue-400">
+                {t('home:tokenomics.clickToView')}
+              </div>
             </motion.div>
           </div>
         </div>

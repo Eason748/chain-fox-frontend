@@ -10,12 +10,9 @@ function FAQSection() {
 
   const contractAddress = "RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump";
 
-  const copyToClipboard = (e) => {
-    e.stopPropagation(); // Prevent toggling the FAQ when clicking the copy button
-    navigator.clipboard.writeText(contractAddress).then(() => {
-      setCopiedAddress(true);
-      setTimeout(() => setCopiedAddress(false), 2000);
-    });
+  const openDexScreener = (e) => {
+    e.stopPropagation(); // Prevent toggling the FAQ when clicking the link
+    window.open(`https://dexscreener.com/solana/${contractAddress}`, '_blank');
   };
 
   const faqItems = [
@@ -43,10 +40,10 @@ function FAQSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-            {t('faq.title')}
+            {t('home:faq.title')}
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            {t('faq.subtitle')}
+            {t('home:faq.subtitle')}
           </p>
         </motion.div>
 
@@ -67,7 +64,7 @@ function FAQSection() {
                 <div className="flex justify-between items-center">
                   {/* Changed gradient-text to text-white */}
                   <h3 className="text-xl font-bold text-white">
-                    {t(`faq.items.${item.key}.question`)}
+                    {t(`home:faq.items.${item.key}.question`)}
                   </h3>
                   <div className="text-2xl transition-transform duration-300 text-white" style={{ transform: openIndex === index ? 'rotate(45deg)' : 'rotate(0)' }}> {/* Also changed '+' color */}
                     +
@@ -86,39 +83,30 @@ function FAQSection() {
                       {item.key === 'contract_address' ? (
                         <div>
                           <p>
-                            {t('faq.items.contract_address.answer').split(contractAddress)[0]}
+                            {t('home:faq.items.contract_address.answer').split(contractAddress)[0]}
                             <span
-                              className="font-mono text-blue-400 cursor-pointer hover:text-blue-300 transition-colors duration-200 select-all inline-flex items-center group"
-                              onClick={copyToClipboard}
+                              className="font-mono text-blue-400 cursor-pointer hover:text-blue-300 transition-colors duration-200 inline-flex items-center group break-all"
+                              onClick={openDexScreener}
                             >
-                              {contractAddress}
-                              <span className="ml-2 text-blue-500 group-hover:text-blue-400">
-                                {copiedAddress ? (
-                                  <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                  </svg>
-                                ) : (
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                                  </svg>
-                                )}
+                              <span className="truncate max-w-[180px] sm:max-w-[250px] md:max-w-full">{contractAddress}</span>
+                              <span className="ml-2 text-blue-500 group-hover:text-blue-400 flex-shrink-0">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
                               </span>
                             </span>
-                            {t('faq.items.contract_address.answer').split(contractAddress)[1]}
+                            {t('home:faq.items.contract_address.answer').split(contractAddress)[1]}
                           </p>
-                          {copiedAddress && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0 }}
-                              className="mt-2 text-xs text-green-400"
-                            >
-                              {t('common:copied')}
-                            </motion.div>
-                          )}
+                          <motion.div
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-2 text-xs text-blue-400"
+                          >
+                            {t('home:faq.clickToView')}
+                          </motion.div>
                         </div>
                       ) : (
-                        <p>{t(`faq.items.${item.key}.answer`)}</p>
+                        <p>{t(`home:faq.items.${item.key}.answer`)}</p>
                       )}
                     </motion.div>
                   )}
