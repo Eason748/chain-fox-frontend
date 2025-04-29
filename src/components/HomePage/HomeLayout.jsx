@@ -52,7 +52,7 @@ function HomeLayout({ children }) {
             <div className="flex items-center space-x-6">
               {/* Logo */}
               <div className="hidden md:block">
-                <ChainFoxLogo width={120} />
+                <ChainFoxLogo width={60} />
               </div>
               <div className="block md:hidden">
                 <ChainFoxLogoSmall width={40} />

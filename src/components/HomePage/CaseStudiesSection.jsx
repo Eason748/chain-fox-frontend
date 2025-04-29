@@ -6,12 +6,42 @@ function CaseStudiesSection() {
   const { t } = useTranslation(['home']);
 
   const caseStudies = [
-    { key: 'solana', delay: 0, logo: '/imgs/solana.png' },
-    { key: 'ethereum', delay: 0.1, logo: '/imgs/ethereum.png' },
-    { key: 'polkadot', delay: 0.2, logo: '/imgs/polkadot.png' },
-    { key: 'foundry', delay: 0.3, logo: '/imgs/foundry.png' },
-    { key: 'conflux', delay: 0.4, logo: '/imgs/conflux.png' },
-    { key: 'grin', delay: 0.5, logo: '/imgs/grin.png' }
+    {
+      key: 'solana',
+      delay: 0,
+      logo: '/imgs/solana.png',
+      url: 'https://solana.com'
+    },
+    {
+      key: 'ethereum',
+      delay: 0.1,
+      logo: '/imgs/ethereum.png',
+      url: 'https://ethereum.org'
+    },
+    {
+      key: 'polkadot',
+      delay: 0.2,
+      logo: '/imgs/polkadot.png',
+      url: 'https://polkadot.network'
+    },
+    {
+      key: 'foundry',
+      delay: 0.3,
+      logo: '/imgs/foundry.png',
+      url: 'https://book.getfoundry.sh'
+    },
+    {
+      key: 'conflux',
+      delay: 0.4,
+      logo: '/imgs/conflux.png',
+      url: 'https://confluxnetwork.org'
+    },
+    {
+      key: 'grin',
+      delay: 0.5,
+      logo: '/imgs/grin.png',
+      url: 'https://grin.mw'
+    }
   ];
 
   return (
@@ -34,14 +64,17 @@ function CaseStudiesSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
           {caseStudies.map((study) => (
-            <motion.div
+            <motion.a
+              href={study.url}
+              target="_blank"
+              rel="noopener noreferrer"
               key={study.key}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 + study.delay }}
               whileHover={{ scale: 1.05 }}
-              className="floating bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 flex flex-col items-center justify-center text-center"
+              className="floating bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 flex flex-col items-center justify-center text-center cursor-pointer"
             >
               <div className="h-16 w-16 mb-4 flex items-center justify-center">
                 <img src={study.logo} alt={t(`caseStudies.projects.${study.key}`)} className="max-h-full max-w-full object-contain" />
@@ -49,7 +82,7 @@ function CaseStudiesSection() {
               <h3 className="text-xl font-bold gradient-text">
                 {t(`caseStudies.projects.${study.key}`)}
               </h3>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </div>
