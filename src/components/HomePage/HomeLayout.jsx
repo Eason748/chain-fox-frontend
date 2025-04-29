@@ -107,7 +107,7 @@ function HomeLayout({ children }) {
           <div className="container mx-auto px-6">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="mb-6 md:mb-0">
-                <ChainFoxLogo width={100} />
+                <ChainFoxLogo width={60} />
                 <p className="mt-4 text-gray-400">© 2025 Chain Fox. All rights reserved.</p>
               </div>
               <div className="flex space-x-6">
