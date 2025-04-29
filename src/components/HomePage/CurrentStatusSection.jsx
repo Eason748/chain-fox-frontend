@@ -39,7 +39,7 @@ function CurrentStatusSection() {
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="mailto:contact@chain-fox.com"
+                  href="mailto:chain-fox-developer@chain-fox.com"
                   className="px-8 py-4 border-2 border-white/20 rounded-full text-lg font-semibold hover:bg-white/10 transition-colors flex items-center"
                 >
                   <span className="mr-2">📧</span>
