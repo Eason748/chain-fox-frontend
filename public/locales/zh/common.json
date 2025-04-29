@@ -34,6 +34,11 @@
     "continueWithGoogle": "使用 Google 登录",
     "continueWithDiscord": "使用 Discord 登录",
     "backToHome": "返回首页",
+    "required": {
+      "title": "需要登录",
+      "message": "您需要登录才能访问此内容。",
+      "loginButton": "登录"
+    },
     "error": {
       "general": "身份验证过程中发生错误",
       "sessionExpired": "您的会话已过期，请重新登录。",

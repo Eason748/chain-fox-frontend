@@ -34,6 +34,11 @@
     "continueWithGoogle": "Continue with Google",
     "continueWithDiscord": "Continue with Discord",
     "backToHome": "Back to Home",
+    "required": {
+      "title": "Authentication Required",
+      "message": "You need to be logged in to access this content.",
+      "loginButton": "Sign In"
+    },
     "error": {
       "general": "An error occurred during authentication",
       "sessionExpired": "Your session has expired. Please sign in again.",

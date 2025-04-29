@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import deepseekService from '../services/deepseek';
 import AuditReport from '../components/AuditReport/AuditReport';
+import AuthRequired from '../components/AuthRequired';
 
 // Enhanced mock API with more detailed security audit results
 const mockDetectApi = async (type, data) => {
@@ -894,21 +895,22 @@ fn process_instruction(
         transition={{ duration: 0.5, delay: 0.1 }}
         className="max-w-5xl mx-auto bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md p-6 md:p-10 rounded-xl shadow-2xl border border-white/10"
       >
-        {/* Security stats banner */}
-        <div className="mb-8 grid grid-cols-3 gap-4 p-4 rounded-lg bg-blue-900/10 border border-blue-500/20">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400">24/7</div>
-            <div className="text-xs text-gray-400">{t('detectionPage.stats.monitoring')}</div>
+        <AuthRequired redirectToLogin={false}>
+          {/* Security stats banner */}
+          <div className="mb-8 grid grid-cols-3 gap-4 p-4 rounded-lg bg-blue-900/10 border border-blue-500/20">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-400">24/7</div>
+              <div className="text-xs text-gray-400">{t('detectionPage.stats.monitoring')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-400">99.9%</div>
+              <div className="text-xs text-gray-400">{t('detectionPage.stats.accuracy')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-400">500+</div>
+              <div className="text-xs text-gray-400">{t('detectionPage.stats.vulnerabilities')}</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-400">99.9%</div>
-            <div className="text-xs text-gray-400">{t('detectionPage.stats.accuracy')}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-400">500+</div>
-            <div className="text-xs text-gray-400">{t('detectionPage.stats.vulnerabilities')}</div>
-          </div>
-        </div>
 
         {/* Styled Tabs */}
         <div className="mb-8 border-b border-white/20">
@@ -1064,6 +1066,7 @@ fn process_instruction(
             </div>
           </motion.div>
         )}
+        </AuthRequired>
       </motion.div>
 
       {/* Footer with trust indicators */}

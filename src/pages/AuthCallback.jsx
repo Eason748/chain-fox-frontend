@@ -64,10 +64,20 @@ const AuthCallback = () => {
 
             console.log("AuthCallback: Authorization code exchange successful", exchangeData);
 
-            // If session exchange was successful, redirect to home page
+            // If session exchange was successful, check for redirect path
             if (exchangeData?.session) {
-              console.log("AuthCallback: Valid session detected, redirecting to home page");
-              navigate('/');
+              console.log("AuthCallback: Valid session detected");
+
+              // Check if there's a saved redirect path from AuthRequired component
+              const redirectPath = sessionStorage.getItem('auth_redirect');
+              if (redirectPath) {
+                console.log("AuthCallback: Redirecting to saved path:", redirectPath);
+                sessionStorage.removeItem('auth_redirect');
+                navigate(redirectPath);
+              } else {
+                console.log("AuthCallback: No saved path, redirecting to home page");
+                navigate('/');
+              }
               return;
             }
           } catch (exchangeErr) {
@@ -100,10 +110,20 @@ const AuthCallback = () => {
 
             console.log("AuthCallback: Session set successfully", sessionData);
 
-            // If session was set successfully, redirect to home page
+            // If session was set successfully, check for redirect path
             if (sessionData?.session) {
-              console.log("AuthCallback: Valid session detected, redirecting to home page");
-              navigate('/');
+              console.log("AuthCallback: Valid session detected");
+
+              // Check if there's a saved redirect path from AuthRequired component
+              const redirectPath = sessionStorage.getItem('auth_redirect');
+              if (redirectPath) {
+                console.log("AuthCallback: Redirecting to saved path:", redirectPath);
+                sessionStorage.removeItem('auth_redirect');
+                navigate(redirectPath);
+              } else {
+                console.log("AuthCallback: No saved path, redirecting to home page");
+                navigate('/');
+              }
               return;
             }
           } catch (sessionErr) {
@@ -133,12 +153,21 @@ const AuthCallback = () => {
           console.log("AuthCallback: Session data", data);
 
           if (data?.session) {
-            console.log("AuthCallback: Valid session detected, redirecting to home page");
+            console.log("AuthCallback: Valid session detected");
             // Clean up temporary stored data
             localStorage.removeItem('auth_provider');
             localStorage.removeItem('auth_callback_refreshed');
-            // If there is a session, redirect to home page
-            navigate('/');
+
+            // Check if there's a saved redirect path from AuthRequired component
+            const redirectPath = sessionStorage.getItem('auth_redirect');
+            if (redirectPath) {
+              console.log("AuthCallback: Redirecting to saved path:", redirectPath);
+              sessionStorage.removeItem('auth_redirect');
+              navigate(redirectPath);
+            } else {
+              console.log("AuthCallback: No saved path, redirecting to home page");
+              navigate('/');
+            }
           } else {
             // If no session, try refreshing the page once
             if (!localStorage.getItem('auth_callback_refreshed')) {
