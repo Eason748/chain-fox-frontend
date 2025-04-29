@@ -19,27 +19,27 @@ function CurrentStatusSection() {
             <h2 className="text-3xl font-bold mb-6 gradient-text text-center">
               {t('currentStatus.title')}
             </h2>
-            
+
             <div className="space-y-6">
               <p className="text-gray-300">
                 {t('currentStatus.description')}
               </p>
-              
+
               <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6 mt-8">
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="#"
+                  href="https://x.com/ChainFoxHQ"
                   className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-lg font-semibold hover:opacity-90 transition-opacity flex items-center"
                 >
                   <span className="mr-2">🐦</span>
                   {t('currentStatus.twitterButton')}
                 </motion.a>
-                
+
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="#"
+                  href="mailto:contact@chain-fox.com"
                   className="px-8 py-4 border-2 border-white/20 rounded-full text-lg font-semibold hover:bg-white/10 transition-colors flex items-center"
                 >
                   <span className="mr-2">📧</span>
