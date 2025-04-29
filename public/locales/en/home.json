@@ -1,0 +1,170 @@
+{
+  "hero": {
+    "title": "Chain Fox - Blockchain Guardian",
+    "subtitle": "Automated analysis platform for blockchain projects and smart contracts, democratizing security for all developers"
+  },
+  "mission": {
+    "title": "Our Mission",
+    "description": "To bring automated analysis to blockchain security, making it more accessible and democratic for all developers."
+  },
+  "workflow": {
+    "title": "How It Works",
+    "subtitle": "Our platform operates through four main steps",
+    "steps": {
+      "upload": {
+        "title": "Upload Your Project",
+        "description": "Submit your blockchain or smart contract project through our secure platform (public repositories or private code)."
+      },
+      "detect": {
+        "title": "Automated Detection",
+        "description": "Our engine runs a comprehensive audit using cutting-edge static and dynamic analysis tools, including proprietary bug detectors."
+      },
+      "report": {
+        "title": "Receive Report",
+        "description": "Get detailed analysis of identified issues, including bug type, root cause, and suggested fixes."
+      },
+      "upgrade": {
+        "title": "Upgrade for Deep Insights",
+        "description": "Optionally upgrade for advanced reports, optimization suggestions (like gas fee reduction), or connection with top auditors."
+      }
+    }
+  },
+  "features": {
+    "title": "Core Features",
+    "subtitle": "What makes Chain Fox unique",
+    "items": {
+      "expertTools": {
+        "title": "Expert-Built Detection Tools",
+        "description": "Based on years of static and dynamic bug detection and verification research, with proven success on Ethereum, Solana, Polkadot, and more."
+      },
+      "multiPlatform": {
+        "title": "Multi-Platform Support",
+        "description": "Support for Rust, Go, Solidity, and more, tailored for blockchain systems and smart contracts."
+      },
+      "oneClickReport": {
+        "title": "One-Click Reports",
+        "description": "No need to install complex tools. Clear, actionable insights without interpreting vague warnings."
+      },
+      "latestResearch": {
+        "title": "Latest Research Integration",
+        "description": "Automatically incorporates the newest academic and industry detection tools."
+      },
+      "openSource": {
+        "title": "Open Source Core with Production-Grade Service",
+        "description": "Simplifies the complexity of open-source tools, providing results without deployment headaches."
+      },
+      "security": {
+        "title": "Security and Confidentiality",
+        "description": "Private projects stay private. Code is encrypted, never shared, and deleted upon request."
+      }
+    }
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "subtitle": "Our journey and future plans",
+    "items": {
+      "2020_06": {
+        "date": "June 2020",
+        "description": "Launch"
+      },
+      "2021_03": {
+        "date": "March 2021",
+        "description": "Rust and Go support"
+      },
+      "2022_09": {
+        "date": "September 2022",
+        "description": "Checking 50+ repositories"
+      },
+      "2023_10": {
+        "date": "October 2023",
+        "description": "Adding more tests"
+      },
+      "2024_11": {
+        "date": "November 2024",
+        "description": "Checking blockchain repositories"
+      },
+      "2025_03": {
+        "date": "March 2025",
+        "description": "Verification and dynamic checkers"
+      },
+      "2025_06": {
+        "date": "June 2025",
+        "description": "AI-driven bug fixes"
+      },
+      "2025_10": {
+        "date": "October 2025",
+        "description": "Platform securing blockchain ecosystem"
+      }
+    }
+  },
+  "tokenomics": {
+    "title": "Tokenomics",
+    "subtitle": "Token distribution and allocation",
+    "distribution": {
+      "public": {
+        "title": "Public Distribution",
+        "description": "90% allocated to the community"
+      },
+      "marketing": {
+        "title": "Marketing & Listing",
+        "description": "3% for marketing efforts and exchange listings"
+      },
+      "team": {
+        "title": "Team Allocation",
+        "description": "2% allocated to the development team"
+      },
+      "development": {
+        "title": "Development Wallet",
+        "description": "5% for ongoing platform development"
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Common questions about Chain Fox",
+    "items": {
+      "replace_audit": {
+        "question": "Can this replace human audits?",
+        "answer": "Not entirely - it provides a quick, economical baseline assurance. For high-risk deployments, we help connect with human auditors."
+      },
+      "bug_types": {
+        "question": "What types of bugs can it detect?",
+        "answer": "Memory issues, concurrency bugs, gas inefficiencies, unsafe coding patterns - all tailored for blockchain environments."
+      },
+      "private_code": {
+        "question": "What if my code is private?",
+        "answer": "Code is encrypted during upload, handled securely, and deleted after scanning if chosen."
+      },
+      "ci_cd": {
+        "question": "Can I integrate it into my CI/CD pipeline?",
+        "answer": "Yes - API and GitHub Actions integrations are coming soon for continuous security checks."
+      },
+      "languages": {
+        "question": "Which languages are supported?",
+        "answer": "Rust, Go, Solidity (with more coming soon), optimized for blockchain system components and smart contracts."
+      },
+      "vulnerabilities": {
+        "question": "How do you keep up with new vulnerabilities?",
+        "answer": "We track the latest academic research, CVEs, and industry trends, continuously improving our tools and detection logic."
+      }
+    }
+  },
+  "caseStudies": {
+    "title": "Success Stories",
+    "subtitle": "Chain Fox has detected and helped fix bugs in major blockchain projects",
+    "projects": {
+      "solana": "Solana",
+      "ethereum": "Ethereum",
+      "polkadot": "Polkadot",
+      "foundry": "Foundry",
+      "conflux": "Conflux",
+      "grin": "Grin"
+    }
+  },
+  "currentStatus": {
+    "title": "Current Status",
+    "description": "Our detection tools are complete, but the platform is still under heavy development and coming soon. Feel free to ask questions on X (formerly Twitter).",
+    "twitterButton": "Follow us on X",
+    "contactButton": "Contact Us"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "hero": {
+    "title": "链狐 - 区块链守护者",
+    "subtitle": "为区块链项目和智能合约提供自动化分析服务的平台，使安全对所有开发者更加民主化"
+  },
+  "mission": {
+    "title": "我们的使命",
+    "description": "为区块链安全带来自动化分析，使其对所有开发者更加accessible和民主化。"
+  },
+  "workflow": {
+    "title": "工作流程",
+    "subtitle": "我们的平台通过四个主要步骤运作",
+    "steps": {
+      "upload": {
+        "title": "上传您的项目",
+        "description": "通过安全平台提交区块链或智能合约项目（公共仓库或私有代码）。"
+      },
+      "detect": {
+        "title": "自动化检测",
+        "description": "引擎使用前沿的静态和动态分析工具（包括专有Bug检测器）运行全面审计。"
+      },
+      "report": {
+        "title": "接收报告",
+        "description": "获取已识别问题的详细分析，包括Bug类型、根本原因和建议修复方案。"
+      },
+      "upgrade": {
+        "title": "升级深度洞察",
+        "description": "可选择高级报告、优化建议（如Gas费用减少）或与顶级审计师连接。"
+      }
+    }
+  },
+  "features": {
+    "title": "核心特点",
+    "subtitle": "链狐的独特之处",
+    "items": {
+      "expertTools": {
+        "title": "专家构建的检测工具",
+        "description": "基于多年静态和动态Bug检测与验证研究，在以太坊、Solana、Polkadot等平台上取得实际成功。"
+      },
+      "multiPlatform": {
+        "title": "多平台支持",
+        "description": "支持Rust、Go、Solidity等语言，为区块链系统和智能合约量身定制。"
+      },
+      "oneClickReport": {
+        "title": "一键报告",
+        "description": "无需安装复杂工具，清晰、可操作的洞察，无需解释模糊警告。"
+      },
+      "latestResearch": {
+        "title": "最新研究集成",
+        "description": "自动整合最新学术和行业检测工具。"
+      },
+      "openSource": {
+        "title": "开源核心与生产级服务",
+        "description": "简化开源工具的复杂性，提供无部署困扰的结果。"
+      },
+      "security": {
+        "title": "安全与保密",
+        "description": "私有项目保持私密，代码加密，从不共享，根据请求删除。"
+      }
+    }
+  },
+  "roadmap": {
+    "title": "路线图",
+    "subtitle": "我们的旅程和未来计划",
+    "items": {
+      "2020_06": {
+        "date": "2020年6月",
+        "description": "启动"
+      },
+      "2021_03": {
+        "date": "2021年3月",
+        "description": "Rust和Go支持"
+      },
+      "2022_09": {
+        "date": "2022年9月",
+        "description": "检查50+仓库"
+      },
+      "2023_10": {
+        "date": "2023年10月",
+        "description": "增加更多测试"
+      },
+      "2024_11": {
+        "date": "2024年11月",
+        "description": "检查区块链仓库"
+      },
+      "2025_03": {
+        "date": "2025年3月",
+        "description": "验证与动态检查器"
+      },
+      "2025_06": {
+        "date": "2025年6月",
+        "description": "AI驱动的Bug修复"
+      },
+      "2025_10": {
+        "date": "2025年10月",
+        "description": "保障区块链生态系统的平台"
+      }
+    }
+  },
+  "tokenomics": {
+    "title": "代币经济学",
+    "subtitle": "代币分配和分配",
+    "distribution": {
+      "public": {
+        "title": "公共分配",
+        "description": "90%分配给社区"
+      },
+      "marketing": {
+        "title": "营销与上市",
+        "description": "3%用于营销工作和交易所上市"
+      },
+      "team": {
+        "title": "团队分配",
+        "description": "2%分配给开发团队"
+      },
+      "development": {
+        "title": "开发钱包",
+        "description": "5%用于持续平台开发"
+      }
+    }
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "关于链狐的常见问题",
+    "items": {
+      "replace_audit": {
+        "question": "这是否能替代人工审计？",
+        "answer": "不完全是 - 提供快速、经济的基线保障。对于高风险发布，帮助连接人工审计师。"
+      },
+      "bug_types": {
+        "question": "它能检测哪些类型的Bug？",
+        "answer": "内存问题、并发Bug、Gas效率低下、不安全编码模式 - 所有这些都针对区块链环境定制。"
+      },
+      "private_code": {
+        "question": "如果我的代码是私有的怎么办？",
+        "answer": "代码在上传过程中加密，安全处理，如选择则在扫描后删除。"
+      },
+      "ci_cd": {
+        "question": "我可以将其集成到CI/CD流程中吗？",
+        "answer": "可以 - API和GitHub Actions集成即将推出，用于持续安全检查。"
+      },
+      "languages": {
+        "question": "支持哪些语言？",
+        "answer": "Rust、Go、Solidity（更多即将推出），为区块链系统组件和智能合约优化。"
+      },
+      "vulnerabilities": {
+        "question": "如何跟上新的漏洞？",
+        "answer": "跟踪最新学术研究、CVE和行业趋势，不断改进工具和检测逻辑。"
+      }
+    }
+  },
+  "caseStudies": {
+    "title": "成功案例",
+    "subtitle": "链狐已检测并帮助修复主要区块链项目的Bug",
+    "projects": {
+      "solana": "Solana",
+      "ethereum": "以太坊",
+      "polkadot": "Polkadot",
+      "foundry": "Foundry",
+      "conflux": "Conflux",
+      "grin": "Grin"
+    }
+  },
+  "currentStatus": {
+    "title": "当前状态",
+    "description": "检测工具已经完成，但平台仍在大力开发中，即将推出。鼓励用户在X（前Twitter）上提问。",
+    "twitterButton": "在X上关注我们",
+    "contactButton": "联系我们"
+  }
+}

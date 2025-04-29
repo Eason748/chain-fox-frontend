@@ -1,0 +1,217 @@
+{
+  "appName": "Chain Fox",
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "features": "Features",
+    "workflow": "Workflow",
+    "roadmap": "Roadmap",
+    "tokenomics": "Tokenomics",
+    "faq": "FAQ",
+    "caseStudies": "Case Studies",
+    "language": "Language",
+    "content": "Content"
+  },
+  "buttons": {
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "uploadProject": "Upload Project",
+    "contactUs": "Contact Us",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "languageSwitcher": {
+    "en": "English",
+    "zh": "中文"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "loading": "Loading...",
+    "chooseProvider": "Choose a provider to continue",
+    "continueWithGithub": "Continue with GitHub",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithDiscord": "Continue with Discord",
+    "backToHome": "Back to Home",
+    "error": {
+      "general": "An error occurred during authentication",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "emailConflict": "Email address conflict detected: Your email is already linked to another login method.",
+      "emailConflictSuggestion": "We recommend using GitHub login, or the login method you've successfully used before.",
+      "emailConflictTechnical": "Technical reason: Multiple accounts with the same email address exist in the system.",
+      "unverifiedDiscord": "Unverified Discord email: You need to verify your Discord account's email address first.",
+      "unverifiedDiscordSuggestion": "Please log into your Discord account and complete email verification before trying again.",
+      "unverifiedDiscordAlternative": "Alternatively, you can try using another login method such as GitHub or Google.",
+      "loginFailed": "Login Failed",
+      "processingLogin": "Processing your login request",
+      "verifyingIdentity": "Please wait while we verify your identity...",
+      "recommendedProvider": "Recommended Login Method",
+      "recommendedGithub": "We recommend using GitHub login, which may resolve the issue you encountered previously.",
+      "recommendedGoogle": "We recommend using Google login, which may resolve the issue you encountered previously.",
+      "recommendedDiscord": "We recommend using Discord login, which may resolve the issue you encountered previously.",
+      "returnToLogin": "Return to Login Page"
+    },
+    "profile": {
+      "title": "Profile",
+      "email": "Email",
+      "name": "Name",
+      "avatar": "Avatar"
+    },
+    "callback": {
+      "debugInfo": "Debug Information"
+    }
+  },
+  "detectionPage": {
+    "title": "Smart Contract Security Audit",
+    "subtitle": "Advanced security analysis for blockchain projects and smart contracts",
+    "secureConnection": "Secure Connection",
+    "tabs": {
+      "code": "Code Snippet",
+      "github": "GitHub Repository",
+      "upload": "Upload Project"
+    },
+    "stats": {
+      "monitoring": "Continuous Monitoring",
+      "accuracy": "Detection Accuracy",
+      "vulnerabilities": "Vulnerabilities Detected"
+    },
+    "code": {
+      "title": "Paste Code for Security Analysis",
+      "placeholder": "Paste your Solidity, Rust, Go, or other supported code here...",
+      "supportedLanguages": "Supported Languages"
+    },
+    "github": {
+      "title": "Enter GitHub Repository URL",
+      "placeholder": "e.g., https://github.com/owner/repo",
+      "features": "Repository Analysis Features",
+      "feature1": "Scans all smart contracts in the repository",
+      "feature2": "Analyzes dependencies and imported contracts",
+      "feature3": "Detects vulnerabilities across the entire codebase",
+      "feature4": "Provides comprehensive security report with recommendations"
+    },
+    "upload": {
+      "title": "Upload Your Project Code",
+      "description": "This feature is coming soon. You will be able to upload zipped project files for comprehensive analysis.",
+      "placeholder": "Drag and drop files here or click to browse",
+      "supportedFormats": "Supported formats: .zip, .sol, .rs, .go, .move",
+      "selectFiles": "Select Files",
+      "comingSoon": "This feature is coming soon. We're working on supporting direct file uploads for more comprehensive analysis."
+    },
+    "button": {
+      "detect": "Start Security Audit",
+      "loading": "Analyzing...",
+      "generateReport": "Generate Report",
+      "exportPDF": "Export PDF"
+    },
+    "progress": {
+      "initializing": "Initializing security scan...",
+      "cloning": "Cloning repository...",
+      "parsing": "Parsing code...",
+      "analyzing": "Analyzing contract structure...",
+      "vulnerabilityDetection": "Detecting vulnerabilities...",
+      "gasAnalysis": "Optimizing gas usage...",
+      "reportGeneration": "Generating security report...",
+      "complete": "Analysis complete!",
+      "error": "Analysis error",
+      "processing": "Processing..."
+    },
+    "error": {
+      "emptyCode": "Please enter the code to analyze.",
+      "invalidGithubUrl": "Please enter a valid GitHub repository URL (e.g., https://github.com/owner/repo).",
+      "apiError": "An error occurred during analysis. Please try again later."
+    },
+    "result": {
+      "title": "Security Audit Results",
+      "scanId": "Scan ID",
+      "target": "Target",
+      "success": "Analysis Complete",
+      "issuesFound": "{{count}} potential issues found.",
+      "reportUrl": "Report URL",
+      "failure": "Analysis Failed",
+      "showDetails": "Show Detailed Report",
+      "hideDetails": "Hide Detailed Report",
+      "viewFullReport": "View Full Report",
+      "scanDuration": "Scan completed in",
+      "seconds": "seconds",
+      "generateReport": "Generate Report",
+      "viewReport": "View Report"
+    },
+    "vulnerability": {
+      "listTitle": "Detected Vulnerabilities",
+      "description": "Description",
+      "location": "Location",
+      "recommendation": "Recommendation",
+      "close": "Close Details"
+    },
+    "metrics": {
+      "codeQuality": "Code Quality",
+      "securityScore": "Security Score",
+      "gasEfficiency": "Gas Efficiency",
+      "testCoverage": "Test Coverage"
+    },
+    "features": {
+      "title": "Advanced Security Features",
+      "feature1": {
+        "title": "Vulnerability Detection",
+        "description": "Identifies common smart contract vulnerabilities including reentrancy, integer overflow/underflow, and unchecked external calls."
+      },
+      "feature2": {
+        "title": "Gas Optimization",
+        "description": "Analyzes contract efficiency and suggests improvements to reduce gas costs and optimize performance."
+      },
+      "feature3": {
+        "title": "Detailed Reporting",
+        "description": "Provides comprehensive security reports with severity ratings, vulnerability descriptions, and actionable recommendations."
+      }
+    },
+    "footer": {
+      "trusted": "Trusted by leading blockchain projects"
+    },
+    "ai": {
+      "title": "AI-Powered Analysis",
+      "subtitle": "Preliminary audit powered by DeepSeek AI",
+      "thinking": "AI Reasoning Process",
+      "showThinking": "Show AI Thinking",
+      "liveThinking": "AI Thinking Process (Live)",
+      "disclaimer": "This is a preliminary AI-powered audit. For critical projects, we recommend a full professional audit.",
+      "progress": {
+        "initializing": "Initializing AI model...",
+        "analyzing": "AI analyzing code structure...",
+        "reasoning": "AI reasoning about potential issues...",
+        "generating": "Generating comprehensive report..."
+      },
+      "result": {
+        "title": "AI Audit Results",
+        "summary": "Summary",
+        "details": "Detailed Analysis",
+        "thinking": "AI Reasoning Process",
+        "showThinking": "Show AI Reasoning",
+        "hideThinking": "Hide AI Reasoning"
+      }
+    }
+  },
+  "report": {
+    "title": "Smart Contract Security Audit Report",
+    "scanId": "Scan ID",
+    "generatedBy": "Generated by",
+    "executiveSummary": "Executive Summary",
+    "target": "Target",
+    "securityMetrics": "Security Metrics",
+    "vulnerabilityDistribution": "Vulnerability Distribution",
+    "vulnerabilities": "Vulnerabilities",
+    "noVulnerabilities": "No vulnerabilities detected.",
+    "location": "Location",
+    "description": "Description",
+    "recommendation": "Recommendation",
+    "analyzedCode": "Analyzed Code",
+    "aiAnalysis": "AI Analysis Process",
+    "aiDisclaimer": "This is a preliminary AI-powered audit. For critical projects, we recommend a full professional audit.",
+    "disclaimer": "This report is provided for informational purposes only and does not constitute professional advice. Chain Fox is not liable for any damages arising from the use of this report.",
+    "allRightsReserved": "All rights reserved.",
+    "exportPDF": "Export PDF",
+    "exporting": "Exporting...",
+    "generateReport": "Generate Report",
+    "viewReport": "View Report"
+  }
+}

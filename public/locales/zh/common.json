@@ -1,0 +1,217 @@
+{
+  "appName": "链狐",
+  "navigation": {
+    "home": "首页",
+    "about": "关于我们",
+    "features": "核心特点",
+    "workflow": "工作流程",
+    "roadmap": "路线图",
+    "tokenomics": "代币经济学",
+    "faq": "常见问题",
+    "caseStudies": "成功案例",
+    "language": "语言选择",
+    "content": "内容导航"
+  },
+  "buttons": {
+    "getStarted": "开始使用",
+    "learnMore": "了解更多",
+    "uploadProject": "上传项目",
+    "contactUs": "联系我们",
+    "signIn": "登录",
+    "signOut": "退出登录"
+  },
+  "languageSwitcher": {
+    "en": "English",
+    "zh": "中文"
+  },
+  "auth": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "signOut": "退出登录",
+    "loading": "加载中...",
+    "chooseProvider": "选择一个登录方式继续",
+    "continueWithGithub": "使用 GitHub 登录",
+    "continueWithGoogle": "使用 Google 登录",
+    "continueWithDiscord": "使用 Discord 登录",
+    "backToHome": "返回首页",
+    "error": {
+      "general": "身份验证过程中发生错误",
+      "sessionExpired": "您的会话已过期，请重新登录。",
+      "emailConflict": "检测到电子邮件冲突：您的电子邮件地址已经与其他登录方式关联。",
+      "emailConflictSuggestion": "建议尝试使用 GitHub 登录，或者您之前成功使用过的登录方式。",
+      "emailConflictTechnical": "技术原因：同一个电子邮件地址在系统中存在多个账户，无法确定应该链接到哪个账户。",
+      "unverifiedDiscord": "Discord 邮箱未验证：您需要先验证 Discord 账号的电子邮件地址。",
+      "unverifiedDiscordSuggestion": "请登录您的 Discord 账号，完成电子邮件验证后再尝试登录。",
+      "unverifiedDiscordAlternative": "或者，您也可以尝试使用其他登录方式，如 GitHub 或 Google。",
+      "loginFailed": "登录失败",
+      "processingLogin": "正在处理您的登录请求",
+      "verifyingIdentity": "请稍候，我们正在验证您的身份...",
+      "recommendedProvider": "推荐登录方式",
+      "recommendedGithub": "我们推荐您使用 GitHub 登录，这可能会解决之前遇到的问题。",
+      "recommendedGoogle": "我们推荐您使用 Google 登录，这可能会解决之前遇到的问题。",
+      "recommendedDiscord": "我们推荐您使用 Discord 登录，这可能会解决之前遇到的问题。",
+      "returnToLogin": "返回登录页面"
+    },
+    "profile": {
+      "title": "个人资料",
+      "email": "邮箱",
+      "name": "姓名",
+      "avatar": "头像"
+    },
+    "callback": {
+      "debugInfo": "调试信息"
+    }
+  },
+  "detectionPage": {
+    "title": "智能合约安全审计",
+    "subtitle": "为区块链项目和智能合约提供高级安全分析",
+    "secureConnection": "安全连接",
+    "tabs": {
+      "code": "代码片段",
+      "github": "GitHub 仓库",
+      "upload": "上传项目"
+    },
+    "stats": {
+      "monitoring": "持续监控",
+      "accuracy": "检测准确率",
+      "vulnerabilities": "已检测漏洞"
+    },
+    "code": {
+      "title": "粘贴代码进行安全分析",
+      "placeholder": "在此处粘贴您的 Solidity, Rust, Go 或其他支持的代码...",
+      "supportedLanguages": "支持的语言"
+    },
+    "github": {
+      "title": "输入 GitHub 仓库地址",
+      "placeholder": "例如：https://github.com/owner/repo",
+      "features": "仓库分析功能",
+      "feature1": "扫描仓库中的所有智能合约",
+      "feature2": "分析依赖项和导入的合约",
+      "feature3": "检测整个代码库中的漏洞",
+      "feature4": "提供包含建议的全面安全报告"
+    },
+    "upload": {
+      "title": "上传您的项目代码",
+      "description": "此功能即将推出。您将能够上传压缩的项目文件进行全面分析。",
+      "placeholder": "拖放文件到此处或点击浏览",
+      "supportedFormats": "支持的格式：.zip, .sol, .rs, .go, .move",
+      "selectFiles": "选择文件",
+      "comingSoon": "此功能即将推出。我们正在努力支持直接文件上传以进行更全面的分析。"
+    },
+    "button": {
+      "detect": "开始安全审计",
+      "loading": "分析中...",
+      "generateReport": "生成报告",
+      "exportPDF": "导出 PDF"
+    },
+    "progress": {
+      "initializing": "初始化安全扫描...",
+      "cloning": "克隆仓库...",
+      "parsing": "解析代码...",
+      "analyzing": "分析合约结构...",
+      "vulnerabilityDetection": "检测漏洞...",
+      "gasAnalysis": "优化 Gas 使用...",
+      "reportGeneration": "生成安全报告...",
+      "complete": "分析完成！",
+      "error": "分析错误",
+      "processing": "处理中..."
+    },
+    "error": {
+      "emptyCode": "请输入需要分析的代码。",
+      "invalidGithubUrl": "请输入有效的 GitHub 仓库地址 (以 https://github.com/ 开头)。",
+      "apiError": "分析过程中发生错误，请稍后重试。"
+    },
+    "result": {
+      "title": "安全审计结果",
+      "scanId": "扫描 ID",
+      "target": "目标",
+      "success": "分析完成",
+      "issuesFound": "发现 {{count}} 个潜在问题。",
+      "reportUrl": "报告链接",
+      "failure": "分析失败",
+      "showDetails": "显示详细报告",
+      "hideDetails": "隐藏详细报告",
+      "viewFullReport": "查看完整报告",
+      "scanDuration": "扫描完成用时",
+      "seconds": "秒",
+      "generateReport": "生成报告",
+      "viewReport": "查看报告"
+    },
+    "vulnerability": {
+      "listTitle": "检测到的漏洞",
+      "description": "描述",
+      "location": "位置",
+      "recommendation": "建议",
+      "close": "关闭详情"
+    },
+    "metrics": {
+      "codeQuality": "代码质量",
+      "securityScore": "安全评分",
+      "gasEfficiency": "Gas 效率",
+      "testCoverage": "测试覆盖率"
+    },
+    "features": {
+      "title": "高级安全功能",
+      "feature1": {
+        "title": "漏洞检测",
+        "description": "识别常见的智能合约漏洞，包括重入攻击、整数溢出/下溢和未检查的外部调用。"
+      },
+      "feature2": {
+        "title": "Gas 优化",
+        "description": "分析合约效率并提出改进建议，以降低 Gas 成本并优化性能。"
+      },
+      "feature3": {
+        "title": "详细报告",
+        "description": "提供全面的安全报告，包括严重性评级、漏洞描述和可操作的建议。"
+      }
+    },
+    "footer": {
+      "trusted": "受到领先区块链项目的信任"
+    },
+    "ai": {
+      "title": "AI 驱动分析",
+      "subtitle": "由 DeepSeek AI 提供的前置审计",
+      "thinking": "AI 推理过程",
+      "showThinking": "显示思考过程",
+      "liveThinking": "AI 思考过程（实时）",
+      "disclaimer": "这是由 AI 提供的前置审计。对于关键项目，我们建议进行完整的专业审计。",
+      "progress": {
+        "initializing": "初始化 AI 模型...",
+        "analyzing": "AI 分析代码结构...",
+        "reasoning": "AI 推理潜在问题...",
+        "generating": "生成全面报告..."
+      },
+      "result": {
+        "title": "AI 审计结果",
+        "summary": "摘要",
+        "details": "详细分析",
+        "thinking": "AI 推理过程",
+        "showThinking": "显示 AI 推理",
+        "hideThinking": "隐藏 AI 推理"
+      }
+    }
+  },
+  "report": {
+    "title": "智能合约安全审计报告",
+    "scanId": "扫描 ID",
+    "generatedBy": "生成者",
+    "executiveSummary": "执行摘要",
+    "target": "目标",
+    "securityMetrics": "安全指标",
+    "vulnerabilityDistribution": "漏洞分布",
+    "vulnerabilities": "漏洞",
+    "noVulnerabilities": "未检测到漏洞。",
+    "location": "位置",
+    "description": "描述",
+    "recommendation": "建议",
+    "analyzedCode": "分析的代码",
+    "aiAnalysis": "AI 分析过程",
+    "aiDisclaimer": "这是由 AI 提供的前置审计。对于关键项目，我们建议进行完整的专业审计。",
+    "disclaimer": "本报告仅供参考，不构成专业建议。链狐不对使用本报告而产生的任何损害负责。",
+    "allRightsReserved": "版权所有。",
+    "exportPDF": "导出 PDF",
+    "exporting": "导出中...",
+    "generateReport": "生成报告",
+    "viewReport": "查看报告"
+  }
+}

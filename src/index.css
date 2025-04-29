@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #3B82F6, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.bg-grid {
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.8);
+}
+
+/* Custom styles for textarea */
+textarea {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(4px);
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+textarea:focus {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
+}
+
+/* Code editor specific styles */
+.code-editor-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.code-editor {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  padding-left: 3.5rem !important;
+  color: #e2e8f0 !important;
+  background: linear-gradient(to bottom, rgba(30, 30, 60, 0.4), rgba(10, 10, 30, 0.4)) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.code-editor:focus {
+  background: linear-gradient(to bottom, rgba(30, 30, 60, 0.5), rgba(10, 10, 30, 0.5)) !important;
+  border: 1px solid rgba(139, 92, 246, 0.4) !important;
+}

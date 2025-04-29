@@ -1,271 +1,271 @@
-# Chain Fox 官网前端项目
+# Chain Fox Frontend Project
 
 [English](README.md) | [中文](README.zh.md)
 
-这是 Chain Fox 区块链安全平台的官方网站前端开源项目。本项目使用 React、Tailwind CSS 和 Framer Motion 构建，提供现代化的用户界面和流畅的动画效果，展示 Chain Fox 平台的功能和服务。
+This is the official website frontend open-source project for Chain Fox blockchain security platform. Built with React, Tailwind CSS, and Framer Motion, it provides a modern user interface with smooth animations to showcase the features and services of the Chain Fox platform.
 
 ![Project Logo](/public/logo.png)
 
-## 关于本项目
+## About This Project
 
-本项目是 Chain Fox 的官方网站前端代码库，旨在为用户提供直观、美观的界面来访问 Chain Fox 的区块链安全审计服务。项目特点包括：
+This project is the official website frontend codebase for Chain Fox, designed to provide users with an intuitive and visually appealing interface to access Chain Fox's blockchain security audit services. Key features include:
 
-- 现代化的 UI 设计，包括渐变效果和流畅动画
-- 响应式布局，适配各种设备尺寸
-- 多语言支持（英文和中文）
-- 集成 DeepSeek AI 进行代码分析
-- 专业的安全审计报告生成和 PDF 导出功能
-- 基于 React 和 Tailwind CSS 的组件化架构
+- Modern UI design with gradient effects and smooth animations
+- Responsive layout that adapts to various device sizes
+- Multi-language support (English and Chinese)
+- Integration with DeepSeek AI for code analysis
+- Professional security audit report generation and PDF export functionality
+- Component-based architecture built on React and Tailwind CSS
 
-### 设计理念
+### Design Philosophy
 
-贯穿整个首页的动态粒子网络背景 (NetworkParticles) 不仅仅是一个视觉装饰，它承载了 Chain Fox 的核心使命隐喻：
+The dynamic particle network background (NetworkParticles) that runs throughout the homepage is not just a visual decoration; it carries a metaphor for Chain Fox's core mission:
 
-- **守护区块数据**：每一个闪烁的光点代表着广阔区块链宇宙中的一个区块节点，交织的线条则象征着复杂的数据流与交互。
-- **照亮黑暗森林**：Chain Fox 如同守护者，细致地扫描并点亮这些区块，确保其安全与完整。从节点散发出的光芒穿透了潜在威胁丛生的"黑暗森林"，寓意着 Chain Fox 如何为复杂且时常晦涩的区块链世界带来清晰的安全视野。
+- **Protecting Blockchain Data**: Each glowing point represents a block node in the vast blockchain universe, while the interweaving lines symbolize complex data flows and interactions.
+- **Illuminating the Dark Forest**: Chain Fox acts as a guardian, meticulously scanning and illuminating these blocks to ensure their security and integrity. The light emanating from the nodes penetrates the "dark forest" where potential threats lurk, symbolizing how Chain Fox brings clarity to the complex and often obscure world of blockchain.
 
-*Author：[@1379hash](https://twitter.com/1379hash)*
+*UI Design: [@1379hash](https://twitter.com/1379hash)*
 
-## 关于 Chain Fox 平台
+## About Chain Fox Platform
 
-Chain Fox 是一个区块链安全平台，为区块链项目和智能合约提供自动化分析服务。该平台旨在通过自动化检测工具使区块链安全更加民主化和普及化。
+Chain Fox is a blockchain security platform that provides automated analysis services for blockchain projects and smart contracts. The platform aims to democratize and popularize blockchain security through automated detection tools.
 
-Chain Fox 平台支持多种区块链（如以太坊、Solana、Polkadot 等）和编程语言（Rust、Go、Solidity 等），提供一键式报告生成，无需安装复杂工具。平台注重安全与保密，确保私有项目代码加密处理，从不共享，并根据用户请求删除。
+The Chain Fox platform supports various blockchains (such as Ethereum, Solana, Polkadot, etc.) and programming languages (Rust, Go, Solidity, etc.), offering one-click report generation without the need to install complex tools. The platform emphasizes security and confidentiality, ensuring that private project code is encrypted, never shared, and deleted upon request.
 
-## 前端项目核心特点
+## Core Features of the Frontend Project
 
-- 🎨 **现代化用户界面**
-  - 精美的渐变效果和流畅动画
-  - 完全响应式设计，适配各种设备
-  - 基于 Tailwind CSS 的优雅样式系统
+- 🎨 **Modern User Interface**
+  - Beautiful gradient effects and smooth animations
+  - Fully responsive design, adapting to various devices
+  - Elegant styling system based on Tailwind CSS
 
-- 🌊 **动态视觉效果**
-  - 使用 Three.js 实现的粒子背景效果
-  - Framer Motion 驱动的平滑过渡动画
-  - 悬浮卡片组件带有背景模糊效果
+- 🌊 **Dynamic Visual Effects**
+  - Particle background effects implemented with Three.js
+  - Smooth transition animations powered by Framer Motion
+  - Floating card components with backdrop blur effects
 
-- 🌐 **国际化支持**
-  - 完整的英文和中文语言支持
-  - 基于 react-i18next 的灵活翻译系统
-  - 易于扩展的多语言架构
+- 🌐 **Internationalization Support**
+  - Complete English and Chinese language support
+  - Flexible translation system based on react-i18next
+  - Easily extensible multilingual architecture
 
-- 🔍 **安全审计功能展示**
-  - 代码分析界面，支持多种编程语言
-  - GitHub 仓库分析集成
-  - 漏洞检测结果可视化展示
+- 🔍 **Security Audit Feature Showcase**
+  - Code analysis interface supporting multiple programming languages
+  - GitHub repository analysis integration
+  - Vulnerability detection results visualization
 
-- 🤖 **AI 集成**
-  - DeepSeek AI 代码分析集成
-  - 实时展示 AI 推理过程的打字机效果
-  - AI 思考过程可视化
+- 🤖 **AI Integration**
+  - DeepSeek AI code analysis integration
+  - Real-time display of AI reasoning process with typewriter effect
+  - AI thinking process visualization
 
-- 📊 **专业报告系统**
-  - 生成全面的安全审计报告
-  - 支持 PDF 导出功能
-  - 美观的报告模板设计
+- 📊 **Professional Reporting System**
+  - Generation of comprehensive security audit reports
+  - PDF export functionality
+  - Beautifully designed report templates
 
-- 🔐 **身份验证**
-  - 集成 Supabase 身份验证
-  - 支持 GitHub、Google 和 Discord 登录
-  - 安全的用户会话管理
+- 🔐 **Authentication**
+  - Supabase authentication integration
+  - Support for GitHub, Google, and Discord login
+  - Secure user session management
 
-- 📱 **组件化架构**
-  - 基于 React 的可复用组件系统
-  - 清晰的项目结构和代码组织
-  - 易于维护和扩展的模块化设计
+- 📱 **Component-Based Architecture**
+  - Reusable component system based on React
+  - Clear project structure and code organization
+  - Easily maintainable and extensible modular design
 
-## 前端功能展示
+## Frontend Feature Showcase
 
-本前端项目展示了 Chain Fox 平台的主要功能和工作流程：
+This frontend project showcases the main features and workflows of the Chain Fox platform:
 
-### 主页展示
+### Homepage Display
 
-- **品牌介绍**：展示 Chain Fox 的品牌形象和核心价值
-- **动态背景**：使用 Three.js 实现的粒子效果背景
-- **功能概览**：直观展示平台的主要功能和优势
-- **多语言切换**：在英文和中文之间无缝切换
+- **Brand Introduction**: Showcasing Chain Fox's brand image and core values
+- **Dynamic Background**: Particle effect background implemented with Three.js
+- **Feature Overview**: Intuitive display of the platform's main features and advantages
+- **Language Switching**: Seamless switching between English and Chinese
 
-### 安全审计界面
+### Security Audit Interface
 
-- **多种输入方式**：
-  - 代码片段直接输入
-  - GitHub 仓库 URL 分析
-  - 文件上传功能（即将推出）
-- **语言选择**：支持多种区块链开发语言的代码高亮
-- **实时分析**：展示分析进度和中间结果
+- **Multiple Input Methods**:
+  - Direct code snippet input
+  - GitHub repository URL analysis
+  - File upload functionality (coming soon)
+- **Language Selection**: Support for code highlighting in multiple blockchain development languages
+- **Real-time Analysis**: Display of analysis progress and intermediate results
 
-### AI 分析展示
+### AI Analysis Display
 
-- **AI 思考过程**：实时展示 AI 的推理过程
-- **打字机效果**：逐字显示 AI 分析结果，增强用户体验
-- **可切换视图**：用户可以选择是否显示 AI 思考过程
+- **AI Reasoning Process**: Real-time display of the AI's reasoning process
+- **Typewriter Effect**: Character-by-character display of AI analysis results, enhancing user experience
+- **Switchable Views**: Users can choose whether to display the AI thinking process
 
-### 报告系统
+### Reporting System
 
-- **结果可视化**：直观展示安全审计结果
-- **漏洞详情**：展示每个漏洞的详细信息和修复建议
-- **报告生成**：生成专业的安全审计报告
-- **PDF 导出**：将报告导出为 PDF 格式，方便分享和存档
+- **Results Visualization**: Intuitive display of security audit results
+- **Vulnerability Details**: Display of detailed information and fix recommendations for each vulnerability
+- **Report Generation**: Generation of professional security audit reports
+- **PDF Export**: Export reports to PDF format for easy sharing and archiving
 
-### 用户认证
+### User Authentication
 
-- **多平台登录**：支持 GitHub、Google 和 Discord 登录
-- **用户管理**：安全的用户会话和权限管理
-- **个性化体验**：根据用户偏好提供定制化内容
+- **Multi-platform Login**: Support for GitHub, Google, and Discord login
+- **User Management**: Secure user session and permission management
+- **Personalized Experience**: Customized content based on user preferences
 
-## 技术实现
+## Technical Implementation
 
-本前端项目使用了多种现代 Web 技术和库：
+This frontend project uses a variety of modern web technologies and libraries:
 
-### 前端框架与工具
+### Frontend Frameworks and Tools
 
-- **React**：用于构建用户界面的 JavaScript 库
-- **Vite**：快速的前端构建工具和开发服务器
-- **Tailwind CSS**：实用优先的 CSS 框架
-- **Framer Motion**：强大的 React 动画库
-- **Three.js**：用于创建 3D 粒子效果的 JavaScript 库
+- **React**: JavaScript library for building user interfaces
+- **Vite**: Fast frontend build tool and development server
+- **Tailwind CSS**: Utility-first CSS framework
+- **Framer Motion**: Powerful React animation library
+- **Three.js**: JavaScript library for creating 3D particle effects
 
-### 功能实现
+### Feature Implementation
 
-- **国际化**：使用 react-i18next 实现多语言支持
-- **路由**：使用 React Router 实现页面导航
-- **状态管理**：使用 React 的 Context API 和 Hooks
-- **API 集成**：与 DeepSeek AI API 集成进行代码分析
-- **身份验证**：集成 Supabase 身份验证服务
-- **PDF 导出**：使用 jsPDF 和 html2canvas 实现报告导出
+- **Internationalization**: Multi-language support using react-i18next
+- **Routing**: Page navigation using React Router
+- **State Management**: Using React's Context API and Hooks
+- **API Integration**: Integration with DeepSeek AI API for code analysis
+- **Authentication**: Integration with Supabase authentication service
+- **PDF Export**: Report export using jsPDF and html2canvas
 
-### 性能优化
+### Performance Optimization
 
-- **代码分割**：使用 React.lazy 和 Suspense 实现按需加载
-- **图像优化**：优化图像大小和格式
-- **缓存策略**：实现适当的缓存策略
-- **懒加载**：组件和资源的懒加载
+- **Code Splitting**: On-demand loading using React.lazy and Suspense
+- **Image Optimization**: Optimizing image size and format
+- **Caching Strategy**: Implementing appropriate caching strategies
+- **Lazy Loading**: Lazy loading of components and resources
 
-## 项目展示
+## Project Showcase
 
-本前端项目展示了 Chain Fox 平台的功能，包括：
+This frontend project showcases the features of the Chain Fox platform, including:
 
-- **主页**：展示平台概述和主要功能
-- **安全审计页面**：展示代码分析和漏洞检测功能
-- **报告页面**：展示安全审计报告和 PDF 导出功能
-- **用户认证**：展示多平台登录选项
+- **Homepage**: Displaying platform overview and main features
+- **Security Audit Page**: Showcasing code analysis and vulnerability detection
+- **Report Page**: Displaying security audit reports and PDF export functionality
+- **User Authentication**: Showcasing multi-platform login options
 
-通过这些页面，用户可以了解 Chain Fox 平台如何帮助区块链项目提高安全性，并体验平台的主要功能。
+Through these pages, users can understand how the Chain Fox platform helps blockchain projects improve security and experience the platform's main features.
 
-## 快速开始
+## Quick Start
 
-### 安装依赖
+### Installing Dependencies
 
 ```bash
 npm install
-# 或
+# or
 yarn install
 ```
 
-### 开发环境运行
+### Running in Development Environment
 
 ```bash
 npm run dev
-# 或
+# or
 yarn dev
 ```
 
-应用将在 http://localhost:5173 启动。
+The application will start at http://localhost:5173.
 
-### 构建生产版本
+### Building for Production
 
 ```bash
 npm run build
-# 或
+# or
 yarn build
 ```
 
-构建文件将生成在 `dist` 目录中。
+Build files will be generated in the `dist` directory.
 
-## 部署指南
+## Deployment Guide
 
-本项目可以部署到多种环境，包括 Cloudflare Pages、Vercel、Netlify 等。详细的部署说明，请参考我们的[部署指南](./deploy.md)，其中包括：
+This project can be deployed to various environments, including Cloudflare Pages, Vercel, Netlify, etc. For detailed deployment instructions, please refer to our [Deployment Guide](./deploy.md), which includes:
 
-- 环境变量配置
-- Supabase 身份验证设置
-- DeepSeek AI API 集成
-- Cloudflare Pages 部署步骤
-- 自定义域名配置
+- Environment variable configuration
+- Supabase authentication setup
+- DeepSeek AI API integration
+- Cloudflare Pages deployment steps
+- Custom domain configuration
 
-> **文档**: [English Deployment Guide](./deploy.md) | [中文部署指南](./deploy.zh.md)
+> **Documentation**: [English Deployment Guide](./deploy.md) | [中文部署指南](./deploy.zh.md)
 
-## 项目结构
+## Project Structure
 
 ```
 chain-fox/
 ├── src/
-│   ├── components/            # 可复用 UI 组件
-│   │   ├── AuditReport/       # 审计报告组件
-│   │   ├── HomePage/          # 首页相关组件
-│   │   ├── Layout/            # 布局组件
-│   │   └── ...                # 其他组件
-│   ├── pages/                 # 页面组件
-│   │   ├── HomePage.jsx       # 首页
-│   │   ├── DetectionPage.jsx  # 安全审计页面
-│   │   └── AuthPage.jsx       # 认证页面
-│   ├── services/              # 服务模块
-│   │   ├── deepseek.js        # AI 集成服务
-│   │   ├── pdfExport.js       # PDF 生成和导出服务
-│   │   └── supabase.js        # 身份验证服务
-│   ├── App.jsx                # 主应用组件（路由配置）
-│   ├── i18n.js                # 国际化配置
-│   └── main.jsx               # 应用入口
+│   ├── components/            # Reusable UI components
+│   │   ├── AuditReport/       # Audit report components
+│   │   ├── HomePage/          # Homepage related components
+│   │   ├── Layout/            # Layout components
+│   │   └── ...                # Other components
+│   ├── pages/                 # Page components
+│   │   ├── HomePage.jsx       # Homepage
+│   │   ├── DetectionPage.jsx  # Security audit page
+│   │   └── AuthPage.jsx       # Authentication page
+│   ├── services/              # Service modules
+│   │   ├── deepseek.js        # AI integration service
+│   │   ├── pdfExport.js       # PDF generation and export service
+│   │   └── supabase.js        # Authentication service
+│   ├── App.jsx                # Main application component (routing configuration)
+│   ├── i18n.js                # Internationalization configuration
+│   └── main.jsx               # Application entry point
 ├── public/
-│   ├── locales/               # 翻译文件
-│   │   ├── en/                # 英文翻译
-│   │   └── zh/                # 中文翻译
-│   └── logo.png               # 应用程序 logo
-├── docs/                      # 文档
-│   └── 描述文档.md            # 项目描述文档
-├── deploy.md                  # 部署指南(英文)
-└── deploy.zh.md               # 部署指南(中文)
+│   ├── locales/               # Translation files
+│   │   ├── en/                # English translations
+│   │   └── zh/                # Chinese translations
+│   └── logo.png               # Application logo
+├── docs/                      # Documentation
+│   └── 描述文档.md            # Project description document
+├── deploy.md                  # Deployment guide (English)
+└── deploy.zh.md               # Deployment guide (Chinese)
 ```
 
-## 多语言支持
+## Multi-language Support
 
-本项目使用 react-i18next 实现了完整的国际化支持：
+This project implements complete internationalization support using react-i18next:
 
-- **支持语言**：
-  - 英文 (en) - 默认语言
-  - 中文 (zh)
+- **Supported Languages**:
+  - English (en) - Default language
+  - Chinese (zh)
 
-- **翻译文件**：
-  - 位于 `public/locales` 目录
-  - 按语言代码和命名空间组织
-  - `common.json` 包含共享翻译
+- **Translation Files**:
+  - Located in the `public/locales` directory
+  - Organized by language code and namespace
+  - `common.json` contains shared translations
 
-- **添加新语言**：
-  1. 在 `public/locales` 中创建新语言文件夹
-  2. 复制并翻译现有 JSON 文件
-  3. 在 `LanguageSwitcher.jsx` 中添加语言选项
+- **Adding a New Language**:
+  1. Create a new language folder in `public/locales`
+  2. Copy and translate existing JSON files
+  3. Add language option in `LanguageSwitcher.jsx`
 
-## 功能开发计划
+## Feature Development Plan
 
-本前端项目正在积极开发中，计划添加的功能包括：
+This frontend project is actively being developed, with planned features including:
 
-- 更多的可视化组件，展示安全分析结果
-- 更完善的用户仪表板
-- 团队协作功能
-- 更多的报告模板和导出选项
-- 移动端优化
+- More visualization components to display security analysis results
+- More comprehensive user dashboard
+- Team collaboration features
+- Additional report templates and export options
+- Mobile optimization
 
-## 贡献指南
+## Contribution Guidelines
 
-我们欢迎社区贡献，帮助改进这个开源项目：
+We welcome community contributions to help improve this open-source project:
 
-1. Fork 仓库
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m '添加新功能：XXX'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建 Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add new feature: XXX'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
 
-请确保您的代码符合项目的编码规范，并通过所有测试。
+Please ensure your code complies with the project's coding standards and passes all tests.
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证 - 详情请参阅 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

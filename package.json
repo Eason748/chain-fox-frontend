@@ -1,0 +1,37 @@
+{
+  "name": "chain-fox-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.49.4",
+    "autoprefixer": "^10.4.16",
+    "framer-motion": "^10.16.4",
+    "gsap": "^3.12.7",
+    "html2canvas": "^1.4.1",
+    "i18next": "^25.0.1",
+    "i18next-browser-languagedetector": "^8.0.5",
+    "i18next-http-backend": "^3.0.2",
+    "jspdf": "^3.0.1",
+    "postcss": "^8.4.31",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^15.5.1",
+    "react-router-dom": "^7.5.2",
+    "react-to-pdf": "^2.0.0",
+    "tailwindcss": "^3.3.3",
+    "three": "^0.176.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.4.5"
+  }
+}
