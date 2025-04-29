@@ -24,7 +24,7 @@ The dynamic particle network background (NetworkParticles) that runs throughout 
 - **Protecting Blockchain Data**: Each glowing point represents a block node in the vast blockchain universe, while the interweaving lines symbolize complex data flows and interactions.
 - **Illuminating the Dark Forest**: Chain Fox acts as a guardian, meticulously scanning and illuminating these blocks to ensure their security and integrity. The light emanating from the nodes penetrates the "dark forest" where potential threats lurk, symbolizing how Chain Fox brings clarity to the complex and often obscure world of blockchain.
 
-*UI Design: [@1379hash](https://twitter.com/1379hash)*
+*Author: [@1379hash](https://twitter.com/1379hash)*
 
 ## About Chain Fox Platform
 
