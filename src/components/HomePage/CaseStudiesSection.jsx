@@ -6,12 +6,12 @@ function CaseStudiesSection() {
   const { t } = useTranslation(['home']);
 
   const caseStudies = [
-    { key: 'solana', delay: 0, logo: '🌞' },
-    { key: 'ethereum', delay: 0.1, logo: '💎' },
-    { key: 'polkadot', delay: 0.2, logo: '🔴' },
-    { key: 'foundry', delay: 0.3, logo: '🏗️' },
-    { key: 'conflux', delay: 0.4, logo: '🔄' },
-    { key: 'grin', delay: 0.5, logo: '😁' }
+    { key: 'solana', delay: 0, logo: '/imgs/solana.jpg' },
+    { key: 'ethereum', delay: 0.1, logo: '/imgs/ethereum.png' },
+    { key: 'polkadot', delay: 0.2, logo: '/imgs/polkadot.png' },
+    { key: 'foundry', delay: 0.3, logo: '/imgs/foundry.png' },
+    { key: 'conflux', delay: 0.4, logo: '/imgs/conflux.png' },
+    { key: 'grin', delay: 0.5, logo: '/imgs/grin.png' }
   ];
 
   return (
@@ -43,7 +43,9 @@ function CaseStudiesSection() {
               whileHover={{ scale: 1.05 }}
               className="floating bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 flex flex-col items-center justify-center text-center"
             >
-              <div className="text-4xl mb-4">{study.logo}</div>
+              <div className="h-16 w-16 mb-4 flex items-center justify-center">
+                <img src={study.logo} alt={t(`caseStudies.projects.${study.key}`)} className="max-h-full max-w-full object-contain" />
+              </div>
               <h3 className="text-xl font-bold gradient-text">
                 {t(`caseStudies.projects.${study.key}`)}
               </h3>
