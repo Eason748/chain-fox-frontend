@@ -6,7 +6,7 @@ function CaseStudiesSection() {
   const { t } = useTranslation(['home']);
 
   const caseStudies = [
-    { key: 'solana', delay: 0, logo: '/imgs/solana.jpg' },
+    { key: 'solana', delay: 0, logo: '/imgs/solana.png' },
     { key: 'ethereum', delay: 0.1, logo: '/imgs/ethereum.png' },
     { key: 'polkadot', delay: 0.2, logo: '/imgs/polkadot.png' },
     { key: 'foundry', delay: 0.3, logo: '/imgs/foundry.png' },
