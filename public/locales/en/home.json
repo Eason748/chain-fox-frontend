@@ -100,6 +100,7 @@
   "tokenomics": {
     "title": "Tokenomics",
     "subtitle": "Token distribution and allocation",
+    "contractAddress": "Contract Address",
     "distribution": {
       "public": {
         "title": "Public Distribution",
@@ -146,6 +147,10 @@
       "vulnerabilities": {
         "question": "How do you keep up with new vulnerabilities?",
         "answer": "We track the latest academic research, CVEs, and industry trends, continuously improving our tools and detection logic."
+      },
+      "contract_address": {
+        "question": "What is the Chain Fox contract address?",
+        "answer": "The official Chain Fox contract address is RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump. You can also find and copy it in the Tokenomics section above."
       }
     }
   },

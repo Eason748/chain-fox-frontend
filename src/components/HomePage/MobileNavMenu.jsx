@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'; // Added useEffect
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import WalletAvatar from '../WalletAvatar';
 
 function MobileNavMenu({ isOpen, onClose }) {
   const { t, i18n } = useTranslation(['common']);
@@ -42,6 +43,10 @@ function MobileNavMenu({ isOpen, onClose }) {
     onClose(); // Close main mobile menu
   };
 
+  // Menu item style classes
+  const menuItemClasses = "hover:text-blue-400 transition-colors py-3 border-b border-white/10 block";
+  const activeMenuItemClasses = "text-blue-400 py-3 border-b border-white/10 block";
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -52,11 +57,51 @@ function MobileNavMenu({ isOpen, onClose }) {
           transition={{ duration: 0.3 }}
           className="md:hidden mt-4 bg-black/90 backdrop-blur-lg rounded-lg p-4 border border-white/10 shadow-xl"
         >
-          <div className="flex flex-col space-y-1"> {/* Reduced space */}
+          <div className="flex flex-col space-y-1">
+            {/* User Info (if logged in) */}
+            {user && (
+              <div className="py-3 border-b border-white/10">
+                <div className="flex items-center space-x-2 mb-2">
+                  {/* For Web3 wallet users */}
+                  {user.type === 'solana' ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <WalletAvatar address={user.address} type={user.type} showAddress={false} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">{`${user.address.substring(0, 6)}...${user.address.substring(user.address.length - 4)}`}</div>
+                        {user.balance !== undefined && (
+                          <div className="text-sm text-gray-300">
+                            <span className="font-medium">{user.balance.toFixed(4)}</span>
+                            <span className="ml-1 text-xs text-gray-400">SOL</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* For OAuth users */
+                    <>
+                      {user.user_metadata?.avatar_url && (
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt="User Avatar"
+                          className="w-8 h-8 rounded-full"
+                        />
+                      )}
+                      <div className="text-sm">
+                        {user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User'}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation Links */}
             {/* Home Link */}
             <Link
               to="/"
-              className="hover:text-blue-400 transition-colors py-3 border-b border-white/10 block" // Increased padding
+              className={location.pathname === '/' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
               {t('navigation.home')}
@@ -66,15 +111,15 @@ function MobileNavMenu({ isOpen, onClose }) {
             {isHomePage ? (
               <a
                 href="#about"
-                className="hover:text-blue-400 transition-colors py-3 border-b border-white/10 block"
-                onClick={handleMenuItemClick} // Use same handler for anchor links
+                className={menuItemClasses}
+                onClick={handleMenuItemClick}
               >
                 {t('navigation.about')}
               </a>
             ) : (
               <Link
                 to="/#about"
-                className="hover:text-blue-400 transition-colors py-3 border-b border-white/10 block"
+                className={menuItemClasses}
                 onClick={handleMenuItemClick}
               >
                 {t('navigation.about')}
@@ -84,19 +129,18 @@ function MobileNavMenu({ isOpen, onClose }) {
             {/* Detection Page Link */}
             <Link
               to="/detect"
-              className="hover:text-blue-400 transition-colors py-3 border-b border-white/10 block"
+              className={location.pathname === '/detect' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
               {t('detectionPage.title')}
             </Link>
-
 
             {/* Conditional Content Dropdown */}
             {isHomePage && (
               <div className="py-2 border-b border-white/10">
                 <button
                   onClick={() => setContentMenuOpen(!contentMenuOpen)}
-                  className="flex items-center justify-between w-full text-left py-1 hover:text-blue-400 transition-colors" // Adjusted padding
+                  className="flex items-center justify-between w-full text-left py-1 hover:text-blue-400 transition-colors"
                 >
                   <span>{t('navigation.content')}</span>
                   <svg className={`w-4 h-4 transition-transform duration-200 ${contentMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -139,45 +183,8 @@ function MobileNavMenu({ isOpen, onClose }) {
               </div>
             )}
 
-            {/* Auth Buttons */}
-            <div className="py-2 border-b border-white/10">
-              {user ? (
-                <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    {user.user_metadata?.avatar_url && (
-                      <img
-                        src={user.user_metadata.avatar_url}
-                        alt="User Avatar"
-                        className="w-8 h-8 rounded-full"
-                      />
-                    )}
-                    <div className="text-sm">
-                      {user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User'}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      signOut();
-                      handleMenuItemClick();
-                    }}
-                    className="w-full text-left py-3 text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    {t('buttons.signOut')}
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  to="/auth"
-                  className="block w-full text-left py-3 text-blue-400 hover:text-blue-300 transition-colors"
-                  onClick={handleMenuItemClick}
-                >
-                  {t('buttons.signIn')}
-                </Link>
-              )}
-            </div>
-
             {/* Language Selection */}
-            <div className="py-2">
+            <div className="py-2 border-b border-white/10">
               <button
                 onClick={() => setLanguageMenuOpen(!languageMenuOpen)}
                 className="flex items-center justify-between w-full text-left py-1 hover:text-blue-400 transition-colors"
@@ -193,6 +200,29 @@ function MobileNavMenu({ isOpen, onClose }) {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="py-2">
+              {user ? (
+                <button
+                  onClick={() => {
+                    signOut();
+                    handleMenuItemClick();
+                  }}
+                  className="w-full text-left py-3 text-red-400 hover:text-red-300 transition-colors"
+                >
+                  {t('buttons.signOut')}
+                </button>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="block w-full text-left py-3 text-blue-400 hover:text-blue-300 transition-colors"
+                  onClick={handleMenuItemClick}
+                >
+                  {t('buttons.signIn')}
+                </Link>
+              )}
             </div>
           </div>
         </motion.div>

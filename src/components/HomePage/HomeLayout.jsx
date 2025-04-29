@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import ChainFoxLogo from './ChainFoxLogo';
 import ChainFoxLogoSmall from './ChainFoxLogoSmall';
 import NavMenu from './NavMenu';
+import UserMenu from './UserMenu';
+import LanguageSelector from './LanguageSelector';
 import MobileNavMenu from './MobileNavMenu';
 
 function HomeLayout({ children }) {
@@ -44,35 +46,52 @@ function HomeLayout({ children }) {
       {/* Main content */}
       <div className="relative z-10">
         {/* Navigation */}
-        <nav className="container mx-auto px-6 py-8">
+        <nav className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="hidden md:block">
-              <ChainFoxLogo width={120} />
-            </div>
-            <div className="block md:hidden">
-              <ChainFoxLogoSmall width={40} />
+            {/* Logo and Menu (Left Side) */}
+            <div className="flex items-center space-x-6">
+              {/* Logo */}
+              <div className="hidden md:block">
+                <ChainFoxLogo width={120} />
+              </div>
+              <div className="block md:hidden">
+                <ChainFoxLogoSmall width={40} />
+              </div>
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:block">
+                <NavMenu />
+              </div>
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:block">
-              <NavMenu />
-            </div>
+            {/* User and Language (Right Side) */}
+            <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+              <div className="hidden md:block">
+                <LanguageSelector />
+              </div>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center">
-              <button
-                onClick={toggleMobileMenu}
-                className="text-white focus:outline-none p-2 rounded-md hover:bg-white/10 transition-colors"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
+              {/* User Menu */}
+              <div className="hidden md:block">
+                <UserMenu />
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="md:hidden flex items-center">
+                <button
+                  onClick={toggleMobileMenu}
+                  className="text-white focus:outline-none p-2 rounded-md hover:bg-white/10 transition-colors"
+                  aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    {mobileMenuOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 

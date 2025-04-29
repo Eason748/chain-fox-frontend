@@ -20,6 +20,11 @@
     "signIn": "登录",
     "signOut": "退出登录"
   },
+  "userMenu": {
+    "profile": "个人资料",
+    "settings": "设置",
+    "wallet": "钱包"
+  },
   "languageSwitcher": {
     "en": "English",
     "zh": "中文"
@@ -33,6 +38,8 @@
     "continueWithGithub": "使用 GitHub 登录",
     "continueWithGoogle": "使用 Google 登录",
     "continueWithDiscord": "使用 Discord 登录",
+    "continueWithSolana": "使用 Solana 钱包登录",
+    "orContinueWith": "或使用钱包登录",
     "backToHome": "返回首页",
     "required": {
       "title": "需要登录",
@@ -55,6 +62,7 @@
       "recommendedGithub": "我们推荐您使用 GitHub 登录，这可能会解决之前遇到的问题。",
       "recommendedGoogle": "我们推荐您使用 Google 登录，这可能会解决之前遇到的问题。",
       "recommendedDiscord": "我们推荐您使用 Discord 登录，这可能会解决之前遇到的问题。",
+      "recommendedSolana": "我们推荐您使用 Solana 钱包登录，这可能会解决之前遇到的问题。",
       "returnToLogin": "返回登录页面"
     },
     "profile": {
@@ -218,5 +226,12 @@
     "exporting": "导出中...",
     "generateReport": "生成报告",
     "viewReport": "查看报告"
-  }
+  },
+  "error": {
+    "title": "出现错误",
+    "message": "应用程序遇到了一个错误。",
+    "errorMessage": "错误信息：",
+    "refreshPage": "刷新页面"
+  },
+  "copied": "已复制到剪贴板！"
 }

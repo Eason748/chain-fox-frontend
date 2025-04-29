@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { auth, supabase } from '../services/supabase';
+import { web3AuthService, getStoredUser, getWalletBalance } from '../services/web3Auth';
 
 // Create authentication context
 const AuthContext = createContext(null);
@@ -17,7 +18,16 @@ export const AuthProvider = ({ children }) => {
         setLoading(true);
         console.log("AuthContext: Checking current user session");
 
-        // Get current session
+        // First check for web3 wallet user
+        const web3User = getStoredUser();
+        if (web3User) {
+          console.log("AuthContext: Web3 user found", web3User);
+          setUser(web3User);
+          setLoading(false);
+          return;
+        }
+
+        // If no web3 user, check Supabase session
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -50,7 +60,12 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("AuthContext: Authentication state changed", event, session?.user);
-        setUser(session?.user || null);
+
+        // Only update if there's no web3 user
+        const web3User = getStoredUser();
+        if (!web3User) {
+          setUser(session?.user || null);
+        }
       }
     );
 
@@ -222,12 +237,97 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Sign in with Solana wallet
+  const signInWithSolana = async () => {
+    try {
+      console.log("AuthContext: Starting Solana wallet login flow");
+
+      // Record current login provider
+      localStorage.setItem('auth_provider', 'solana');
+
+      setLoading(true);
+      setError(null); // Clear previous errors
+
+      // Check if Solana wallet is available
+      if (!web3AuthService.hasSolanaWallet()) {
+        console.error("AuthContext: No Solana wallet detected");
+        setError(new Error("No Solana wallet detected. Please install a Solana wallet extension like Phantom."));
+        return;
+      }
+
+      // Connect to Solana wallet
+      const { publicKey } = await web3AuthService.connectSolanaWallet();
+
+      if (!publicKey) {
+        console.error("AuthContext: Failed to connect to Solana wallet");
+        setError(new Error("Failed to connect to Solana wallet. Please try again."));
+        return;
+      }
+
+      console.log("AuthContext: Connected to Solana wallet", publicKey.toString());
+
+      // Sign in with Solana wallet
+      const userProfile = await web3AuthService.signInWithSolana(publicKey);
+
+      console.log("AuthContext: Solana login successful", userProfile);
+
+      // Set user in context
+      setUser(userProfile);
+
+      return userProfile;
+    } catch (err) {
+      console.error('Error signing in with Solana wallet:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update wallet balance
+  const updateWalletBalance = async () => {
+    try {
+      // Only update if user is a web3 user
+      if (user && user.type === 'solana' && user.address) {
+        setLoading(true);
+
+        // Get updated balance
+        const balance = await getWalletBalance(user.address);
+
+        // Update user state with new balance
+        setUser(prevUser => ({
+          ...prevUser,
+          balance,
+          updatedAt: new Date()
+        }));
+
+        return balance;
+      }
+      return null;
+    } catch (err) {
+      console.error('Error updating wallet balance:', err);
+      setError(err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Sign out
   const signOut = async () => {
     try {
       setLoading(true);
-      const { error } = await auth.signOut();
-      if (error) setError(error);
+
+      // Check if user is a web3 user
+      const web3User = getStoredUser();
+      if (web3User) {
+        // Disconnect web3 wallet
+        await web3AuthService.disconnectWallet();
+        setUser(null);
+      } else {
+        // Sign out from Supabase
+        const { error } = await auth.signOut();
+        if (error) setError(error);
+      }
     } catch (err) {
       console.error('Error signing out:', err);
       setError(err);
@@ -236,14 +336,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Extract wallet information using useMemo
+  const walletInfo = useMemo(() => {
+    if (user && user.type === 'solana') {
+      return {
+        address: user.address || null,
+        balance: user.balance || 0,
+        isWeb3User: true
+      };
+    }
+    return {
+      address: null,
+      balance: 0,
+      isWeb3User: false
+    };
+  }, [user]);
+
   // Values provided to the context
   const value = {
     user,
     loading,
     error,
+    // Wallet specific information
+    address: walletInfo.address,
+    balance: walletInfo.balance,
+    isWeb3User: walletInfo.isWeb3User,
+    updateWalletBalance,
+    // Auth methods
     signInWithGithub,
     signInWithGoogle,
     signInWithDiscord,
+    signInWithSolana,
     signOut,
   };
 

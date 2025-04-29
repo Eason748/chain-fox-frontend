@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import HomeLayout from './components/HomePage/HomeLayout';
 import { HomePage } from './pages/HomePage';
@@ -7,6 +7,7 @@ import AuthPage from './pages/AuthPage';
 import AuthCallback from './pages/AuthCallback';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Import i18n instance
 import './i18n';
 
 // Import AuthProvider
@@ -61,7 +62,9 @@ export const App = () => {
     <ErrorBoundary>
       <Router>
         <AuthProvider>
-          <AppContent />
+          <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+            <AppContent />
+          </Suspense>
         </AuthProvider>
       </Router>
     </ErrorBoundary>

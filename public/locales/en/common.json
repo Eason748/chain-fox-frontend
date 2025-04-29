@@ -20,6 +20,11 @@
     "signIn": "Sign In",
     "signOut": "Sign Out"
   },
+  "userMenu": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "wallet": "Wallet"
+  },
   "languageSwitcher": {
     "en": "English",
     "zh": "中文"
@@ -33,6 +38,8 @@
     "continueWithGithub": "Continue with GitHub",
     "continueWithGoogle": "Continue with Google",
     "continueWithDiscord": "Continue with Discord",
+    "continueWithSolana": "Solana Wallet",
+    "orContinueWith": "or continue with wallet",
     "backToHome": "Back to Home",
     "required": {
       "title": "Authentication Required",
@@ -55,6 +62,7 @@
       "recommendedGithub": "We recommend using GitHub login, which may resolve the issue you encountered previously.",
       "recommendedGoogle": "We recommend using Google login, which may resolve the issue you encountered previously.",
       "recommendedDiscord": "We recommend using Discord login, which may resolve the issue you encountered previously.",
+      "recommendedSolana": "We recommend using Solana wallet login, which may resolve the issue you encountered previously.",
       "returnToLogin": "Return to Login Page"
     },
     "profile": {
@@ -218,5 +226,12 @@
     "exporting": "Exporting...",
     "generateReport": "Generate Report",
     "viewReport": "View Report"
-  }
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "The application encountered an error.",
+    "errorMessage": "Error message:",
+    "refreshPage": "Refresh page"
+  },
+  "copied": "Copied to clipboard!"
 }

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 const AuthPage = () => {
-  const { user, loading, error, signInWithGithub, signInWithGoogle, signInWithDiscord } = useAuth();
+  const { user, loading, error, signInWithGithub, signInWithGoogle, signInWithDiscord, signInWithSolana } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [recommendedProvider, setRecommendedProvider] = useState(null);
@@ -45,12 +45,14 @@ const AuthPage = () => {
           signInWithGoogle();
         } else if (recommendedProvider === 'discord') {
           signInWithDiscord();
+        } else if (recommendedProvider === 'solana') {
+          signInWithSolana();
         }
       }, 500);
 
       return () => clearTimeout(timer);
     }
-  }, [recommendedProvider, loading, autoLoginAttempted, signInWithGithub, signInWithGoogle, signInWithDiscord]);
+  }, [recommendedProvider, loading, autoLoginAttempted, signInWithGithub, signInWithGoogle, signInWithDiscord, signInWithSolana]);
 
   // Button animation variants
   const buttonVariants = {
@@ -158,6 +160,7 @@ const AuthPage = () => {
                   {recommendedProvider === 'github' && t('auth.error.recommendedGithub')}
                   {recommendedProvider === 'google' && t('auth.error.recommendedGoogle')}
                   {recommendedProvider === 'discord' && t('auth.error.recommendedDiscord')}
+                  {recommendedProvider === 'solana' && t('auth.error.recommendedSolana')}
                 </p>
               </div>
             </div>
@@ -229,6 +232,48 @@ const AuthPage = () => {
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
             </svg>
             <span className="text-base font-medium">{loading ? t('auth.loading') : t('auth.continueWithDiscord')}</span>
+          </motion.button>
+
+          {/* Divider between traditional login and wallet login */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="relative my-6"
+          >
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <div className="px-4 bg-black/20 backdrop-blur-sm rounded-full border border-white/10">
+                <div className="flex items-center space-x-2">
+                  <svg className="h-4 w-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                  <span className="text-sm text-gray-300">{t('auth.orContinueWith')}</span>
+                  <svg className="h-4 w-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <path d="M12 12h.01" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Solana wallet login button */}
+          <motion.button
+            onClick={signInWithSolana}
+            disabled={loading}
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            animate={loading ? "disabled" : ""}
+            className="w-full flex items-center justify-center px-6 py-3 rounded-full text-white bg-gradient-to-r from-purple-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg className="h-5 w-5 mr-3" viewBox="0 0 397 311" fill="currentColor">
+              <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM64.6 120.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" />
+            </svg>
+            <span className="text-base font-medium">{loading ? t('auth.loading') : t('auth.continueWithSolana')}</span>
           </motion.button>
         </motion.div>
 

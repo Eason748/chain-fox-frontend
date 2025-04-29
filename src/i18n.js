@@ -13,7 +13,7 @@ i18n
   // Initialize i18next
   .init({
     // Set initial language to English
-    lng: 'en', 
+    lng: 'en',
     // Fallback language if a translation is missing
     fallbackLng: 'en',
     // Debug mode in development
@@ -36,6 +36,8 @@ i18n
       // Wait for translations to be loaded before rendering
       useSuspense: true,
     },
+    // Ensure all namespaces are loaded
+    load: 'all',
   });
 
 export default i18n;

@@ -100,6 +100,7 @@
   "tokenomics": {
     "title": "代币经济学",
     "subtitle": "代币分配和分配",
+    "contractAddress": "合约地址",
     "distribution": {
       "public": {
         "title": "公共分配",
@@ -146,6 +147,10 @@
       "vulnerabilities": {
         "question": "如何跟上新的漏洞？",
         "answer": "跟踪最新学术研究、CVE和行业趋势，不断改进工具和检测逻辑。"
+      },
+      "contract_address": {
+        "question": "链狐的合约地址是什么？",
+        "answer": "链狐的官方合约地址是 RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump。您也可以在上方的代币经济学部分找到并复制它。"
       }
     }
   },
