@@ -204,6 +204,34 @@
       }
     }
   },
+  "reportPage": {
+    "title": "安全报告",
+    "dailySubtitle": "每日安全审计报告，包含详细的漏洞分析",
+    "weeklySubtitle": "每周安全汇总报告，包含趋势分析",
+    "tabs": {
+      "daily": "日报",
+      "weekly": "周报"
+    },
+    "stats": {
+      "totalScans": "总扫描次数",
+      "criticalIssues": "严重问题",
+      "resolvedIssues": "已解决问题",
+      "avgResponse": "平均响应时间"
+    },
+    "vulnerabilities": {
+      "title": "检测到的漏洞",
+      "severity": "严重程度",
+      "name": "漏洞名称",
+      "chain": "区块链",
+      "category": "类别",
+      "status": "状态",
+      "detected": "检测时间",
+      "description": "描述",
+      "impact": "影响分析",
+      "recommendation": "修复建议"
+    },
+    "betaNotice": "注意：安全扫描器尚在开发中。目前显示的数据为历史记录演示数据，实时扫描功能即将开放。"
+  },
   "report": {
     "title": "智能合约安全审计报告",
     "scanId": "扫描 ID",

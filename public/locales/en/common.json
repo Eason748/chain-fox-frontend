@@ -204,6 +204,34 @@
       }
     }
   },
+  "reportPage": {
+    "title": "Security Reports",
+    "dailySubtitle": "Daily security audit reports with detailed vulnerability analysis",
+    "weeklySubtitle": "Weekly consolidated security report with trend analysis",
+    "tabs": {
+      "daily": "Daily Report",
+      "weekly": "Weekly Report"
+    },
+    "stats": {
+      "totalScans": "Total Scans",
+      "criticalIssues": "Critical Issues",
+      "resolvedIssues": "Resolved Issues",
+      "avgResponse": "Avg Response Time"
+    },
+    "vulnerabilities": {
+      "title": "Detected Vulnerabilities",
+      "severity": "Severity",
+      "name": "Vulnerability",
+      "chain": "Chain",
+      "category": "Category",
+      "status": "Status",
+      "detected": "Detected At",
+      "description": "Description",
+      "impact": "Impact Analysis",
+      "recommendation": "Recommendation"
+    },
+    "betaNotice": "Note: The security scanner integration is currently in development. The data shown here are historical records for demonstration purposes only. Real-time scanning capability will be available soon."
+  },
   "report": {
     "title": "Smart Contract Security Audit Report",
     "scanId": "Scan ID",

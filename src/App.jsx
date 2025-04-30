@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import DetectionPage from './pages/DetectionPage';
 import AuthPage from './pages/AuthPage';
 import AuthCallback from './pages/AuthCallback';
+import ReportPage from './pages/ReportPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Import i18n instance
@@ -39,11 +40,13 @@ const AppContent = () => {
         {/* Home page */}
         <Route path="/" element={<HomePage />} />
 
-        {/* Detection Page (now with HomeLayout) */}
+        {/* Detection Page */}
         <Route path="/detect" element={<DetectionPage />} />
 
-        {/* 404 page - Moved inside HomeLayoutWrapper for consistency, or keep outside if preferred */}
-        {/* If 404 should also have HomeLayout, keep it here. If not, move it outside HomeLayoutWrapper */}
+        {/* Report Page */}
+        <Route path="/reports" element={<ReportPage />} />
+
+        {/* 404 page */}
         <Route
           path="*"
           element={

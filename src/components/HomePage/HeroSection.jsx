@@ -34,16 +34,19 @@ function HeroSection() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="flex flex-col md:flex-row gap-6 justify-center"
         >
-          {/* Replace button with Link */}
           <Link
             to="/detect"
-            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all text-center" // Added text-center for consistency if needed
+            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all text-center"
           >
             {t('buttons.uploadProject')}
           </Link>
-          <button className="px-8 py-4 border-2 border-purple-400/50 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:border-purple-400/80 transition-colors">
+
+          <Link
+            to="/reports"
+            className="px-8 py-4 border-2 border-purple-400/50 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:border-purple-400/80 transition-colors text-center"
+          >
             {t('buttons.learnMore')}
-          </button>
+          </Link>
         </motion.div>
       </div>
     </section>
