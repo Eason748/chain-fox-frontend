@@ -413,7 +413,7 @@ function ReportPage() {
       className="text-white p-8 pt-16 md:pt-24"
     >
       <div className="max-w-7xl mx-auto">
-        {/* <AuthRequired redirectToLogin={false}> */}
+        <AuthRequired redirectToLogin={false}>
           {renderHeader()}
           {renderTabs()}
           {renderBetaNotice()}
@@ -437,7 +437,7 @@ function ReportPage() {
           </motion.div>
 
           {selectedVulnerability && renderVulnerabilityDetails()}
-        {/* </AuthRequired> */}
+        </AuthRequired>
       </div>
     </motion.div>
   );
