@@ -77,13 +77,15 @@ function NavMenu() {
         <span>{t('detectionPage.title')}</span>
       </Link>
 
-      {/* White Paper Link */}
-      <Link
-        to="/whitepaper"
-        className={location.pathname === '/whitepaper' ? activeMenuItemClasses : menuItemClasses}
+      {/* White Paper Link - External */}
+      <a
+        href="https://chain-fox.github.io/white-paper/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={menuItemClasses}
       >
         <span>{t('buttons.whitePaper')}</span>
-      </Link>
+      </a>
 
       {/* Conditional Content Dropdown */}
       {isHomePage && (

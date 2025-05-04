@@ -135,14 +135,16 @@ function MobileNavMenu({ isOpen, onClose }) {
               {t('detectionPage.title')}
             </Link>
 
-            {/* White Paper Link */}
-            <Link
-              to="/whitepaper"
-              className={location.pathname === '/whitepaper' ? activeMenuItemClasses : menuItemClasses}
+            {/* White Paper Link - External */}
+            <a
+              href="https://chain-fox.github.io/white-paper/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={menuItemClasses}
               onClick={handleMenuItemClick}
             >
               {t('buttons.whitePaper')}
-            </Link>
+            </a>
 
             {/* Conditional Content Dropdown */}
             {isHomePage && (
