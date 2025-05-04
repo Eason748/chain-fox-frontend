@@ -8,5 +8,7 @@
   "minutes": "Minutes",
   "seconds": "Seconds",
   "stayTuned": "Stay tuned for updates and be the first to read our white paper when it's released!",
-  "followUs": "Follow us on X"
+  "followUs": "Follow us on X",
+  "readWhitepaper": "Read the White Paper",
+  "mobileNote": "Please use a large-screen device to browse the whitepaper. We will optimize for mobile screens in the next version."
 }
