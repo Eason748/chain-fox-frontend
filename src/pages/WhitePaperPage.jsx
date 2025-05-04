@@ -34,15 +34,15 @@ function WhitePaperPage() {
           console.error('Error fetching countdown time:', error);
           setError(t('syncError'));
 
-          // 计算本地备用时间（中国时间 20:00）
+          // 计算本地备用时间（东八区时间 20:00）
           const localNow = new Date();
-          const chinaTime = new Date(localNow.getTime() + (8 * 60 * 60 * 1000 - localNow.getTimezoneOffset() * 60 * 1000));
-          const todayTarget = new Date(chinaTime);
+          const utc8Time = new Date(localNow.getTime() + (8 * 60 * 60 * 1000 - localNow.getTimezoneOffset() * 60 * 1000));
+          const todayTarget = new Date(utc8Time);
           todayTarget.setHours(20, 0, 0, 0);
 
           // 如果已经过了今天的 20:00，将目标时间设置为当前时间（这样差值会是 0）
-          if (chinaTime.getHours() >= 20) {
-            todayTarget.setTime(chinaTime.getTime());
+          if (utc8Time.getHours() >= 20) {
+            todayTarget.setTime(utc8Time.getTime());
           }
 
           // 使用本地计算的备用目标时间
@@ -149,7 +149,7 @@ function WhitePaperPage() {
           </p>
 
           <p className="text-md text-gray-400 mb-8">
-            {t('releaseTime', { time: '20:00 (China Standard Time, UTC+8)' })}
+            {t('releaseTime', { time: '20:00 (UTC+8)' })}
           </p>
 
           {/* Countdown Timer */}
