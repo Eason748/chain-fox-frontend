@@ -15,110 +15,100 @@ function WhitePaperPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Time synchronization
-  const [timeOffset, setTimeOffset] = useState(0);
-  const [targetTime, setTargetTime] = useState(null);
-
-  // Sync time with server
+  // 页面加载时从服务器获取一次倒计时数据
   useEffect(() => {
-    async function syncTime() {
+    async function getCountdownFromServer() {
       try {
         setIsLoading(true);
 
-        // Try to call the Supabase function to get server time and target time
+        // 调用Supabase函数获取倒计时数据
         const { data, error } = await supabase.rpc('get_countdown_time');
 
         if (error) {
           console.error('Error fetching countdown time:', error);
           setError(t('syncError'));
 
-          // Calculate fallback time in UTC+8 timezone
-          // Get current UTC time
-          const now = new Date();
-          const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000);
-
-          // Convert to UTC+8
-          const utc8Now = new Date(utcNow.getTime() + 8 * 60 * 60 * 1000);
-
-          // Set target time to today's 20:00 in UTC+8
-          const todayTarget = new Date(utc8Now);
-          todayTarget.setUTCHours(12, 0, 0, 0); // 20:00 UTC+8 is 12:00 UTC
-
-          // If it's already past 20:00 UTC+8, set countdown to 0
-          if (utc8Now.getTime() >= todayTarget.getTime()) {
-            setTimeLeft({
-              hours: 0,
-              minutes: 0,
-              seconds: 0
-            });
-            setTargetTime(utc8Now); // Set target to current time so difference is 0
-          } else {
-            setTargetTime(todayTarget);
-          }
-
-          setTimeOffset(0);
-          console.log('Using local fallback time (UTC+8):', todayTarget);
+          // 如果服务器连接失败，使用默认值
+          setTimeLeft({
+            hours: 0,
+            minutes: 0,
+            seconds: 0
+          });
         } else {
-          console.log('Countdown time data:', data);
-
-          // Parse server time and target time
-          const serverTime = new Date(data.server_time);
-          const targetTimeFromServer = new Date(data.target_time);
-
-          console.log('Server time (UTC):', serverTime);
-          console.log('Target time (UTC):', targetTimeFromServer);
-
-          // Calculate offset between local time and server time
-          const offset = Date.now() - serverTime.getTime();
-
-          setTargetTime(targetTimeFromServer);
-          setTimeOffset(offset);
-          console.log('Time synchronized. Offset:', offset, 'ms');
+          // 直接使用服务器返回的小时、分钟和秒数（确保是整数）
+          setTimeLeft({
+            hours: parseInt(data.hours) || 0,
+            minutes: parseInt(data.minutes) || 0,
+            seconds: parseInt(data.seconds) || 0
+          });
+          
+          // 调试信息
+          console.log('倒计时数据从服务器获取成功:', {
+            hours: data.hours,
+            minutes: data.minutes,
+            seconds: data.seconds,
+            目标时间: data.target_time
+          });
         }
 
         setIsLoading(false);
       } catch (err) {
-        console.error('Error in syncTime:', err);
+        console.error('Error in getCountdownFromServer:', err);
         setError(t('syncError'));
         setIsLoading(false);
       }
     }
 
-    syncTime();
+    // 获取初始倒计时数据
+    getCountdownFromServer();
   }, [t]);
 
-  // Countdown timer
+  // 本地倒计时
   useEffect(() => {
-    // Don't start the timer until we have a target time
-    if (!targetTime) return;
+    // 只有在成功加载了初始倒计时数据后才开始倒计时
+    if (isLoading) return;
+    
+    // 检查初始时间是否已经为零或负数
+    if (timeLeft.hours <= 0 && timeLeft.minutes <= 0 && timeLeft.seconds <= 0) {
+      return; // 倒计时已结束，不启动计时器
+    }
 
     const timer = setInterval(() => {
-      // Get current time adjusted by the offset
-      const now = new Date(Date.now() - timeOffset);
-      const difference = targetTime - now;
+      setTimeLeft(prev => {
+        // 如果所有时间都为0，说明倒计时已结束
+        if (prev.hours === 0 && prev.minutes === 0 && prev.seconds === 0) {
+          clearInterval(timer);
+          return { hours: 0, minutes: 0, seconds: 0 };
+        }
+        
+        // 计算新的倒计时值
+        let newSeconds = prev.seconds - 1;
+        let newMinutes = prev.minutes;
+        let newHours = prev.hours;
 
-      if (difference <= 0) {
-        // Target time has passed
-        clearInterval(timer);
-        setTimeLeft({
-          hours: 0,
-          minutes: 0,
-          seconds: 0
-        });
-        return;
-      }
+        // 处理秒数减为负数的情况
+        if (newSeconds < 0) {
+          newSeconds = 59;
+          newMinutes -= 1;
+        }
 
-      // Convert all time to hours, minutes, seconds
-      // We're using total hours instead of days to ensure consistency
-      const totalHours = Math.floor(difference / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        // 处理分钟数减为负数的情况
+        if (newMinutes < 0) {
+          newMinutes = 59;
+          newHours -= 1;
+        }
 
-      setTimeLeft({ hours: totalHours, minutes, seconds });
+        // 如果小时也为负数，直接返回全0
+        if (newHours < 0) {
+          return { hours: 0, minutes: 0, seconds: 0 };
+        }
+
+        return { hours: newHours, minutes: newMinutes, seconds: newSeconds };
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetTime, timeOffset]);
+  }, [isLoading, timeLeft]);
 
   // Format time with leading zeros
   const formatTime = (time) => {
@@ -136,8 +126,8 @@ function WhitePaperPage() {
         </div>
       )}
 
-      {/* Error message - only show if we don't have a valid target time */}
-      {error && !isLoading && !targetTime && (
+      {/* Error message - only show if there's an error and not loading */}
+      {error && !isLoading && (
         <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8 text-center max-w-4xl mx-auto">
           <p className="text-red-200">{error}</p>
           <p className="text-red-200 text-sm mt-2">{t('syncFallback')}</p>
@@ -159,12 +149,11 @@ function WhitePaperPage() {
             {t('comingSoon')}
           </p>
 
-          <p className="text-md text-gray-400 mb-8">
-            {t('releaseTime', { time: '20:00 (UTC+8)' })}
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            {t('timezoneNote')}
-          </p>
+          {error && (
+            <p className="text-sm text-red-400 mb-2">
+              {t('syncError')}
+            </p>
+          )}
 
           {/* Countdown Timer */}
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
