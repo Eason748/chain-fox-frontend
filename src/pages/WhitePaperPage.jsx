@@ -25,8 +25,6 @@ function WhitePaperPage() {
       try {
         setIsLoading(true);
 
-        // 主要依赖服务器返回的时间，本地时间仅作为备用
-
         // Try to call the Supabase function to get server time and target time
         const { data, error } = await supabase.rpc('get_countdown_time');
 
@@ -34,20 +32,32 @@ function WhitePaperPage() {
           console.error('Error fetching countdown time:', error);
           setError(t('syncError'));
 
-          // 计算本地备用时间（东八区时间 20:00）
-          const localNow = new Date();
-          const utc8Time = new Date(localNow.getTime() + (8 * 60 * 60 * 1000 - localNow.getTimezoneOffset() * 60 * 1000));
-          const todayTarget = new Date(utc8Time);
-          todayTarget.setHours(20, 0, 0, 0);
+          // Calculate fallback time in UTC+8 timezone
+          // Get current UTC time
+          const now = new Date();
+          const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60 * 1000);
 
-          // 如果已经过了今天的 20:00，将目标时间设置为当前时间（这样差值会是 0）
-          if (utc8Time.getHours() >= 20) {
-            todayTarget.setTime(utc8Time.getTime());
+          // Convert to UTC+8
+          const utc8Now = new Date(utcNow.getTime() + 8 * 60 * 60 * 1000);
+
+          // Set target time to today's 20:00 in UTC+8
+          const todayTarget = new Date(utc8Now);
+          todayTarget.setUTCHours(12, 0, 0, 0); // 20:00 UTC+8 is 12:00 UTC
+
+          // If it's already past 20:00 UTC+8, set countdown to 0
+          if (utc8Now.getTime() >= todayTarget.getTime()) {
+            setTimeLeft({
+              hours: 0,
+              minutes: 0,
+              seconds: 0
+            });
+            setTargetTime(utc8Now); // Set target to current time so difference is 0
+          } else {
+            setTargetTime(todayTarget);
           }
 
-          // 使用本地计算的备用目标时间
-          setTargetTime(todayTarget);
           setTimeOffset(0);
+          console.log('Using local fallback time (UTC+8):', todayTarget);
         } else {
           console.log('Countdown time data:', data);
 
@@ -99,6 +109,7 @@ function WhitePaperPage() {
       }
 
       // Convert all time to hours, minutes, seconds
+      // We're using total hours instead of days to ensure consistency
       const totalHours = Math.floor(difference / (1000 * 60 * 60));
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
@@ -150,6 +161,9 @@ function WhitePaperPage() {
 
           <p className="text-md text-gray-400 mb-8">
             {t('releaseTime', { time: '20:00 (UTC+8)' })}
+          </p>
+          <p className="text-sm text-gray-500 mb-4">
+            {t('timezoneNote')}
           </p>
 
           {/* Countdown Timer */}
