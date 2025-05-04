@@ -1,0 +1,13 @@
+{
+  "title": "Chain Fox White Paper",
+  "comingSoon": "Our comprehensive white paper is coming soon!",
+  "releaseTime": "Scheduled release at {{time}}",
+  "syncError": "Failed to synchronize countdown timer",
+  "syncFallback": "Using local time as fallback",
+  "days": "Days",
+  "hours": "Hours",
+  "minutes": "Minutes",
+  "seconds": "Seconds",
+  "stayTuned": "Stay tuned for updates and be the first to read our white paper when it's released!",
+  "followUs": "Follow us on X"
+}

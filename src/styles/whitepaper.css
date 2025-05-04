@@ -1,0 +1,42 @@
+/* Grid pattern background for countdown boxes */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Radial gradient background */
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
+}
+
+/* Glow effects for text and boxes */
+.glow-text {
+  text-shadow: 0 0 10px rgba(79, 70, 229, 0.7);
+}
+
+.glow-box {
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+}
+
+/* Animated separator pulse */
+@keyframes separator-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.separator-pulse {
+  animation: separator-pulse 1s infinite;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 640px) {
+  .countdown-box {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .countdown-number {
+    font-size: 1.75rem;
+  }
+}

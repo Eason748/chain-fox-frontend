@@ -135,6 +135,15 @@ function MobileNavMenu({ isOpen, onClose }) {
               {t('detectionPage.title')}
             </Link>
 
+            {/* White Paper Link */}
+            <Link
+              to="/whitepaper"
+              className={location.pathname === '/whitepaper' ? activeMenuItemClasses : menuItemClasses}
+              onClick={handleMenuItemClick}
+            >
+              {t('buttons.whitePaper')}
+            </Link>
+
             {/* Conditional Content Dropdown */}
             {isHomePage && (
               <div className="py-2 border-b border-white/10">

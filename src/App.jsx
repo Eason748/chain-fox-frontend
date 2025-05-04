@@ -6,6 +6,7 @@ import DetectionPage from './pages/DetectionPage';
 import AuthPage from './pages/AuthPage';
 import AuthCallback from './pages/AuthCallback';
 import ReportPage from './pages/ReportPage';
+import WhitePaperPage from './pages/WhitePaperPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Import i18n instance
@@ -45,6 +46,9 @@ const AppContent = () => {
 
         {/* Report Page */}
         <Route path="/reports" element={<ReportPage />} />
+
+        {/* White Paper Page */}
+        <Route path="/whitepaper" element={<WhitePaperPage />} />
 
         {/* 404 page */}
         <Route

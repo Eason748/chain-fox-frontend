@@ -77,6 +77,14 @@ function NavMenu() {
         <span>{t('detectionPage.title')}</span>
       </Link>
 
+      {/* White Paper Link */}
+      <Link
+        to="/whitepaper"
+        className={location.pathname === '/whitepaper' ? activeMenuItemClasses : menuItemClasses}
+      >
+        <span>{t('buttons.whitePaper')}</span>
+      </Link>
+
       {/* Conditional Content Dropdown */}
       {isHomePage && (
         <div className="relative" ref={contentMenuRef}>

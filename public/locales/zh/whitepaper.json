@@ -1,0 +1,13 @@
+{
+  "title": "链狐白皮书",
+  "comingSoon": "我们的详细白皮书即将发布！",
+  "releaseTime": "计划发布时间：{{time}}（北京时间）",
+  "syncError": "同步倒计时失败",
+  "syncFallback": "使用本地时间作为备用",
+  "days": "天",
+  "hours": "小时",
+  "minutes": "分钟",
+  "seconds": "秒",
+  "stayTuned": "请持续关注更新，成为白皮书发布后第一批阅读者！",
+  "followUs": "在X上关注我们"
+}
