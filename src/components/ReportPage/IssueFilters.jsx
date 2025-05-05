@@ -11,12 +11,16 @@ const IssueFilters = ({
   availableCategories,
   showFeedback,
   onShowFeedbackChange,
+  showFalsePositives,
+  onShowFalsePositivesChange,
   issueViewMode,
   onIssueViewModeChange,
-  isMultiSelectMode,
-  onMultiSelectModeChange
+  isWhitelistUser // 直接从父组件接收白名单用户状态
 }) => {
   const { t } = useTranslation('common');
+
+
+  console.log("isWhitelistUser", isWhitelistUser)
 
   return (
     <motion.div
@@ -50,40 +54,23 @@ const IssueFilters = ({
           disabled={availableCategories.length === 0}
         />
       </div>
-      <div className="w-full md:w-64">
-        <div className="px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300 backdrop-blur-sm flex items-center justify-between">
-          <span>{t('reportPage.filters.showFeedback', 'Show Feedback')}</span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={showFeedback}
-              onChange={() => onShowFeedbackChange(!showFeedback)}
-            />
-            <div className={`w-11 h-6 rounded-full peer ${showFeedback ? 'bg-purple-600' : 'bg-gray-700'} peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}></div>
-          </label>
-        </div>
-      </div>
+
       <div className="flex-grow flex justify-end gap-2">
-        <button
-          onClick={onMultiSelectModeChange}
-          className={`px-3 py-1 rounded-md text-sm flex items-center gap-1 ${
-            isMultiSelectMode
-              ? 'bg-purple-600/50 text-white'
-              : 'bg-black/30 text-gray-400 hover:bg-white/5 border border-white/10'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d={isMultiSelectMode
-                ? "M5 13l4 4L19 7" // Checkmark
-                : "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"} // Checkbox
-            />
-          </svg>
-          {isMultiSelectMode
-            ? t('reportPage.exitMultiSelect', 'Exit Selection')
-            : t('reportPage.multiSelect', 'Multi-Select')}
-        </button>
+        {isWhitelistUser && (
+          <div className="flex items-center bg-black/30 rounded-lg border border-white/10 p-1 mr-2">
+            <button
+              onClick={() => onShowFalsePositivesChange(!showFalsePositives)}
+              className={`px-3 py-1 rounded-md text-sm ${
+                showFalsePositives
+                  ? 'bg-red-600/50 text-white'
+                  : 'text-gray-400 hover:bg-white/5'
+              }`}
+              title={showFalsePositives ? t('reportPage.hideFalsePositives', 'Hide False Positives') : t('reportPage.showFalsePositives', 'Show False Positives')}
+            >
+              {t('reportPage.showFP', 'Show FP')}
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center bg-black/30 rounded-lg border border-white/10 p-1">
           <button

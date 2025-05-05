@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 
 function NavMenu() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'repository']);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
@@ -112,6 +112,13 @@ function NavMenu() {
                   className={`block px-4 py-2 text-sm ${location.pathname === '/repository-status' ? 'text-blue-400' : 'text-gray-300 hover:bg-white/10 hover:text-blue-400'}`}
                 >
                   {t('repositoryStatus.title', { ns: 'repository' })}
+                </Link>
+                <Link
+                  to="/reports"
+                  onClick={() => setAuditMenuOpen(false)}
+                  className={`block px-4 py-2 text-sm ${location.pathname === '/reports' ? 'text-blue-400' : 'text-gray-300 hover:bg-white/10 hover:text-blue-400'}`}
+                >
+                  {t('navigation.sampleAudit', '抽样审计')}
                 </Link>
               </div>
             </motion.div>

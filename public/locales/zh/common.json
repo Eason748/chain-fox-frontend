@@ -12,7 +12,8 @@
     "language": "语言选择",
     "content": "内容导航",
     "audit": "安全审计",
-    "whitePaper": "白皮书"
+    "whitePaper": "白皮书",
+    "sampleAudit": "抽样审计"
   },
   "buttons": {
     "getStarted": "开始使用",
@@ -85,7 +86,7 @@
     }
   },
   "detectionPage": {
-    "title": "智能合约安全审计",
+    "title": "自助审计",
     "subtitle": "为区块链项目和智能合约提供高级安全分析",
     "secureConnection": "安全连接",
     "tabs": {
@@ -219,9 +220,45 @@
     "title": "安全报告",
     "dailySubtitle": "每日安全审计报告，包含详细的漏洞分析",
     "weeklySubtitle": "每周安全汇总报告，包含趋势分析",
+    "listSubtitle": "浏览每日审计报告。",
+    "detailTitle": "报告详情",
+    "detailSubtitle": "查看报告详情，日期为",
+    "loadingReports": "加载报告中...",
+    "noSearchResults": "未找到匹配的报告",
+    "noReportsForDate": "当前日期没有可用的报告",
+    "noReportsWhitelist": "当前日期尚未创建任何审计报告。",
+    "noReportsRegular": "当前日期没有已完成的审计报告可供查看。",
     "tabs": {
       "daily": "日报",
       "weekly": "周报"
+    },
+    "table": {
+      "repository": "仓库",
+      "user": "用户",
+      "score": "评分",
+      "status": "状态",
+      "actions": "操作",
+      "details": "详情",
+      "feedback": "反馈",
+      "viewDetails": "查看详情",
+      "markAsFalsePositive": "标记为误报",
+      "markedAsFalsePositive": "已标记为误报"
+    },
+    "falsePositive": "误报",
+    "markAsFalsePositive": "标记为误报",
+    "unmarkFalsePositive": "取消误报标记",
+    "showFP": "显示误报",
+    "showFalsePositives": "显示误报数据",
+    "hideFalsePositives": "隐藏误报数据",
+    "status": {
+      "pending": "审核中",
+      "completed": "已完成",
+      "archived": "已归档"
+    },
+    "actions": {
+      "approve": "通过审计",
+      "updating": "更新中...",
+      "noActionNeeded": "无需操作"
     },
     "stats": {
       "totalScans": "总扫描次数",
@@ -230,7 +267,11 @@
       "avgResponse": "平均响应时间",
       "totalRepos": "总仓库数",
       "highIssues": "高危问题",
-      "totalIssues": "总问题数"
+      "totalIssues": "总问题数",
+      "critical": "严重",
+      "high": "高危",
+      "medium": "中危",
+      "low": "低危"
     },
     "vulnerabilities": {
       "title": "检测到的漏洞",
@@ -244,10 +285,18 @@
       "impact": "影响分析",
       "recommendation": "修复建议"
     },
+    "errors": {
+      "fetchDates": "加载可用日期失败。",
+      "fetchDateStats": "加载所选日期的统计信息失败。",
+      "fetchReports": "加载所选日期的报告失败。",
+      "fetchIssues": "加载所选报告的问题失败。",
+      "updateFeedback": "更新所选问题的反馈失败。",
+      "permissionDenied": "权限不足：只有白名单用户才能执行此操作。"
+    },
     "betaNotice": "注意：如果您对安全扫描结果有任何疑问，请与我们的团队取得联系。"
   },
   "report": {
-    "title": "智能合约安全审计报告",
+    "title": "自助审计报告",
     "scanId": "扫描 ID",
     "generatedBy": "生成者",
     "executiveSummary": "执行摘要",

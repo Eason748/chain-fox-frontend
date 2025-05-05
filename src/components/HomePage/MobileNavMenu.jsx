@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import WalletAvatar from '../WalletAvatar';
 
 function MobileNavMenu({ isOpen, onClose }) {
-  const { t, i18n } = useTranslation(['common']);
+  const { t, i18n } = useTranslation(['common', 'repository']);
   const location = useLocation(); // Get current location
   const isHomePage = location.pathname === '/'; // Check if it's the home page
   const { user, signOut } = useAuth(); // Get user info and sign out function
@@ -170,6 +170,13 @@ function MobileNavMenu({ isOpen, onClose }) {
                       className={`block w-full text-left py-2 ${location.pathname === '/repository-status' ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
                     >
                       {t('repositoryStatus.title', { ns: 'repository' })}
+                    </Link>
+                    <Link
+                      to="/reports"
+                      onClick={handleSubMenuItemClick}
+                      className={`block w-full text-left py-2 ${location.pathname === '/reports' ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    >
+                      {t('navigation.sampleAudit', '抽样审计')}
                     </Link>
                   </motion.div>
                 )}

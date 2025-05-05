@@ -11,7 +11,7 @@ export { default as IssueFilters } from './IssueFilters';
 export { default as IssueListView } from './IssueListView';
 export { default as IssuesTable } from './IssuesTable';
 export { default as LoadingIndicator } from './LoadingIndicator';
-export { default as MultiSelectToolbar } from './MultiSelectToolbar';
+
 export { default as PageHeader } from './PageHeader';
 export { default as ReportList } from './ReportList';
 export { default as ReportStatistics } from './ReportStatistics';

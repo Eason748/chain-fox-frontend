@@ -19,7 +19,7 @@ i18n
     // Debug mode in development (temporarily disabled for cleaner console)
     debug: false, // process.env.NODE_ENV === 'development',
     // Namespaces configuration
-    ns: ['common', 'home'],
+    ns: ['common', 'home', 'repository'],
     defaultNS: 'common',
     // Backend configuration
     backend: {

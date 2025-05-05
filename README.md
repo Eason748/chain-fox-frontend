@@ -68,6 +68,7 @@ The Chain Fox platform supports various blockchains (such as Ethereum, Solana, P
   - Supabase authentication integration
   - Support for GitHub, Google, and Discord login
   - Secure user session management
+  - Permission control with whitelist user system
 
 - 📱 **Component-Based Architecture**
   - Reusable component system based on React
@@ -131,7 +132,7 @@ This frontend project uses a variety of modern web technologies and libraries:
 - **Routing**: Page navigation using React Router
 - **State Management**: Using React's Context API and Hooks
 - **API Integration**: Integration with DeepSeek AI API for code analysis
-- **Authentication**: Integration with Supabase authentication service
+- **Authentication**: Integration with Supabase authentication service and permission control
 - **PDF Export**: Report export using jsPDF and html2canvas
 
 ### Performance Optimization
@@ -212,6 +213,14 @@ chain-fox/
 │   │   ├── deepseek.js        # AI integration service
 │   │   ├── pdfExport.js       # PDF generation and export service
 │   │   └── supabase.js        # Authentication service
+│   ├── utils/                 # Utility functions
+│   │   ├── checkWhitelistUser.js  # Check if user is in whitelist
+│   │   ├── supabaseQueries.js     # Supabase database queries
+│   │   └── serverPermissionCheck.js # Server-side permission checks
+│   ├── hooks/                 # Custom React hooks
+│   │   └── usePermission.js   # Permission checking hook
+│   ├── middleware/            # Middleware functions
+│   │   └── permissionMiddleware.js # Permission checking middleware
 │   ├── App.jsx                # Main application component (routing configuration)
 │   ├── i18n.js                # Internationalization configuration
 │   └── main.jsx               # Application entry point
@@ -220,6 +229,10 @@ chain-fox/
 │   │   ├── en/                # English translations
 │   │   └── zh/                # Chinese translations
 │   └── logo.png               # Application logo
+├── tools/
+│   └── migrations/            # Database migration files
+│       ├── 20240503_is_whitelist_user.sql  # Whitelist user check function
+│       └── README.md          # Migration documentation
 ├── docs/                      # Documentation
 │   └── 描述文档.md            # Project description document
 ├── deploy.md                  # Deployment guide (English)

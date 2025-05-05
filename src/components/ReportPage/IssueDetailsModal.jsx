@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getSeverityStyle } from './utils/constants';
 import { supabase } from '../../services/supabase';
 
-const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue }) => {
+const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue, isWhitelistUser }) => {
   const { t } = useTranslation('common');
   const [isEditing, setIsEditing] = useState(false);
   const [editedMessage, setEditedMessage] = useState('');
@@ -14,6 +14,9 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue }) => {
   const displayRef = useRef(null);
   // 添加内部状态来跟踪当前显示的issue数据
   const [currentIssue, setCurrentIssue] = useState(issue);
+
+  // 检查是否可以编辑（只有白名单用户可以编辑，且报告状态不是 archived）
+  const canEdit = isWhitelistUser && report && report.status !== 'archived';
 
   // 当外部传入的issue变化时，更新内部状态
   useEffect(() => {
@@ -54,12 +57,22 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue }) => {
   };
 
   const handleSave = async () => {
-    if (!currentIssue.id) return;
+    if (!currentIssue.id || !canEdit) return;
 
     setIsSaving(true);
     setSaveError(null);
 
     try {
+      // 使用 RPC 函数检查权限
+      const { data: hasPermission, error: permError } = await supabase
+        .rpc('is_whitelist_user', { user_id: (await supabase.auth.getSession()).data.session?.user?.id });
+
+      if (permError || !hasPermission) {
+        console.error('权限检查失败或权限不足:', permError || '用户不在白名单中');
+        setSaveError(t('reportPage.errors.permissionDenied', '权限不足：只有白名单用户才能编辑'));
+        return;
+      }
+
       // 直接保存编辑后的格式化数据
       const { error } = await supabase
         .from('audit_issues')
@@ -155,6 +168,84 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue }) => {
                   {currentIssue.feedback}
                 </span>
               )}
+              {currentIssue.false_positive && (
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-700">
+                  {t('reportPage.falsePositive', 'False Positive')}
+                </span>
+              )}
+              {isWhitelistUser && canEdit && (
+                <button
+                  onClick={async () => {
+                    if (!currentIssue.id) return;
+                    setIsSaving(true);
+
+                    try {
+                      // 使用 RPC 函数检查权限
+                      const { data: hasPermission, error: permError } = await supabase
+                        .rpc('is_whitelist_user', { user_id: (await supabase.auth.getSession()).data.session?.user?.id });
+
+                      if (permError || !hasPermission) {
+                        console.error('权限检查失败或权限不足:', permError || '用户不在白名单中');
+                        setSaveError(t('reportPage.errors.permissionDenied', '权限不足：只有白名单用户才能编辑'));
+                        return;
+                      }
+
+                      // 更新 false_positive 标记
+                      const newValue = !currentIssue.false_positive;
+                      const { error } = await supabase
+                        .from('audit_issues')
+                        .update({ false_positive: newValue })
+                        .eq('id', currentIssue.id);
+
+                      if (error) throw error;
+
+                      // 保存成功后重新获取该记录的最新数据
+                      const { data, error: fetchError } = await supabase
+                        .from('audit_issues')
+                        .select('*')
+                        .eq('id', currentIssue.id)
+                        .single();
+
+                      if (fetchError) throw fetchError;
+
+                      // 更新内部状态和父组件状态
+                      if (data) {
+                        setCurrentIssue(data);
+                        if (onUpdateIssue) {
+                          onUpdateIssue(data);
+                        }
+                      }
+                    } catch (error) {
+                      console.error('更新误报标记失败:', error);
+                      setSaveError(error.message);
+                    } finally {
+                      setIsSaving(false);
+                    }
+                  }}
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    currentIssue.false_positive
+                      ? 'bg-red-600/50 text-red-300 hover:bg-red-700/50'
+                      : 'bg-gray-600/30 text-gray-300 hover:bg-red-600/30 hover:text-red-300'
+                  } transition-colors ml-2`}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin h-3 w-3 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {t('common.saving', '保存中...')}
+                    </span>
+                  ) : (
+                    <span>
+                      {currentIssue.false_positive
+                        ? t('reportPage.unmarkFalsePositive', '取消误报')
+                        : t('reportPage.markAsFalsePositive', '标记误报')}
+                    </span>
+                  )}
+                </button>
+              )}
               {report && (
                 <span className="text-gray-400">
                   {report.user_name}/{report.repo_name}
@@ -194,26 +285,29 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue }) => {
                   {t('reportPage.modal.message', 'Message')}
                 </h4>
                 {!isEditing ? (
-                  <button
-                    onClick={handleEditClick}
-                    className="text-sm text-blue-400 hover:text-blue-300 flex items-center"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  // 强制隐藏编辑按钮，除非明确是白名单用户
+                  isWhitelistUser === true && canEdit ? (
+                    <button
+                      onClick={handleEditClick}
+                      className="text-sm text-blue-400 hover:text-blue-300 flex items-center"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    {t('common.edit', '编辑')}
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                      {t('common.edit', '编辑')}
+                    </button>
+                  ) : null
                 ) : (
                   <div className="flex space-x-2">
                     <button

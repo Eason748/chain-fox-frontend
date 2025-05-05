@@ -57,7 +57,7 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
           <img src={logo} alt="Chain Fox Logo" className="h-12 mr-4" />
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              {t('report.title', 'Smart Contract Security Audit Report')}
+              {t('report.title', 'Self-Service Audit Report')}
             </h1>
             <p className="text-gray-600">{formattedDate}</p>
           </div>

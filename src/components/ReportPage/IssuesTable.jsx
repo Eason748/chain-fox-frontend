@@ -11,12 +11,9 @@ const IssuesTable = ({
   filteredIssues,
   issuesByFile,
   issueViewMode,
-  isMultiSelectMode,
-  selectedIssueIds,
   onIssueClick,
-  onToggleSelectAll,
-  onToggleIssueSelection,
-  onToggleFileSelection
+  onToggleFalsePositive,
+  isWhitelistUser = false
 }) => {
   const { t } = useTranslation('common');
 
@@ -36,11 +33,9 @@ const IssuesTable = ({
           <IssueListView
             issues={issues}
             filteredIssues={filteredIssues}
-            isMultiSelectMode={isMultiSelectMode}
-            selectedIssueIds={selectedIssueIds}
             onIssueClick={onIssueClick}
-            onToggleSelectAll={onToggleSelectAll}
-            onToggleIssueSelection={onToggleIssueSelection}
+            onToggleFalsePositive={onToggleFalsePositive}
+            isWhitelistUser={isWhitelistUser}
           />
         </motion.div>
       ) : (
@@ -53,11 +48,9 @@ const IssuesTable = ({
           <IssueFileGroupedView
             issues={issues}
             issuesByFile={issuesByFile}
-            isMultiSelectMode={isMultiSelectMode}
-            selectedIssueIds={selectedIssueIds}
             onIssueClick={onIssueClick}
-            onToggleFileSelection={onToggleFileSelection}
-            onToggleIssueSelection={onToggleIssueSelection}
+            onToggleFalsePositive={onToggleFalsePositive}
+            isWhitelistUser={isWhitelistUser}
           />
         </motion.div>
       )}

@@ -14,7 +14,7 @@ function LanguageSwitcher() {
       console.log('LanguageSwitcher: Language changed to:', i18n.language);
 
       // Force reload all namespaces after language change
-      i18n.loadNamespaces(['profile', 'common']).then(() => {
+      i18n.loadNamespaces(['profile', 'common', 'home', 'repository']).then(() => {
         console.log('LanguageSwitcher: Namespaces reloaded');
       });
     });

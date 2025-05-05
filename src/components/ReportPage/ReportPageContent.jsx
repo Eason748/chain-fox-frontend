@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import supabase from '../../services/supabase';
 import { formatDateCode, groupIssuesByFile, extractCategories } from './utils/helpers';
 import { defaultSeverityFilters } from './utils/constants';
+import { usePermission } from '../../hooks/usePermission';
 
 // Import components
 import PageHeader from './PageHeader';
@@ -12,12 +13,12 @@ import SearchFilter from './SearchFilter';
 import ReportList from './ReportList';
 import ReportStatistics from './ReportStatistics';
 import IssueFilters from './IssueFilters';
-import MultiSelectToolbar from './MultiSelectToolbar';
 import IssuesTable from './IssuesTable';
 import IssueDetailsModal from './IssueDetailsModal';
 
 const ReportPageContent = () => {
   const { t } = useTranslation('common');
+  const { isWhitelistUser, loading: permissionLoading } = usePermission(); // 使用权限钩子
   const [view, setView] = useState('list'); // 'list' or 'detail'
   const [loadingDates, setLoadingDates] = useState(true);
   const [loadingReports, setLoadingReports] = useState(false);
@@ -39,12 +40,10 @@ const ReportPageContent = () => {
   const [severityFilters, setSeverityFilters] = useState(defaultSeverityFilters); // Default all selected
   const [categoryFilters, setCategoryFilters] = useState([]); // Will be set after loading issues
   const [showFeedback, setShowFeedback] = useState(false); // Default don't show feedback data
+  const [showFalsePositives, setShowFalsePositives] = useState(false); // Default don't show false positives
 
   const [selectedIssue, setSelectedIssue] = useState(null); // For modal view
   const [issueViewMode, setIssueViewMode] = useState('file-grouped'); // 'list' or 'file-grouped'
-  const [selectedIssueIds, setSelectedIssueIds] = useState([]); // For multi-select
-  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false); // Toggle multi-select mode
-  const [bulkFeedbackValue, setBulkFeedbackValue] = useState(''); // Value for bulk feedback update
 
   // Fetch available dates on mount
   useEffect(() => {
@@ -130,6 +129,8 @@ const ReportPageContent = () => {
       setSelectedReport(null);
       setIssues([]);
       try {
+        // 获取报告数据 - 现在所有用户都可以看到所有报告，但只有 completed 或 archived 状态的报告可以查看详情
+        // RLS 策略已更新，允许所有用户查看所有报告
         const { data, error: dbError } = await supabase
           .from('audit_reports')
           .select('*')
@@ -140,7 +141,13 @@ const ReportPageContent = () => {
 
         if (dbError) throw dbError;
 
-        setReports(data || []);
+        if (data && data.length > 0) {
+          console.log(`Loaded ${data.length} reports for date ${selectedDate}`);
+          setReports(data);
+        } else {
+          console.log(`No reports found for date ${selectedDate}`);
+          setReports([]);
+        }
       } catch (err) {
         console.error(`Error fetching reports for date ${selectedDate}:`, err);
         setError(t('reportPage.errors.fetchReports', 'Failed to load reports for the selected date.'));
@@ -201,9 +208,15 @@ const ReportPageContent = () => {
     );
   }, [reports, searchTerm]);
 
-  // Memoized filtered issues based on severity, category, and feedback filters
+  // Memoized filtered issues based on severity, category, feedback filters, and false_positive flag
   const filteredIssues = useMemo(() => {
     return issues.filter(issue => {
+      // 处理误报标记的问题
+      if (issue.false_positive && !showFalsePositives) {
+        // 如果是误报且不显示误报，则过滤掉
+        return false;
+      }
+
       // Filter by severity - show if severity is in selected filters
       const severityMatch = severityFilters.includes(issue.severity?.toLowerCase());
 
@@ -223,7 +236,7 @@ const ReportPageContent = () => {
 
       return severityMatch && categoryMatch && feedbackMatch;
     });
-  }, [issues, severityFilters, categoryFilters, showFeedback]);
+  }, [issues, severityFilters, categoryFilters, showFeedback, showFalsePositives]);
 
   // Group issues by file name
   const issuesByFile = useMemo(() => {
@@ -247,6 +260,7 @@ const ReportPageContent = () => {
     setSeverityFilters(defaultSeverityFilters);
     setCategoryFilters([]); // Will be set after loading issues
     setShowFeedback(false); // Default don't show feedback data
+    setShowFalsePositives(false); // Default don't show false positives
   }, []);
 
   const handleBackToList = useCallback(() => {
@@ -255,25 +269,12 @@ const ReportPageContent = () => {
     setIssues([]);
     setError(null);
     // Keep current view mode, don't reset to list view
-    setIsMultiSelectMode(false); // Exit multi-select mode
-    setSelectedIssueIds([]); // Clear selected issues
   }, []);
 
   const handleIssueClick = useCallback((issue) => {
-    if (isMultiSelectMode) {
-      // In multi-select mode, clicking toggles selection
-      setSelectedIssueIds(prev => {
-        if (prev.includes(issue.id)) {
-          return prev.filter(id => id !== issue.id);
-        } else {
-          return [...prev, issue.id];
-        }
-      });
-    } else {
-      // Normal mode, show details modal
-      setSelectedIssue(issue);
-    }
-  }, [isMultiSelectMode]);
+    // Show details modal
+    setSelectedIssue(issue);
+  }, []);
 
   const handleCloseModal = useCallback(() => {
     setSelectedIssue(null);
@@ -289,83 +290,56 @@ const ReportPageContent = () => {
     );
   }, []);
 
-  // Toggle multi-select mode
-  const toggleMultiSelectMode = useCallback(() => {
-    setIsMultiSelectMode(prev => !prev);
-    if (isMultiSelectMode) {
-      // Clear selections when exiting multi-select mode
-      setSelectedIssueIds([]);
-    }
-  }, [isMultiSelectMode]);
-
-  // Select/deselect all visible issues
-  const toggleSelectAll = useCallback(() => {
-    if (selectedIssueIds.length === filteredIssues.length) {
-      // If all are selected, deselect all
-      setSelectedIssueIds([]);
-    } else {
-      // Otherwise, select all visible issues
-      setSelectedIssueIds(filteredIssues.map(issue => issue.id));
-    }
-  }, [selectedIssueIds, filteredIssues]);
-
-  // Toggle selection for a file group
-  const toggleFileSelection = useCallback((fileGroup) => {
-    const allSelected = fileGroup.issues.every(issue => selectedIssueIds.includes(issue.id));
-    if (allSelected) {
-      // Deselect all in this file
-      setSelectedIssueIds(prev => prev.filter(id => !fileGroup.issues.some(issue => issue.id === id)));
-    } else {
-      // Select all in this file
-      const newIds = fileGroup.issues.map(issue => issue.id);
-      setSelectedIssueIds(prev => [...prev, ...newIds.filter(id => !prev.includes(id))]);
-    }
-  }, [selectedIssueIds]);
-
-  // Toggle selection for a single issue
-  const toggleIssueSelection = useCallback((issueId) => {
-    setSelectedIssueIds(prev => {
-      if (prev.includes(issueId)) {
-        return prev.filter(id => id !== issueId);
-      } else {
-        return [...prev, issueId];
-      }
-    });
-  }, []);
-
-  // Apply bulk feedback update
-  const applyBulkFeedback = useCallback(async (feedbackValue) => {
-    if (selectedIssueIds.length === 0) return;
+  // Handle toggling false positive flag
+  const handleToggleFalsePositive = useCallback(async (issue) => {
+    if (!isWhitelistUser || !issue || !issue.id) return;
 
     try {
-      // Update in Supabase
+      // 使用 RPC 函数检查权限
+      const { data: hasPermission, error: permError } = await supabase
+        .rpc('is_whitelist_user', { user_id: (await supabase.auth.getSession()).data.session?.user?.id });
+
+      if (permError || !hasPermission) {
+        console.error('权限检查失败或权限不足:', permError || '用户不在白名单中');
+        return;
+      }
+
+      // 更新 false_positive 标记
+      const newValue = !issue.false_positive;
       const { error } = await supabase
         .from('audit_issues')
-        .update({ feedback: feedbackValue })
-        .in('id', selectedIssueIds);
+        .update({ false_positive: newValue })
+        .eq('id', issue.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('更新 false_positive 标记失败:', error);
+        return;
+      }
 
-      // Update local state
+      // 更新本地状态
       setIssues(prevIssues =>
-        prevIssues.map(issue =>
-          selectedIssueIds.includes(issue.id)
-            ? { ...issue, feedback: feedbackValue }
-            : issue
+        prevIssues.map(item =>
+          item.id === issue.id ? { ...item, false_positive: newValue } : item
         )
       );
 
-      // Clear selections after successful update
-      setSelectedIssueIds([]);
-      setBulkFeedbackValue('');
-
-      // Show success message (you could add a toast notification here)
-      console.log(`Successfully updated ${selectedIssueIds.length} issues with feedback: ${feedbackValue}`);
-    } catch (err) {
-      console.error('Error updating feedback:', err);
-      setError(t('reportPage.errors.updateFeedback', 'Failed to update feedback for selected issues.'));
+      console.log(`Issue ${issue.id} 已${newValue ? '标记为' : '取消标记'}误报`);
+    } catch (error) {
+      console.error('处理误报标记时出错:', error);
     }
-  }, [selectedIssueIds, t]);
+  }, [isWhitelistUser]);
+
+  // Handle report status change
+  const handleReportStatusChange = useCallback((updatedReport) => {
+    // Update the report in the reports array
+    setReports(prevReports =>
+      prevReports.map(report =>
+        report.id === updatedReport.id ? updatedReport : report
+      )
+    );
+  }, []);
+
+
 
   return (
     <motion.div
@@ -413,6 +387,7 @@ const ReportPageContent = () => {
                   isLoading={loadingReports}
                   searchTerm={searchTerm}
                   onReportClick={handleReportClick}
+                  onReportStatusChange={handleReportStatusChange}
                 />
               </motion.div>
             ) : (
@@ -432,31 +407,27 @@ const ReportPageContent = () => {
                   availableCategories={availableCategories}
                   showFeedback={showFeedback}
                   onShowFeedbackChange={setShowFeedback}
+                  showFalsePositives={showFalsePositives}
+                  onShowFalsePositivesChange={setShowFalsePositives}
                   issueViewMode={issueViewMode}
                   onIssueViewModeChange={setIssueViewMode}
-                  isMultiSelectMode={isMultiSelectMode}
-                  onMultiSelectModeChange={toggleMultiSelectMode}
+                  isWhitelistUser={isWhitelistUser} // 传递白名单用户状态
                 />
-                <MultiSelectToolbar
-                  isMultiSelectMode={isMultiSelectMode}
-                  selectedIssueIds={selectedIssueIds}
-                  bulkFeedbackValue={bulkFeedbackValue}
-                  onBulkFeedbackValueChange={setBulkFeedbackValue}
-                  onApplyBulkFeedback={applyBulkFeedback}
-                  onClearSelection={() => setSelectedIssueIds([])}
-                />
+
                 <IssuesTable
                   isLoading={loadingIssues}
                   issues={issues}
                   filteredIssues={filteredIssues}
                   issuesByFile={issuesByFile}
                   issueViewMode={issueViewMode}
-                  isMultiSelectMode={isMultiSelectMode}
-                  selectedIssueIds={selectedIssueIds}
+                  isMultiSelectMode={false}
+                  selectedIssueIds={[]}
                   onIssueClick={handleIssueClick}
-                  onToggleSelectAll={toggleSelectAll}
-                  onToggleIssueSelection={toggleIssueSelection}
-                  onToggleFileSelection={toggleFileSelection}
+                  onToggleFalsePositive={handleToggleFalsePositive}
+                  onToggleSelectAll={() => {}}
+                  onToggleIssueSelection={() => {}}
+                  onToggleFileSelection={() => {}}
+                  isWhitelistUser={isWhitelistUser}
                 />
               </motion.div>
             )}
@@ -468,6 +439,7 @@ const ReportPageContent = () => {
           report={selectedReport}
           onClose={handleCloseModal}
           onUpdateIssue={handleUpdateIssue}
+          isWhitelistUser={isWhitelistUser} // 传递白名单用户状态
         />
       </div>
     </motion.div>
