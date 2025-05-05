@@ -51,3 +51,4 @@ supabase
 
 # tools directory
 tools/
+sql/
