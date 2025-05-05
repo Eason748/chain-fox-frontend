@@ -29,6 +29,21 @@ const AuthCallback = () => {
           // Clean up temporary stored data
           localStorage.removeItem('auth_provider');
           localStorage.removeItem('auth_callback_refreshed');
+          
+          // 如果错误包含 "both auth code and code verifier"，但看起来是无害的（用户仍能登录），
+          // 我们尝试获取会话而不是直接显示错误
+          if (error === 'invalid_request' && 
+              (errorDescription || '').includes('both auth code and code verifier') &&
+              !localStorage.getItem('tried_session_recovery')) {
+            console.log("AuthContext: Detected auth code/verifier error but attempting session recovery");
+            localStorage.setItem('tried_session_recovery', 'true');
+            
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 100);
+            return;
+          }
+          
           setError(`${error}: ${decodeURIComponent(errorDescription || '')}`);
           return;
         }
@@ -67,6 +82,9 @@ const AuthCallback = () => {
             // If session exchange was successful, check for redirect path
             if (exchangeData?.session) {
               console.log("AuthCallback: Valid session detected");
+              
+              // 清除会话恢复尝试的标记
+              localStorage.removeItem('tried_session_recovery');
 
               // Check if there's a saved redirect path from AuthRequired component
               const redirectPath = sessionStorage.getItem('auth_redirect');
