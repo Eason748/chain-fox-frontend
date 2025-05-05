@@ -9,13 +9,13 @@ import logo from '/public/logo.png';
  */
 const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
   const { t } = useTranslation();
-  const { 
-    scanId, 
-    timestamp, 
-    target, 
-    vulnerabilities, 
-    metrics, 
-    summary, 
+  const {
+    scanId,
+    timestamp,
+    target,
+    vulnerabilities,
+    metrics,
+    summary,
     codeContent,
     thinking
   } = data;
@@ -74,7 +74,7 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
           {t('report.executiveSummary', 'Executive Summary')}
         </h2>
         <p className="mb-4 text-gray-700">{summary}</p>
-        
+
         <div className="bg-gray-100 p-4 rounded-lg">
           <h3 className="font-bold mb-2 text-gray-800">{t('report.target', 'Target')}</h3>
           <p className="text-gray-700 font-mono text-sm">{target}</p>
@@ -86,22 +86,22 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
         <h2 className="text-xl font-bold mb-4 text-gray-800 border-b border-gray-200 pb-2">
           {t('report.securityMetrics', 'Security Metrics')}
         </h2>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {Object.entries(metrics).map(([key, value]) => {
             if (key === 'scanDuration') return null;
-            
+
             // Determine color based on score
             let colorClass = 'text-gray-800';
             if (value >= 90) colorClass = 'text-green-600';
             else if (value >= 70) colorClass = 'text-blue-600';
             else if (value >= 50) colorClass = 'text-yellow-600';
             else colorClass = 'text-red-600';
-            
+
             return (
               <div key={key} className="bg-gray-100 p-4 rounded-lg text-center">
                 <div className={`text-2xl font-bold ${colorClass}`}>
-                  {value}%
+                  {t('common.score', 'Score')}: {value}%
                 </div>
                 <div className="text-sm text-gray-600 mt-1 capitalize">
                   {t(`detectionPage.metrics.${key}`)}
@@ -110,7 +110,7 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
             );
           })}
         </div>
-        
+
         {/* Vulnerability Distribution */}
         <div className="mb-6">
           <h3 className="font-bold mb-3 text-gray-800">{t('report.vulnerabilityDistribution', 'Vulnerability Distribution')}</h3>
@@ -132,7 +132,7 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
         <h2 className="text-xl font-bold mb-4 text-gray-800 border-b border-gray-200 pb-2">
           {t('report.vulnerabilities', 'Vulnerabilities')}
         </h2>
-        
+
         {vulnerabilities.length === 0 ? (
           <p className="text-green-600 font-medium">{t('report.noVulnerabilities', 'No vulnerabilities detected.')}</p>
         ) : (
@@ -162,13 +162,13 @@ const AuditReportTemplate = React.forwardRef(({ data }, ref) => {
                     {vuln.severity.toUpperCase()}
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-white">
                   <div className="mb-3">
                     <h4 className="font-medium text-gray-800">{t('report.description', 'Description')}:</h4>
                     <p className="text-gray-700">{vuln.description}</p>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-800">{t('report.recommendation', 'Recommendation')}:</h4>
                     <p className="text-gray-700">{vuln.recommendation}</p>

@@ -4,24 +4,40 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
+// 从环境变量中获取是否需要身份验证
+const AUTH_REQUIRED = import.meta.env.VITE_AUTH_REQUIRED !== 'false';
+
 /**
  * AuthRequired component - Wraps content that requires authentication
  * If user is not logged in, redirects to login page or shows a message
- * 
+ *
+ * This component respects the VITE_AUTH_REQUIRED environment variable:
+ * - When VITE_AUTH_REQUIRED=false: Authentication is bypassed, children are always rendered
+ * - When VITE_AUTH_REQUIRED=true (or not set): Normal authentication flow is enforced
+ *
  * @param {Object} props
  * @param {React.ReactNode} props.children - Content to show when authenticated
  * @param {boolean} props.redirectToLogin - Whether to redirect to login page (default: true)
  * @param {string} props.fallbackMessage - Custom message to show when not redirecting
  * @returns {React.ReactElement}
  */
-const AuthRequired = ({ 
-  children, 
+const AuthRequired = ({
+  children,
   redirectToLogin = true,
   fallbackMessage
 }) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // 如果环境变量设置为不需要身份验证，直接渲染子组件
+  if (!AUTH_REQUIRED) {
+    // 在开发环境中显示调试信息
+    if (import.meta.env.DEV) {
+      console.log('AuthRequired: Authentication bypassed due to VITE_AUTH_REQUIRED=false');
+    }
+    return children;
+  }
 
   useEffect(() => {
     // Only redirect after loading is complete and we know user is not logged in

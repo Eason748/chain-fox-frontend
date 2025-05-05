@@ -1,0 +1,86 @@
+{
+  "repositorySubmission": {
+    "title": "Submit GitHub Repository",
+    "description": "Submit your GitHub repositories for code audit and security analysis.",
+    "form": {
+      "title": "Repository Information",
+      "placeholder": "e.g., https://github.com/owner/repo",
+      "addAnother": "Add another repository",
+      "submit": "Submit Repositories",
+      "submitting": "Submitting..."
+    },
+    "info": {
+      "title": "Important Information",
+      "item1": "Only public GitHub repositories are supported at this time.",
+      "item2": "The audit process may take several hours to complete.",
+      "item3": "You will be notified when the audit is complete.",
+      "item4": "You can check the status of your submissions on the Repository Status page."
+    },
+    "success": {
+      "title": "Repositories Submitted Successfully",
+      "message": "Your repositories have been submitted for audit. You can check the status on the Repository Status page.",
+      "submittedRepos": "Submitted repositories"
+    },
+    "error": {
+      "title": "Submission Error",
+      "noRepositories": "Please enter at least one repository URL.",
+      "invalidUrls": "One or more repository URLs are invalid. Please ensure they are in the format: https://github.com/owner/repo",
+      "notAuthenticated": "You need to be logged in to submit repositories.",
+      "submissionFailed": "Failed to submit repositories. Please try again later."
+    }
+  },
+  "repositoryStatus": {
+    "title": "Repository Status",
+    "description": "View the status of your submitted repositories and audit results.",
+    "submitNew": "Submit New Repository",
+    "submitRepository": "Submit Repository",
+    "searchPlaceholder": "Search by repository name or owner...",
+    "filters": {
+      "all": "All Statuses",
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "statusLabels": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "submitted": "Submitted",
+    "completed": "Completed",
+    "viewResults": "View Results",
+    "error": "Error",
+    "noRepositories": "You haven't submitted any repositories yet.",
+    "noMatchingRepositories": "No repositories match your search criteria.",
+    "error": {
+      "title": "Error",
+      "fetchFailed": "Failed to fetch repositories. Please try again later."
+    }
+  },
+  "repositoryResult": {
+    "title": "Repository Audit Results",
+    "description": "Detailed security audit results for your repository.",
+    "backToList": "Back to Repository List",
+    "submitted": "Submitted",
+    "completed": "Completed",
+    "summary": "Audit Summary",
+    "implementation": "Implementation Note",
+    "implementationNote": "This is a placeholder for the actual audit results display. In a real implementation, the audit_result JSON data would be parsed and displayed in a more user-friendly format.",
+    "noResults": {
+      "title": "No Audit Results Available",
+      "message": "The audit for this repository has not been completed yet or no results are available."
+    },
+    "error": {
+      "title": "Error",
+      "fetchFailed": "Failed to fetch repository details. Please try again later.",
+      "notFound": "Repository not found."
+    }
+  },
+  "detectionPage": {
+    "github": {
+      "privateRepoNotice": "For private repositories, please grant access to our GitHub account @chainfox-security so we can review your code."
+    }
+  }
+}

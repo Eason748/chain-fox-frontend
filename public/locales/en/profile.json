@@ -1,0 +1,70 @@
+{
+  "title": "Profile",
+  "subtitle": "Manage your account information and preferences",
+  "email": "Email",
+  "name": "Name",
+  "avatar": "Avatar",
+  "personalInfo": "Personal Information",
+  "preferences": "Preferences",
+  "language": "Language",
+  "provider": "Login Provider",
+  "walletInfo": "Wallet Information",
+  "address": "Address",
+  "balance": "Balance",
+  "refreshBalance": "Refresh Balance",
+  "walletAddress": "Wallet Address",
+  "linkAccounts": "Link Accounts",
+  "linkAccountsDesc": "Connect additional login methods to your account for easier access",
+  "linkAccountsDescWeb3": "Connect your social media accounts to your wallet for easier access",
+  "currentProvider": "Current login method",
+  "connectProvider": "Connect this login method",
+  "connected": "Connected",
+  "connect": "Connect",
+  "unknown": "Unknown",
+  "showPanel": "Show Panel",
+  "hidePanel": "Hide Panel",
+  "tabs": {
+    "profile": "Profile",
+    "accounts": "Linked Accounts"
+  },
+  "stakeCfx": "Stake CFX",
+  "staking": {
+    "title": "CFX Staking",
+    "description": "Stake CFX to gain code audit privileges. The more you stake, the higher your priority",
+    "yourStake": "Your Stake",
+    "totalStaked": "Total Staked",
+    "totalStakers": "Total Stakers",
+    "stakeMore": "Stake More",
+    "unstake": "Unstake",
+    "amount": "Amount",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "priority": "Current Priority",
+    "priorityLevels": {
+      "none": "No Access",
+      "low": "Low Priority",
+      "medium": "Medium Priority",
+      "high": "High Priority"
+    },
+    "points": {
+      "title": "Points Rewards",
+      "description": "Earn points by staking CFX. Points can be used to boost audit priority",
+      "yourPoints": "Your Points",
+      "rate": "Reward Rate",
+      "perBlock": "Per Block",
+      "perDay": "Per Day",
+      "history": "Points History",
+      "earned": "Earned",
+      "used": "Used",
+      "balance": "Balance",
+      "lastUpdated": "Last Updated",
+      "viewAll": "View All",
+      "recentActivity": "Recent Activity",
+      "activities": {
+        "earned": "Points Earned",
+        "used": "Points Used",
+        "stakeChanged": "Stake Changed"
+      }
+    }
+  }
+}

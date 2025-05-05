@@ -10,12 +10,13 @@
     "faq": "FAQ",
     "caseStudies": "Case Studies",
     "language": "Language",
-    "content": "Content"
+    "content": "Content",
+    "audit": "Audit",
+    "whitePaper": "White Paper"
   },
   "buttons": {
     "getStarted": "Get Started",
-    "learnMore": "Learn More",
-    "whitePaper": "White Paper",
+    "learnMore": "White Paper",
     "uploadProject": "Upload Project",
     "contactUs": "Contact Us",
     "signIn": "Sign In",
@@ -82,7 +83,7 @@
     "secureConnection": "Secure Connection",
     "tabs": {
       "code": "Code Snippet",
-      "github": "GitHub Repository",
+      "github": "GitHub Repository Audit",
       "upload": "Upload Project"
     },
     "stats": {
@@ -96,8 +97,10 @@
       "supportedLanguages": "Supported Languages"
     },
     "github": {
-      "title": "Enter GitHub Repository URL",
+      "title": "GitHub Repository Security Audit",
       "placeholder": "e.g., https://github.com/owner/repo",
+      "singleRepo": "Quick Scan Repository",
+      "singleRepoDescription": "Enter a single repository URL for immediate analysis",
       "features": "Repository Analysis Features",
       "feature1": "Scans all smart contracts in the repository",
       "feature2": "Analyzes dependencies and imported contracts",
@@ -231,7 +234,7 @@
       "impact": "Impact Analysis",
       "recommendation": "Recommendation"
     },
-    "betaNotice": "Note: The security scanner integration is currently in development. The data shown here are historical records for demonstration purposes only. Real-time scanning capability will be available soon."
+    "betaNotice": "Note: If you have any questions about the security scan results, please contact our team."
   },
   "report": {
     "title": "Smart Contract Security Audit Report",
@@ -262,5 +265,9 @@
     "errorMessage": "Error message:",
     "refreshPage": "Refresh page"
   },
-  "copied": "Copied to clipboard!"
+  "copied": "Copied to clipboard!",
+  "common": {
+    "score": "Score",
+    "comingSoon": "Coming Soon"
+  }
 }

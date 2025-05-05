@@ -16,8 +16,8 @@ i18n
     lng: 'en',
     // Fallback language if a translation is missing
     fallbackLng: 'en',
-    // Debug mode in development
-    debug: process.env.NODE_ENV === 'development',
+    // Debug mode in development (temporarily disabled for cleaner console)
+    debug: false, // process.env.NODE_ENV === 'development',
     // Namespaces configuration
     ns: ['common', 'home'],
     defaultNS: 'common',

@@ -5,7 +5,18 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Create Supabase client instance
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    flowType: 'pkce',
+    detectSessionInUrl: true,
+    persistSession: true,
+    storage: window.localStorage,
+    storageKey: 'supabase.auth.token',
+    autoRefreshToken: true,
+    debug: false, // 关闭调试模式
+  },
+});
 
 // Authentication helper functions
 export const auth = {
@@ -71,6 +82,152 @@ export const auth = {
     const { error } = await supabase.auth.signOut();
     return { error };
   },
+};
+
+// Repository submission functions
+export const repositories = {
+  // Submit a new repository for audit
+  submitRepository: async (repositoryUrl) => {
+    try {
+      // Extract repository name and owner from URL
+      // Expected format: https://github.com/owner/repo
+      const urlPattern = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
+      const match = repositoryUrl.match(urlPattern);
+
+      if (!match || match.length < 3) {
+        throw new Error('Invalid GitHub repository URL format');
+      }
+
+      const repositoryOwner = match[1];
+      const repositoryName = match[2];
+
+      // Get current user
+      const user = await auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Insert repository submission
+      const { data, error } = await supabase
+        .from('repository_submissions')
+        .insert({
+          user_id: user.id,
+          repository_url: repositoryUrl,
+          repository_name: repositoryName,
+          repository_owner: repositoryOwner,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error submitting repository:', error);
+        throw error;
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error in submitRepository:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Get all repositories submitted by the current user
+  getUserRepositories: async () => {
+    try {
+      // Get current user
+      const user = await auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Get repositories
+      const { data, error } = await supabase
+        .from('repository_submissions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error getting user repositories:', error);
+        throw error;
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error in getUserRepositories:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Get a specific repository submission by ID
+  getRepositoryById: async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from('repository_submissions')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error('Error getting repository by ID:', error);
+        throw error;
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error in getRepositoryById:', error);
+      return { data: null, error };
+    }
+  },
+
+  // Submit multiple repositories at once
+  submitMultipleRepositories: async (repositoryUrls) => {
+    try {
+      // Get current user
+      const user = await auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Prepare repository data
+      const repositories = repositoryUrls.map(url => {
+        const urlPattern = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
+        const match = url.match(urlPattern);
+
+        if (!match || match.length < 3) {
+          throw new Error(`Invalid GitHub repository URL format: ${url}`);
+        }
+
+        const repositoryOwner = match[1];
+        const repositoryName = match[2];
+
+        return {
+          user_id: user.id,
+          repository_url: url,
+          repository_name: repositoryName,
+          repository_owner: repositoryOwner,
+          status: 'pending'
+        };
+      });
+
+      // Insert all repositories
+      const { data, error } = await supabase
+        .from('repository_submissions')
+        .insert(repositories)
+        .select();
+
+      if (error) {
+        console.error('Error submitting multiple repositories:', error);
+        throw error;
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error in submitMultipleRepositories:', error);
+      return { data: null, error };
+    }
+  }
 };
 
 // Web3 authentication helper functions

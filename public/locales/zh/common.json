@@ -10,12 +10,13 @@
     "faq": "常见问题",
     "caseStudies": "成功案例",
     "language": "语言选择",
-    "content": "内容导航"
+    "content": "内容导航",
+    "audit": "安全审计",
+    "whitePaper": "白皮书"
   },
   "buttons": {
     "getStarted": "开始使用",
-    "learnMore": "了解更多",
-    "whitePaper": "白皮书",
+    "learnMore": "白皮书",
     "uploadProject": "上传项目",
     "contactUs": "联系我们",
     "signIn": "登录",
@@ -82,7 +83,7 @@
     "secureConnection": "安全连接",
     "tabs": {
       "code": "代码片段",
-      "github": "GitHub 仓库",
+      "github": "GitHub 仓库审计",
       "upload": "上传项目"
     },
     "stats": {
@@ -96,8 +97,10 @@
       "supportedLanguages": "支持的语言"
     },
     "github": {
-      "title": "输入 GitHub 仓库地址",
+      "title": "GitHub 仓库代码提交审计注意事项",
       "placeholder": "例如：https://github.com/owner/repo",
+      "singleRepo": "快速扫描仓库",
+      "singleRepoDescription": "输入单个仓库地址进行即时分析",
       "features": "仓库分析功能",
       "feature1": "扫描仓库中的所有智能合约",
       "feature2": "分析依赖项和导入的合约",
@@ -217,7 +220,10 @@
       "totalScans": "总扫描次数",
       "criticalIssues": "严重问题",
       "resolvedIssues": "已解决问题",
-      "avgResponse": "平均响应时间"
+      "avgResponse": "平均响应时间",
+      "totalRepos": "总仓库数",
+      "highIssues": "高危问题",
+      "totalIssues": "总问题数"
     },
     "vulnerabilities": {
       "title": "检测到的漏洞",
@@ -231,7 +237,7 @@
       "impact": "影响分析",
       "recommendation": "修复建议"
     },
-    "betaNotice": "注意：安全扫描器尚在开发中。目前显示的数据为历史记录演示数据，实时扫描功能即将开放。"
+    "betaNotice": "注意：如果您对安全扫描结果有任何疑问，请与我们的团队取得联系。"
   },
   "report": {
     "title": "智能合约安全审计报告",
@@ -262,5 +268,9 @@
     "errorMessage": "错误信息：",
     "refreshPage": "刷新页面"
   },
-  "copied": "已复制到剪贴板！"
+  "copied": "已复制到剪贴板！",
+  "common": {
+    "score": "评分",
+    "comingSoon": "即将推出"
+  }
 }

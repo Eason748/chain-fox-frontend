@@ -1,0 +1,22 @@
+{
+  "dates": [
+    "20250502"
+  ],
+  "dateInfoMap": {
+    "20250502": {
+      "date": "20250502",
+      "formattedDate": "2025-05-02",
+      "totalRepos": 148,
+      "totalIssues": 4300,
+      "criticalIssues": 441,
+      "highIssues": 745,
+      "mediumIssues": 3024,
+      "lowIssues": 90,
+      "avgRiskScore": 70,
+      "lastUpdated": "2025-05-02T07:45:47.776Z"
+    }
+  },
+  "total": 1,
+  "latest": "20250502",
+  "lastUpdated": "2025-05-02T07:45:47.776Z"
+}

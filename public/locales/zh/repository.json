@@ -1,0 +1,86 @@
+{
+  "repositorySubmission": {
+    "title": "提交 GitHub 仓库",
+    "description": "提交您的 GitHub 仓库进行代码审计和安全分析。",
+    "form": {
+      "title": "仓库信息",
+      "placeholder": "例如：https://github.com/owner/repo",
+      "addAnother": "添加另一个仓库",
+      "submit": "提交仓库",
+      "submitting": "提交中..."
+    },
+    "info": {
+      "title": "重要信息",
+      "item1": "目前仅支持公开的 GitHub 仓库。",
+      "item2": "审计过程可能需要几个小时才能完成。",
+      "item3": "审计完成后，您将收到通知。",
+      "item4": "您可以在仓库状态页面查看提交的状态。"
+    },
+    "success": {
+      "title": "仓库提交成功",
+      "message": "您的仓库已提交进行审计。您可以在仓库状态页面查看状态。",
+      "submittedRepos": "已提交的仓库"
+    },
+    "error": {
+      "title": "提交错误",
+      "noRepositories": "请至少输入一个仓库 URL。",
+      "invalidUrls": "一个或多个仓库 URL 无效。请确保它们的格式为：https://github.com/owner/repo",
+      "notAuthenticated": "您需要登录才能提交仓库。",
+      "submissionFailed": "提交仓库失败。请稍后再试。"
+    }
+  },
+  "repositoryStatus": {
+    "title": "仓库状态",
+    "description": "查看已提交仓库的状态和审计结果。",
+    "submitNew": "提交新仓库",
+    "submitRepository": "提交仓库",
+    "searchPlaceholder": "按仓库名称或所有者搜索...",
+    "filters": {
+      "all": "所有状态",
+      "pending": "待处理",
+      "processing": "处理中",
+      "completed": "已完成",
+      "failed": "失败"
+    },
+    "statusLabels": {
+      "pending": "待处理",
+      "processing": "处理中",
+      "completed": "已完成",
+      "failed": "失败"
+    },
+    "submitted": "提交时间",
+    "completed": "完成时间",
+    "viewResults": "查看结果",
+    "error": "错误",
+    "noRepositories": "您尚未提交任何仓库。",
+    "noMatchingRepositories": "没有符合您搜索条件的仓库。",
+    "error": {
+      "title": "错误",
+      "fetchFailed": "获取仓库失败。请稍后再试。"
+    }
+  },
+  "repositoryResult": {
+    "title": "仓库审计结果",
+    "description": "您的仓库的详细安全审计结果。",
+    "backToList": "返回仓库列表",
+    "submitted": "提交时间",
+    "completed": "完成时间",
+    "summary": "审计摘要",
+    "implementation": "实现说明",
+    "implementationNote": "这是实际审计结果显示的占位符。在实际实现中，audit_result JSON 数据将被解析并以更友好的格式显示。",
+    "noResults": {
+      "title": "没有可用的审计结果",
+      "message": "此仓库的审计尚未完成或没有可用的结果。"
+    },
+    "error": {
+      "title": "错误",
+      "fetchFailed": "获取仓库详情失败。请稍后再试。",
+      "notFound": "未找到仓库。"
+    }
+  },
+  "detectionPage": {
+    "github": {
+      "privateRepoNotice": "对于私有仓库，请授权访问我们的 GitHub 帐户 @chainfox-security，以便我们审核您的代码。"
+    }
+  }
+}

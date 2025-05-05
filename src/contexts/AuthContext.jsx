@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     // Listen for authentication state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("AuthContext: Authentication state changed", event, session?.user);
+        // console.log("AuthContext: Authentication state changed", event, session?.user);
 
         // Only update if there's no web3 user
         const web3User = getStoredUser();

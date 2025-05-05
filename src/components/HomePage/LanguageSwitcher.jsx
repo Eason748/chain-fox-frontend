@@ -5,7 +5,19 @@ function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+    console.log('HomePage/LanguageSwitcher: Changing language to:', lng);
+    // Save language preference to localStorage first
+    localStorage.setItem('i18nextLng', lng);
+
+    // Change language and force reload resources
+    i18n.changeLanguage(lng).then(() => {
+      console.log('HomePage/LanguageSwitcher: Language changed to:', i18n.language);
+
+      // Force reload all namespaces after language change
+      i18n.loadNamespaces(['profile', 'common']).then(() => {
+        console.log('HomePage/LanguageSwitcher: Namespaces reloaded');
+      });
+    });
   };
 
   return (

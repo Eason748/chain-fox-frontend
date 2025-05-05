@@ -1,0 +1,12 @@
+{
+  "title": "Coming Soon",
+  "comingSoon": "We're launching new features soon!",
+  "syncError": "Failed to synchronize countdown timer",
+  "syncFallback": "Using local time as fallback",
+  "days": "Days",
+  "hours": "Hours",
+  "minutes": "Minutes",
+  "seconds": "Seconds",
+  "stayTuned": "Stay tuned for updates and be the first to experience our new features!",
+  "followUs": "Follow us on X"
+}

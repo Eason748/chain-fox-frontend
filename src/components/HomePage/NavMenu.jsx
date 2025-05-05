@@ -8,20 +8,20 @@ function NavMenu() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
-  const [featuresMenuOpen, setFeaturesMenuOpen] = useState(false);
   const [contentMenuOpen, setContentMenuOpen] = useState(false);
+  const [auditMenuOpen, setAuditMenuOpen] = useState(false);
 
-  const featuresMenuRef = useRef(null);
   const contentMenuRef = useRef(null);
+  const auditMenuRef = useRef(null);
 
   // Close menus on outside click
   useEffect(() => {
     function handleClickOutside(event) {
-      if (featuresMenuRef.current && !featuresMenuRef.current.contains(event.target)) {
-        setFeaturesMenuOpen(false);
-      }
       if (contentMenuRef.current && !contentMenuRef.current.contains(event.target)) {
         setContentMenuOpen(false);
+      }
+      if (auditMenuRef.current && !auditMenuRef.current.contains(event.target)) {
+        setAuditMenuOpen(false);
       }
     }
 
@@ -34,7 +34,7 @@ function NavMenu() {
   // Helper to close dropdowns, used for anchor links
   const closeDropdowns = () => {
     setContentMenuOpen(false);
-    setFeaturesMenuOpen(false);
+    setAuditMenuOpen(false);
   };
 
   // Menu item style classes
@@ -69,22 +69,65 @@ function NavMenu() {
         </Link>
       )}
 
-      {/* Detection Page Link */}
-      <Link
-        to="/detect"
-        className={location.pathname === '/detect' ? activeMenuItemClasses : menuItemClasses}
-      >
-        <span>{t('detectionPage.title')}</span>
-      </Link>
+      {/* Audit Dropdown Menu */}
+      <div className="relative" ref={auditMenuRef}>
+        <button
+          onClick={() => setAuditMenuOpen(!auditMenuOpen)}
+          className={auditMenuOpen ||
+            location.pathname === '/detect' ||
+            location.pathname === '/repository-status' ?
+            activeMenuItemClasses : menuItemClasses}
+        >
+          <span>{t('navigation.audit')}</span>
+          <svg
+            className={`w-4 h-4 ml-1 transition-transform duration-200 ${auditMenuOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <AnimatePresence>
+          {auditMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-black/90 backdrop-blur-lg border border-white/10 z-50"
+            >
+              <div className="py-1">
+                <Link
+                  to="/detect"
+                  onClick={() => setAuditMenuOpen(false)}
+                  className={`block px-4 py-2 text-sm ${location.pathname === '/detect' ? 'text-blue-400' : 'text-gray-300 hover:bg-white/10 hover:text-blue-400'}`}
+                >
+                  {t('detectionPage.title')}
+                </Link>
+                <Link
+                  to="/repository-status"
+                  onClick={() => setAuditMenuOpen(false)}
+                  className={`block px-4 py-2 text-sm ${location.pathname === '/repository-status' ? 'text-blue-400' : 'text-gray-300 hover:bg-white/10 hover:text-blue-400'}`}
+                >
+                  {t('repositoryStatus.title', { ns: 'repository' })}
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-      {/* White Paper Link - External */}
+      {/* White Paper Link */}
       <a
         href="https://chain-fox.github.io/white-paper/"
         target="_blank"
         rel="noopener noreferrer"
         className={menuItemClasses}
+        onClick={closeDropdowns}
       >
-        <span>{t('buttons.whitePaper')}</span>
+        <span>{t('navigation.whitePaper')}</span>
       </a>
 
       {/* Conditional Content Dropdown */}
@@ -140,52 +183,7 @@ function NavMenu() {
         </div>
       )}
 
-      {/* Conditional Features Dropdown */}
-      {isHomePage && (
-        <div className="relative" ref={featuresMenuRef}>
-          <button
-            onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
-            className={featuresMenuOpen ? activeMenuItemClasses : menuItemClasses}
-          >
-            <span>{t('navigation.features')}</span>
-            <svg
-              className={`w-4 h-4 transition-transform duration-200 ${featuresMenuOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <AnimatePresence>
-            {featuresMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-black/90 backdrop-blur-lg border border-white/10 z-50"
-              >
-                <div className="py-1">
-                  <a href="#features" onClick={closeDropdowns} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-blue-400">
-                    All Features
-                  </a>
-                  <a href="#features-security" onClick={closeDropdowns} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-blue-400">
-                    Security Analysis
-                  </a>
-                  <a href="#features-automation" onClick={closeDropdowns} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-blue-400">
-                    Automation Tools
-                  </a>
-                  <a href="#features-reports" onClick={closeDropdowns} className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-blue-400">
-                    Detailed Reports
-                  </a>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
+
     </div>
   );
 }

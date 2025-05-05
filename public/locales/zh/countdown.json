@@ -1,0 +1,12 @@
+{
+  "title": "敬请期待",
+  "comingSoon": "我们即将推出新功能！",
+  "syncError": "同步倒计时失败",
+  "syncFallback": "使用本地时间作为备用",
+  "days": "天",
+  "hours": "小时",
+  "minutes": "分钟",
+  "seconds": "秒",
+  "stayTuned": "请持续关注更新，成为第一批体验新功能的用户！",
+  "followUs": "在X上关注我们"
+}

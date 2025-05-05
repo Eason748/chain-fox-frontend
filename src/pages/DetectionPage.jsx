@@ -1,125 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import deepseekService from '../services/deepseek';
+import { repositories } from '../services/supabase';
 import AuditReport from '../components/AuditReport/AuditReport';
 import AuthRequired from '../components/AuthRequired';
+import CustomSelect from '../components/ui/CustomSelect';
 
-// Enhanced mock API with more detailed security audit results
-const mockDetectApi = async (type, data) => {
-  console.log(`Mock API call for ${type}:`, data);
-
-  // Simulate different stages of analysis with delays
-  const updateProgress = (progress, callback) => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        callback(progress);
-        resolve();
-      }, 800);
-    });
-  };
-
-  // Generate realistic mock vulnerabilities based on type
-  const generateMockVulnerabilities = (type) => {
-    const commonVulns = [
-      {
-        id: `VULN-${Date.now()}-1`,
-        severity: 'critical',
-        name: 'Reentrancy Vulnerability',
-        description: 'Contract state changes after external calls can lead to reentrancy attacks.',
-        location: type === 'code' ? 'Line 42-57' : 'contracts/Token.sol',
-        recommendation: 'Implement checks-effects-interactions pattern and consider using ReentrancyGuard.'
-      },
-      {
-        id: `VULN-${Date.now()}-2`,
-        severity: 'high',
-        name: 'Unchecked Return Values',
-        description: 'External call return values are not checked, which may lead to silent failures.',
-        location: type === 'code' ? 'Line 78-92' : 'contracts/Marketplace.sol',
-        recommendation: 'Always check return values from external calls or use SafeERC20 library.'
-      },
-      {
-        id: `VULN-${Date.now()}-3`,
-        severity: 'medium',
-        name: 'Integer Overflow/Underflow',
-        description: 'Arithmetic operations can overflow/underflow without proper checks.',
-        location: type === 'code' ? 'Line 103-115' : 'contracts/Staking.sol',
-        recommendation: 'Use SafeMath library or Solidity 0.8.x built-in overflow checks.'
-      }
-    ];
-
-    // Add some randomness to the results
-    const randomVulns = [
-      {
-        id: `VULN-${Date.now()}-4`,
-        severity: 'medium',
-        name: 'Centralization Risk',
-        description: 'Contract has privileged roles that can control critical functions.',
-        location: type === 'code' ? 'Line 15-28' : 'contracts/Governance.sol',
-        recommendation: 'Consider implementing a multi-signature scheme or DAO governance.'
-      },
-      {
-        id: `VULN-${Date.now()}-5`,
-        severity: 'low',
-        name: 'Gas Optimization',
-        description: 'Contract uses inefficient storage patterns that consume excessive gas.',
-        location: type === 'code' ? 'Line 132-145' : 'contracts/NFTMarket.sol',
-        recommendation: 'Pack storage variables and optimize loops to reduce gas costs.'
-      },
-      {
-        id: `VULN-${Date.now()}-6`,
-        severity: 'info',
-        name: 'Compiler Version Not Fixed',
-        description: 'Solidity pragma is not locked to a specific version.',
-        location: type === 'code' ? 'Line 1' : 'Multiple files',
-        recommendation: 'Lock pragma to a specific version to ensure consistent compilation.'
-      }
-    ];
-
-    // Randomly select some vulnerabilities
-    const selectedRandomVulns = randomVulns.filter(() => Math.random() > 0.3);
-    return [...commonVulns, ...selectedRandomVulns];
-  };
-
-  // Generate mock metrics
-  const generateMockMetrics = () => {
-    return {
-      codeQuality: Math.floor(Math.random() * 40) + 60, // 60-100
-      securityScore: Math.floor(Math.random() * 50) + 50, // 50-100
-      gasEfficiency: Math.floor(Math.random() * 30) + 70, // 70-100
-      testCoverage: Math.floor(Math.random() * 60) + 40, // 40-100
-      scanDuration: Math.floor(Math.random() * 120) + 30 // 30-150 seconds
-    };
-  };
-
-  // Return a more comprehensive result
-  return new Promise(async (resolve) => {
-    // Simulate a multi-stage analysis process
-    await new Promise(r => setTimeout(r, 1500)); // Initial delay
-
-    const vulnerabilities = generateMockVulnerabilities(type);
-    const metrics = generateMockMetrics();
-
-    resolve({
-      success: true,
-      scanId: `SCAN-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      type: type,
-      target: type === 'code' ? 'Code Snippet' : data,
-      vulnerabilities: vulnerabilities,
-      issuesFound: vulnerabilities.length,
-      metrics: metrics,
-      reportUrl: `/report/${type}/${Date.now()}`,
-      summary: `Detected ${vulnerabilities.length} potential issues across ${vulnerabilities.filter(v => v.severity === 'critical').length} critical, ${vulnerabilities.filter(v => v.severity === 'high').length} high, and ${vulnerabilities.filter(v => v.severity === 'medium').length} medium severity levels.`
-    });
-  });
-};
 
 function DetectionPage() {
-  const { t } = useTranslation('common');
-  const [activeTab, setActiveTab] = useState('code');
+  const { t } = useTranslation(['common', 'repository']);
+  const [activeTab, setActiveTab] = useState('github');
   const [codeContent, setCodeContent] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
+  const [repositoryUrls, setRepositoryUrls] = useState(['']); // For multiple repository submissions
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -133,6 +28,8 @@ function DetectionPage() {
   const [streamingThinking, setStreamingThinking] = useState(''); // Streaming thinking process
   const [isStreaming, setIsStreaming] = useState(false); // Whether streaming is in progress
   const [showReport, setShowReport] = useState(false); // Whether to show the report modal
+  const [success, setSuccess] = useState(false); // For repository submission success
+  const [submittedRepos, setSubmittedRepos] = useState([]); // For tracking submitted repositories
   const reportRef = useRef(null); // Reference to the report component
 
   // Reset state when changing tabs
@@ -144,6 +41,12 @@ function DetectionPage() {
     setShowFullReport(false);
     setSelectedVulnerability(null);
     setShowReport(false);
+    setSuccess(false);
+
+    // Reset repository URLs when switching to GitHub tab
+    if (activeTab === 'github') {
+      setRepositoryUrls(['']);
+    }
   }, [activeTab]);
 
   // Handle generating and showing the report
@@ -213,137 +116,12 @@ fn process_instruction(
     setCodeLanguage(language);
   };
 
-  // Enhanced detection process with updates
+  // Handle detect button click - this function is no longer used
+  // We've removed the "Start Security Audit" button and integrated its functionality
+  // directly into the repository submission form
   const handleDetect = async () => {
-    setIsLoading(true);
-    setResult(null);
-    setError('');
-    setScanProgress(0);
-    setScanStage('initializing');
-    setShowAIThinking(false);
-
-    try {
-      let response;
-
-      // Update scan status with progress animation
-      const updateScanStatus = async (stage, progressStart, progressEnd) => {
-        setScanStage(stage);
-
-        // Animate progress from start to end
-        const steps = 10;
-        const increment = (progressEnd - progressStart) / steps;
-
-        for (let i = 0; i < steps; i++) {
-          await new Promise(r => setTimeout(r, 200));
-          setScanProgress(progressStart + increment * (i + 1));
-        }
-      };
-
-      if (activeTab === 'code') {
-        if (!codeContent.trim()) {
-          setError(t('detectionPage.error.emptyCode'));
-          setIsLoading(false);
-          setScanProgress(0);
-          setScanStage('');
-          return;
-        }
-
-        if (useAI) {
-          // Use DeepSeek AI for code analysis
-          try {
-            // AI-specific scanning stages
-            await updateScanStatus(t('detectionPage.ai.progress.initializing'), 0, 20);
-            await updateScanStatus(t('detectionPage.ai.progress.analyzing'), 20, 40);
-
-            // Reset streaming thinking content
-            setStreamingThinking('');
-
-            // Enable streaming if AI thinking is enabled
-            if (showAIThinking) {
-              setIsStreaming(true);
-            }
-
-            // Define callback for streaming updates
-            const handleThinkingUpdate = (newThinking) => {
-              if (showAIThinking) {
-                setStreamingThinking(prev => prev + newThinking);
-              }
-            };
-
-            // Define callback for progress updates
-            const handleProgressUpdate = (progress) => {
-              setScanProgress(progress);
-            };
-
-            // Call DeepSeek API with streaming support
-            response = await deepseekService.auditCode(
-              codeContent,
-              codeLanguage,
-              showAIThinking ? handleThinkingUpdate : null,
-              handleProgressUpdate
-            );
-
-            // Ensure we reach 95% progress before finalizing
-            setScanProgress(95);
-          } catch (aiError) {
-            // Reset streaming state
-            setIsStreaming(false);
-            console.error("AI analysis error:", aiError);
-
-            // Fallback to mock API if AI fails
-            console.log("Falling back to mock API due to AI error");
-
-            // Standard scanning stages
-            await updateScanStatus('parsing', 0, 15);
-            await updateScanStatus('analyzing', 15, 40);
-            await updateScanStatus('vulnerabilityDetection', 40, 70);
-            await updateScanStatus('gasAnalysis', 70, 85);
-            await updateScanStatus('reportGeneration', 85, 95);
-
-            response = await mockDetectApi('code', codeContent);
-          }
-        } else {
-          // Use mock API for code analysis
-          await updateScanStatus('parsing', 0, 15);
-          await updateScanStatus('analyzing', 15, 40);
-          await updateScanStatus('vulnerabilityDetection', 40, 70);
-          await updateScanStatus('gasAnalysis', 70, 85);
-          await updateScanStatus('reportGeneration', 85, 95);
-
-          response = await mockDetectApi('code', codeContent);
-        }
-      } else if (activeTab === 'github') {
-        if (!githubUrl.trim() || !/^https:\/\/github\.com\/[^\/]+\/[^\/]+$/.test(githubUrl)) {
-          setError(t('detectionPage.error.invalidGithubUrl'));
-          setIsLoading(false);
-          setScanProgress(0);
-          setScanStage('');
-          return;
-        }
-
-        // GitHub repos always use mock API for now
-        await updateScanStatus('cloning', 0, 20);
-        await updateScanStatus('parsing', 20, 35);
-        await updateScanStatus('analyzing', 35, 60);
-        await updateScanStatus('vulnerabilityDetection', 60, 80);
-        await updateScanStatus('reportGeneration', 80, 95);
-
-        response = await mockDetectApi('github', githubUrl);
-      }
-
-      // Final stage
-      setScanProgress(100);
-      setScanStage('complete');
-      setResult(response);
-
-    } catch (err) {
-      console.error("Detection error:", err);
-      setError(t('detectionPage.error.apiError'));
-      setScanStage('error');
-    } finally {
-      setIsLoading(false);
-      setIsStreaming(false);
-    }
+    // This function is kept as a placeholder to avoid breaking existing code references
+    console.log("handleDetect is deprecated - using repository submission instead");
   };
 
   // Reusable input/textarea classes
@@ -588,7 +366,7 @@ fn process_instruction(
               return (
                 <div key={key} className="text-center p-2 rounded-lg bg-black/20">
                   <div className={`text-xl font-bold ${scoreColor}`}>
-                    {value}%
+                    {t('common.score', 'Score')}: {value}%
                   </div>
                   <div className="text-xs text-gray-400 mt-1">
                     {t(`detectionPage.metrics.${key}`)}
@@ -707,151 +485,215 @@ fn process_instruction(
     );
   };
 
-  // Render tab content
+  // Render tab content - always render GitHub tab content regardless of activeTab value
   const renderContent = () => {
-    switch (activeTab) {
-      case 'code':
-        return (
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-medium text-white/80">{t('detectionPage.code.title')}</h3>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => loadSampleCode('solidity')}
-                  className="px-2 py-1 text-xs rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 transition-colors"
+    return (
+      <div>
+        <h3 className="text-lg font-medium mb-3 text-white/80">{t('detectionPage.github.title')}</h3>
+        <p className="text-gray-400 mb-6">
+          <span className="text-yellow-400">
+            {t('repository:detectionPage.github.privateRepoNotice')}
+          </span>
+        </p>
+
+        {/* Success message */}
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-lg bg-green-900/20 border border-green-500/30 text-green-300"
+          >
+            <h3 className="font-semibold mb-2">{t('repositorySubmission.success.title', { ns: 'repository' })}</h3>
+            <p>{t('repositorySubmission.success.message', { ns: 'repository' })}</p>
+            <div className="mt-3">
+              <p className="font-medium">{t('repositorySubmission.success.submittedRepos', { ns: 'repository' })}:</p>
+              <ul className="list-disc pl-5 mt-2">
+                {submittedRepos.map((repo, index) => (
+                  <li key={index} className="text-sm">
+                    {repo.repository_owner}/{repo.repository_name}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4">
+                <Link
+                  to="/repository-status"
+                  className="text-blue-400 hover:text-blue-300 transition-colors flex items-center"
                 >
-                  Solidity Example
-                </button>
-                <button
-                  onClick={() => loadSampleCode('rust')}
-                  className="px-2 py-1 text-xs rounded bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 transition-colors"
-                >
-                  Rust Example
-                </button>
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  {t('repositoryStatus.title', { ns: 'repository' })}
+                </Link>
               </div>
             </div>
+          </motion.div>
+        )}
 
-            <div className="relative code-editor-container">
-              <textarea
-                className={`${inputBaseClasses} h-60 md:h-72 resize-none font-mono text-sm code-editor`}
-                placeholder={t('detectionPage.code.placeholder')}
-                value={codeContent}
-                onChange={(e) => setCodeContent(e.target.value)}
-                disabled={isLoading}
-                spellCheck="false"
-              />
+        {/* Error message */}
+        {error && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300"
+          >
+            <h3 className="font-semibold mb-1">{t('repositorySubmission.error.title', { ns: 'repository' })}</h3>
+            <p>{error}</p>
+          </motion.div>
+        )}
 
-              {/* Line numbers overlay (visual enhancement) */}
-              <div className="absolute top-0 left-0 h-full overflow-hidden pointer-events-none">
-                <div className="h-full py-3 px-2 text-gray-500 font-mono text-sm text-right">
-                  {codeContent.split('\n').map((_, i) => (
-                    <div key={i} className="h-6">{i + 1}</div>
-                  ))}
-                </div>
-              </div>
-            </div>
+        <div className="space-y-4">
+          {/* Single repository mode for quick scan */}
+          {!result && (
+            <>
+              {/* Single repository input removed - we only use the multiple repository submission form */}
 
-            <div className="mt-2 flex justify-between items-center">
-              <div className="text-xs text-gray-400">
-                {t('detectionPage.code.supportedLanguages')}: Solidity, Rust, Move, Go
-              </div>
+              <div className="mb-6">
+                {/* <h4 className="text-md font-medium text-white/80 mb-4">{t('repositorySubmission.form.title', { ns: 'repository' })}</h4> */}
 
-              {/* AI Analysis Toggle */}
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-400">{t('detectionPage.ai.title')}</span>
+                {repositoryUrls.map((url, index) => (
+                  <div key={index} className="flex items-center gap-2 mb-3">
+                    <div className="flex-1">
+                      <input
+                        type="url"
+                        value={url}
+                        onChange={(e) => {
+                          const updatedUrls = [...repositoryUrls];
+                          updatedUrls[index] = e.target.value;
+                          setRepositoryUrls(updatedUrls);
+                        }}
+                        placeholder={t('repositorySubmission.form.placeholder', { ns: 'repository' })}
+                        className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
+                          backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
+                        disabled={isLoading}
+                      />
+                    </div>
+
+                    {/* Remove button (only show if there's more than one input) */}
+                    {repositoryUrls.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedUrls = [...repositoryUrls];
+                          updatedUrls.splice(index, 1);
+                          setRepositoryUrls(updatedUrls);
+                        }}
+                        className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                        disabled={isLoading}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {/* Add repository button */}
+                <div className="mb-4 flex justify-center">
                   <button
-                    onClick={() => setUseAI(!useAI)}
-                    className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${useAI ? 'bg-purple-600' : 'bg-gray-600'}`}
+                    type="button"
+                    onClick={() => setRepositoryUrls([...repositoryUrls, ''])}
+                    className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+                    disabled={isLoading}
                   >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${useAI ? 'translate-x-5' : 'translate-x-1'}`}
-                    />
+                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    {t('repositorySubmission.form.addAnother', { ns: 'repository' })}
                   </button>
                 </div>
 
-                {/* AI Thinking Process Toggle - Only visible when AI is enabled */}
-                {useAI && (
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs text-gray-400">{t('detectionPage.ai.showThinking', 'Show Thinking')}</span>
-                    <button
-                      onClick={() => setShowAIThinking(!showAIThinking)}
-                      className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${showAIThinking ? 'bg-purple-600' : 'bg-gray-600'}`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showAIThinking ? 'translate-x-5' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-                )}
+                {/* Submit button for multiple repositories */}
+                <div className="mt-4 flex justify-center">
+                  <motion.button
+                    onClick={async () => {
+                      // Reset states
+                      setError('');
+                      setSuccess(false);
+
+                      // Filter out empty URLs
+                      const filteredUrls = repositoryUrls.filter(url => url.trim() !== '');
+
+                      if (filteredUrls.length === 0) {
+                        setError(t('repositorySubmission.error.noRepositories', { ns: 'repository' }));
+                        return;
+                      }
+
+                      // Validate all URLs
+                      const validateGithubUrl = (url) => {
+                        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+$/.test(url);
+                      };
+
+                      const invalidUrls = filteredUrls.filter(url => !validateGithubUrl(url));
+                      if (invalidUrls.length > 0) {
+                        setError(t('repositorySubmission.error.invalidUrls', { ns: 'repository' }));
+                        return;
+                      }
+
+                      setIsLoading(true);
+
+                      try {
+                        // Submit repositories to Supabase
+                        const { data, error } = await repositories.submitMultipleRepositories(filteredUrls);
+
+                        if (error) {
+                          throw error;
+                        }
+
+                        // Success
+                        setSuccess(true);
+                        setSubmittedRepos(data || []);
+                        setRepositoryUrls(['']); // Reset form with one empty field
+                      } catch (err) {
+                        console.error('Error submitting repositories:', err);
+                        if (err.message === 'User not authenticated') {
+                          setError(t('repositorySubmission.error.notAuthenticated', { ns: 'repository' }));
+                        } else {
+                          setError(err.message || t('repositorySubmission.error.submissionFailed'));
+                        }
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    disabled={isLoading || repositoryUrls.every(url => url.trim() === '')}
+                    className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(147, 51, 234, 0.5)" }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {t('repositorySubmission.form.submitting', { ns: 'repository' })}
+                      </div>
+                    ) : (
+                      <span className="flex items-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        {t('repositorySubmission.form.submit', { ns: 'repository' })}
+                      </span>
+                    )}
+                  </motion.button>
+                </div>
               </div>
-            </div>
+            </>
+          )}
+
+          <div className="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 mt-8">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">{t('detectionPage.github.features')}</h4>
+            <ul className="text-sm text-gray-300 space-y-1 list-disc pl-5">
+              <li>{t('detectionPage.github.feature1')}</li>
+              <li>{t('detectionPage.github.feature2')}</li>
+              <li>{t('detectionPage.github.feature3')}</li>
+              <li>{t('detectionPage.github.feature4')}</li>
+            </ul>
           </div>
-        );
-
-      case 'github':
-        return (
-          <div>
-            <h3 className="text-lg font-medium mb-3 text-white/80">{t('detectionPage.github.title')}</h3>
-
-            <div className="space-y-4">
-              <input
-                type="url"
-                className={inputBaseClasses}
-                placeholder={t('detectionPage.github.placeholder')}
-                value={githubUrl}
-                onChange={(e) => setGithubUrl(e.target.value)}
-                disabled={isLoading}
-              />
-
-              <div className="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30">
-                <h4 className="text-sm font-medium text-blue-300 mb-2">{t('detectionPage.github.features')}</h4>
-                <ul className="text-sm text-gray-300 space-y-1 list-disc pl-5">
-                  <li>{t('detectionPage.github.feature1')}</li>
-                  <li>{t('detectionPage.github.feature2')}</li>
-                  <li>{t('detectionPage.github.feature3')}</li>
-                  <li>{t('detectionPage.github.feature4')}</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'upload':
-        return (
-          <div>
-            <h3 className="text-lg font-medium mb-3 text-white/80">{t('detectionPage.upload.title')}</h3>
-            <p className="text-gray-400 mb-4">{t('detectionPage.upload.description')}</p>
-
-            <div className="mt-4 p-8 border-2 border-dashed rounded-lg border-white/20 text-center bg-black/20 flex flex-col items-center justify-center">
-              <svg className="w-12 h-12 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <p className="text-gray-400 mb-2">{t('detectionPage.upload.placeholder')}</p>
-              <p className="text-gray-500 text-sm">{t('detectionPage.upload.supportedFormats')}</p>
-
-              <button
-                className="mt-4 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-md transition-colors"
-                disabled
-              >
-                {t('detectionPage.upload.selectFiles')}
-              </button>
-            </div>
-
-            <div className="mt-6 p-4 rounded-lg bg-yellow-900/20 border border-yellow-500/30">
-              <div className="flex items-start">
-                <svg className="w-5 h-5 text-yellow-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-sm text-gray-300">{t('detectionPage.upload.comingSoon')}</p>
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -915,17 +757,17 @@ fn process_instruction(
         {/* Styled Tabs */}
         <div className="mb-8 border-b border-white/20">
           <nav className="-mb-px flex space-x-6 md:space-x-8 justify-center" aria-label="Tabs">
-            {['code', 'github', 'upload'].map((tab) => (
+            {['github', 'code', 'upload'].map((tab) => (
               <motion.button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => tab === 'github' ? setActiveTab(tab) : null}
                 className={`whitespace-nowrap pb-3 px-1 border-b-2 font-medium text-base transition-all duration-200 ${
                   activeTab === tab
                     ? 'border-purple-500 text-purple-300'
                     : 'border-transparent text-gray-400 hover:text-gray-100 hover:border-purple-500/50'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                } ${tab !== 'github' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                whileHover={{ scale: tab === 'github' ? 1.05 : 1 }}
+                whileTap={{ scale: tab === 'github' ? 0.95 : 1 }}
               >
                 <div className="flex items-center space-x-2">
                   {tab === 'code' && (
@@ -944,6 +786,11 @@ fn process_instruction(
                     </svg>
                   )}
                   <span>{t(`detectionPage.tabs.${tab}`)}</span>
+                  {tab !== 'github' && (
+                    <span className="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 rounded-full ml-1">
+                      {t('common.comingSoon', 'Coming Soon')}
+                    </span>
+                  )}
                 </div>
               </motion.button>
             ))}
@@ -958,40 +805,7 @@ fn process_instruction(
         {/* Scan Progress Indicator */}
         {renderScanProgress()}
 
-        {/* Detect Button (only if not upload tab) */}
-        {activeTab !== 'upload' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mt-8 flex justify-center"
-          >
-            <motion.button
-              onClick={handleDetect}
-              disabled={isLoading || (activeTab === 'code' && !codeContent.trim()) || (activeTab === 'github' && !githubUrl.trim())}
-              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-              whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(147, 51, 234, 0.5)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isLoading ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {t('detectionPage.button.loading')}
-                </span>
-              ) : (
-                <span className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  {t('detectionPage.button.detect')}
-                </span>
-              )}
-            </motion.button>
-          </motion.div>
-        )}
+        {/* Detect Button is removed - we only use the Submit Repositories button in the GitHub tab */}
 
         {/* Error Message Area */}
         <AnimatePresence>

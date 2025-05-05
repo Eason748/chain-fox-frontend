@@ -45,7 +45,7 @@ function HeroSection() {
             to="/whitepaper"
             className="px-8 py-4 border-2 border-purple-400/50 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:border-purple-400/80 transition-colors text-center"
           >
-            {t('buttons.whitePaper')}
+            {t('buttons.learnMore')}
           </Link>
         </motion.div>
       </div>

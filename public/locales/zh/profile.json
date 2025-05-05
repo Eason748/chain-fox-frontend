@@ -1,0 +1,70 @@
+{
+  "title": "个人中心",
+  "subtitle": "管理您的账户信息和偏好设置",
+  "email": "邮箱",
+  "name": "姓名",
+  "avatar": "头像",
+  "personalInfo": "个人信息",
+  "preferences": "偏好设置",
+  "language": "语言",
+  "provider": "登录方式",
+  "walletInfo": "钱包信息",
+  "address": "地址",
+  "balance": "余额",
+  "refreshBalance": "刷新余额",
+  "walletAddress": "钱包地址",
+  "linkAccounts": "关联账户",
+  "linkAccountsDesc": "关联其他登录方式到您的账户，以便更轻松地访问",
+  "linkAccountsDescWeb3": "将您的社交媒体账户关联到您的钱包，以便更轻松地访问",
+  "currentProvider": "当前登录方式",
+  "connectProvider": "关联此登录方式",
+  "connected": "已关联",
+  "connect": "关联",
+  "unknown": "未知",
+  "showPanel": "显示面板",
+  "hidePanel": "隐藏面板",
+  "tabs": {
+    "profile": "个人中心",
+    "accounts": "关联账户"
+  },
+  "stakeCfx": "质押 CFX",
+  "staking": {
+    "title": "CFX 质押",
+    "description": "质押CFX以获得代码审计权限，质押数量越多，优先级越高",
+    "yourStake": "您已质押",
+    "totalStaked": "总质押量",
+    "totalStakers": "质押人数",
+    "stakeMore": "增加质押",
+    "unstake": "解除质押",
+    "amount": "数量",
+    "confirm": "确认",
+    "cancel": "取消",
+    "priority": "当前优先级",
+    "priorityLevels": {
+      "none": "无权限",
+      "low": "低优先级",
+      "medium": "中优先级",
+      "high": "高优先级"
+    },
+    "points": {
+      "title": "积分奖励",
+      "description": "质押CFX可以获得积分奖励，积分可用于提升审计优先级",
+      "yourPoints": "您的积分",
+      "rate": "奖励速率",
+      "perBlock": "每区块",
+      "perDay": "每天",
+      "history": "积分历史",
+      "earned": "已获得",
+      "used": "已使用",
+      "balance": "余额",
+      "lastUpdated": "最后更新",
+      "viewAll": "查看全部",
+      "recentActivity": "近期活动",
+      "activities": {
+        "earned": "获得积分",
+        "used": "使用积分",
+        "stakeChanged": "质押变更"
+      }
+    }
+  }
+}

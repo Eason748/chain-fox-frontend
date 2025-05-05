@@ -12,15 +12,15 @@ function MobileNavMenu({ isOpen, onClose }) {
   const { user, signOut } = useAuth(); // Get user info and sign out function
 
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
-  const [featuresMenuOpen, setFeaturesMenuOpen] = useState(false);
   const [contentMenuOpen, setContentMenuOpen] = useState(false);
+  const [auditMenuOpen, setAuditMenuOpen] = useState(false);
 
   // Reset dropdown states when main menu opens/closes
   useEffect(() => {
     if (!isOpen) {
       setLanguageMenuOpen(false);
-      setFeaturesMenuOpen(false);
       setContentMenuOpen(false);
+      setAuditMenuOpen(false);
     }
   }, [isOpen]);
 
@@ -126,16 +126,57 @@ function MobileNavMenu({ isOpen, onClose }) {
               </Link>
             )}
 
-            {/* Detection Page Link */}
-            <Link
-              to="/detect"
-              className={location.pathname === '/detect' ? activeMenuItemClasses : menuItemClasses}
-              onClick={handleMenuItemClick}
-            >
-              {t('detectionPage.title')}
-            </Link>
+            {/* Audit Dropdown */}
+            <div className="py-2 border-b border-white/10">
+              <button
+                onClick={() => setAuditMenuOpen(!auditMenuOpen)}
+                className={`flex items-center justify-between w-full text-left py-1 ${
+                  auditMenuOpen ||
+                  location.pathname === '/detect' ||
+                  location.pathname === '/repository-status' ?
+                  'text-blue-400' : 'hover:text-blue-400'
+                } transition-colors`}
+              >
+                <span>{t('navigation.audit')}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${auditMenuOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <AnimatePresence>
+                {auditMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-2 pl-4 border-l border-white/10"
+                  >
+                    <Link
+                      to="/detect"
+                      onClick={handleSubMenuItemClick}
+                      className={`block w-full text-left py-2 ${location.pathname === '/detect' ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    >
+                      {t('detectionPage.title')}
+                    </Link>
+                    <Link
+                      to="/repository-status"
+                      onClick={handleSubMenuItemClick}
+                      className={`block w-full text-left py-2 ${location.pathname === '/repository-status' ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    >
+                      {t('repositoryStatus.title', { ns: 'repository' })}
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-            {/* White Paper Link - External */}
+            {/* White Paper Link */}
             <a
               href="https://chain-fox.github.io/white-paper/"
               target="_blank"
@@ -143,7 +184,7 @@ function MobileNavMenu({ isOpen, onClose }) {
               className={menuItemClasses}
               onClick={handleMenuItemClick}
             >
-              {t('buttons.whitePaper')}
+              {t('navigation.whitePaper')}
             </a>
 
             {/* Conditional Content Dropdown */}
@@ -171,28 +212,7 @@ function MobileNavMenu({ isOpen, onClose }) {
               </div>
             )}
 
-            {/* Conditional Features Dropdown */}
-            {isHomePage && (
-              <div className="py-2 border-b border-white/10">
-                <button
-                  onClick={() => setFeaturesMenuOpen(!featuresMenuOpen)}
-                  className="flex items-center justify-between w-full text-left py-1 hover:text-blue-400 transition-colors"
-                >
-                  <span>{t('navigation.features')}</span>
-                  <svg className={`w-4 h-4 transition-transform duration-200 ${featuresMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                <AnimatePresence>
-                  {featuresMenuOpen && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="mt-2 pl-4 border-l border-white/10">
-                      <a href="#features" onClick={handleSubMenuItemClick} className="block w-full text-left py-2 text-gray-300 hover:text-blue-400">All Features</a>
-                      <a href="#features-security" onClick={handleSubMenuItemClick} className="block w-full text-left py-2 text-gray-300 hover:text-blue-400">Security Analysis</a>
-                      <a href="#features-automation" onClick={handleSubMenuItemClick} className="block w-full text-left py-2 text-gray-300 hover:text-blue-400">Automation Tools</a>
-                      <a href="#features-reports" onClick={handleSubMenuItemClick} className="block w-full text-left py-2 text-gray-300 hover:text-blue-400">Detailed Reports</a>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
+
 
             {/* Language Selection */}
             <div className="py-2 border-b border-white/10">

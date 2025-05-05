@@ -23,7 +23,20 @@ function LanguageSelector() {
 
   // Change language
   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+    console.log('LanguageSelector: Changing language to:', lng);
+    // Save language preference to localStorage first
+    localStorage.setItem('i18nextLng', lng);
+
+    // Change language and force reload resources
+    i18n.changeLanguage(lng).then(() => {
+      console.log('LanguageSelector: Language changed to:', i18n.language);
+
+      // Force reload all namespaces after language change
+      i18n.loadNamespaces(['profile', 'common']).then(() => {
+        console.log('LanguageSelector: Namespaces reloaded');
+      });
+    });
+
     setMenuOpen(false);
   };
 
@@ -35,11 +48,11 @@ function LanguageSelector() {
         aria-label="Select language"
       >
         <span>{i18n.language === 'zh' ? '中文' : 'English'}</span>
-        <svg 
-          className={`w-4 h-4 transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
+        <svg
+          className={`w-4 h-4 transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -47,22 +60,22 @@ function LanguageSelector() {
       </button>
       <AnimatePresence>
         {menuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            exit={{ opacity: 0, y: -10 }} 
-            transition={{ duration: 0.2 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
             className="absolute right-0 mt-1 w-36 rounded-md shadow-lg bg-black/90 backdrop-blur-lg border border-white/10 z-50"
           >
             <div className="py-1">
-              <button 
-                onClick={() => changeLanguage('en')} 
+              <button
+                onClick={() => changeLanguage('en')}
                 className={`block w-full text-left px-4 py-2 text-sm ${i18n.language === 'en' ? 'bg-blue-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}
               >
                 English
               </button>
-              <button 
-                onClick={() => changeLanguage('zh')} 
+              <button
+                onClick={() => changeLanguage('zh')}
                 className={`block w-full text-left px-4 py-2 text-sm ${i18n.language === 'zh' ? 'bg-blue-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}
               >
                 中文
