@@ -279,6 +279,16 @@ const ReportPageContent = () => {
     setSelectedIssue(null);
   }, []);
 
+  // Handle issue update from modal
+  const handleUpdateIssue = useCallback((updatedIssue) => {
+    // Update the issue in the issues array
+    setIssues(prevIssues =>
+      prevIssues.map(issue =>
+        issue.id === updatedIssue.id ? updatedIssue : issue
+      )
+    );
+  }, []);
+
   // Toggle multi-select mode
   const toggleMultiSelectMode = useCallback(() => {
     setIsMultiSelectMode(prev => !prev);
@@ -457,6 +467,7 @@ const ReportPageContent = () => {
           issue={selectedIssue}
           report={selectedReport}
           onClose={handleCloseModal}
+          onUpdateIssue={handleUpdateIssue}
         />
       </div>
     </motion.div>
