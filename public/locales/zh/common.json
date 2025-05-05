@@ -74,7 +74,14 @@
       "avatar": "头像"
     },
     "callback": {
-      "debugInfo": "调试信息"
+      "debugInfo": "调试信息",
+      "verifyingStatus": "登录状态验证中...",
+      "accountSuccessful": "您的账户可能已成功登录，我们正在验证登录状态...",
+      "continueToHome": "继续到主页",
+      "sessionCheckFailed": "无法获取会话",
+      "checkingSession": "错误页面中检查会话",
+      "validSessionDetected": "在错误页面中检测到有效会话，自动重定向到主页",
+      "autoCheckFailed": "自动会话检查失败"
     }
   },
   "detectionPage": {

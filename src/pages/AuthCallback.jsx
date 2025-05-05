@@ -29,21 +29,42 @@ const AuthCallback = () => {
           // Clean up temporary stored data
           localStorage.removeItem('auth_provider');
           localStorage.removeItem('auth_callback_refreshed');
-          
-          // 如果错误包含 "both auth code and code verifier"，但看起来是无害的（用户仍能登录），
-          // 我们尝试获取会话而不是直接显示错误
-          if (error === 'invalid_request' && 
-              (errorDescription || '').includes('both auth code and code verifier') &&
-              !localStorage.getItem('tried_session_recovery')) {
-            console.log("AuthContext: Detected auth code/verifier error but attempting session recovery");
-            localStorage.setItem('tried_session_recovery', 'true');
-            
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 100);
+
+          // If error contains "both auth code and code verifier", handle this special case
+          // This error typically indicates that despite the error, the user has successfully logged in
+          if (error === 'invalid_request' &&
+              (errorDescription || '').includes('both auth code and code verifier')) {
+
+            console.log("AuthContext: Detected auth code/verifier error, attempting session recovery");
+
+            // Use setItem just to mark that we've attempted recovery, the value isn't important
+            localStorage.setItem('auth_recovery_attempted', new Date().toISOString());
+
+            // Immediately try to get the current session
+            try {
+              const { data } = await supabase.auth.getSession();
+              console.log(t('auth.callback.checkingSession') + ":", data);
+
+              if (data && data.session) {
+                console.log(t('auth.callback.validSessionDetected'));
+                const redirectPath = sessionStorage.getItem('auth_redirect');
+                if (redirectPath) {
+                  sessionStorage.removeItem('auth_redirect');
+                  navigate(redirectPath);
+                } else {
+                  navigate('/');
+                }
+                return;
+              }
+            } catch (sessionErr) {
+              console.error("Failed to recover session:", sessionErr);
+            }
+
+            // Even if we couldn't get a session immediately, don't show an error
+            // Just return and let the loading state handle it with auto-retry
             return;
           }
-          
+
           setError(`${error}: ${decodeURIComponent(errorDescription || '')}`);
           return;
         }
@@ -82,8 +103,8 @@ const AuthCallback = () => {
             // If session exchange was successful, check for redirect path
             if (exchangeData?.session) {
               console.log("AuthCallback: Valid session detected");
-              
-              // 清除会话恢复尝试的标记
+
+              // Clear the session recovery attempt marker
               localStorage.removeItem('tried_session_recovery');
 
               // Check if there's a saved redirect path from AuthRequired component
@@ -221,10 +242,10 @@ const AuthCallback = () => {
     handleAuthCallback();
   }, [navigate]);
 
-  // 显示加载状态或错误信息
+  // Display loading state or error message
   return (
     <div className="text-white p-8 pt-16 md:pt-24 min-h-screen">
-      {/* 背景渐变 */}
+      {/* Background gradient */}
       <div
         className="fixed top-0 left-0 w-full h-full"
         style={{
@@ -233,7 +254,7 @@ const AuthCallback = () => {
         }}
       />
 
-      {/* 动画背景球体 */}
+      {/* Animated background sphere */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30">
         <motion.div
           animate={{
@@ -249,10 +270,10 @@ const AuthCallback = () => {
         />
       </div>
 
-      {/* 网格背景 */}
+      {/* Grid background */}
       <div className="fixed top-0 left-0 w-full h-full bg-grid" style={{ zIndex: -5 }} />
 
-      {/* 主内容 */}
+      {/* Main content */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -265,19 +286,23 @@ const AuthCallback = () => {
             animate={{ opacity: 1 }}
             className="text-center"
           >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-red-500/20 border border-red-500/30"
-            >
-              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </motion.div>
+            {!error.includes("both auth code and code verifier") && (
+              <>
+                <motion.div
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-red-500/20 border border-red-500/30"
+                >
+                  <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </motion.div>
 
-            <h2 className="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
-              {t('auth.error.loginFailed')}
-            </h2>
+                <h2 className="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                  {t('auth.error.loginFailed')}
+                </h2>
+              </>
+            )}
 
             {error.includes("Multiple accounts with the same email") || error.includes("server_error") && error.includes("same email address") ? (
               <>
@@ -342,6 +367,68 @@ const AuthCallback = () => {
                     {t('auth.error.returnToLogin')}
                   </motion.button>
                 </div>
+              </>
+            ) : error.includes("both auth code and code verifier") ? (
+              <>
+                {/* Auto check session and redirect - with shorter timeout */}
+                {(() => {
+                  // Use IIFE to execute this logic when rendering
+                  setTimeout(async () => {
+                    try {
+                      const { data } = await supabase.auth.getSession();
+                      console.log(t('auth.callback.checkingSession') + ":", data);
+                      if (data?.session) {
+                        console.log(t('auth.callback.validSessionDetected'));
+                        navigate('/');
+                      } else {
+                        // If no session after 500ms, try again after a bit longer
+                        setTimeout(async () => {
+                          try {
+                            const { data } = await supabase.auth.getSession();
+                            if (data?.session) {
+                              navigate('/');
+                            }
+                          } catch (e) {
+                            console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                          }
+                        }, 1000);
+                      }
+                    } catch (e) {
+                      console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                    }
+                  }, 300); // Reduced timeout for faster redirect
+                  return null; // Return null to not render anything
+                })()}
+
+                <motion.div
+                  animate={{
+                    rotate: 360,
+                    borderColor: ['#3B82F6', '#8B5CF6', '#3B82F6']
+                  }}
+                  transition={{
+                    rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
+                    borderColor: { duration: 3, repeat: Infinity }
+                  }}
+                  className="w-16 h-16 border-t-4 border-b-4 border-blue-500 rounded-full mx-auto mb-6"
+                />
+
+                <motion.h2
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl font-bold mb-4 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                >
+                  {t('auth.callback.verifyingStatus')}
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-gray-300"
+                >
+                  {t('auth.callback.accountSuccessful')}
+                </motion.p>
               </>
             ) : (
               <>

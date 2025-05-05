@@ -74,7 +74,14 @@
       "avatar": "Avatar"
     },
     "callback": {
-      "debugInfo": "Debug Information"
+      "debugInfo": "Debug Information",
+      "verifyingStatus": "Verifying login status...",
+      "accountSuccessful": "Your account may have been successfully logged in, we are verifying the login status...",
+      "continueToHome": "Continue to Home",
+      "sessionCheckFailed": "Failed to get session",
+      "checkingSession": "Checking session in error page",
+      "validSessionDetected": "Valid session detected in error page, automatically redirecting to home page",
+      "autoCheckFailed": "Automatic session check failed"
     }
   },
   "detectionPage": {
