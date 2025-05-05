@@ -220,40 +220,40 @@ function CountdownPage() {
         </div>
       )}
 
-      {/* Error message - only show if there's an error and not loading */}
-      {error && !isLoading && (
-        <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8 text-center max-w-4xl mx-auto">
-          <p className="text-red-200">{error}</p>
-          <p className="text-red-200 text-sm mt-2">{t('syncFallback')}</p>
-        </div>
-      )}
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-4xl mx-auto bg-gradient-to-b from-gray-900/80 to-gray-800/80 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 shadow-xl"
-      >
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-          {t('title')}
-        </h1>
-
-        <div className="text-center mb-8">
-          <p className="text-2xl text-gray-200 font-semibold mb-4">
-            {t('comingSoon')}
-          </p>
-
-          <div className="mb-6 text-center">
-            <p className="text-lg text-blue-300">2024年5月6日 | 22:00 (UTC+8)</p>
+    {/* Error message - only show if there's an error and not loading */}
+        {error && !isLoading && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-8 text-center max-w-4xl mx-auto">
+            <p className="text-red-200">{error}</p>
+            <p className="text-red-200 text-sm mt-2">{t('syncFallback')}</p>
           </div>
+        )}
 
-          {error && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto bg-gradient-to-b from-gray-900/80 to-gray-800/80 backdrop-blur-lg rounded-3xl p-8 border border-gray-700/50 shadow-xl"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+            {t('title')}
+          </h1>
+
+          <div className="text-center mb-8">
+            <p className="text-2xl text-gray-200 font-semibold mb-4">
+            {t('comingSoon')}
+            </p>
+
+            <div className="mb-6 text-center">
+            <p className="text-lg text-blue-300">May 6, 2025 | 22:00 (UTC+8)</p>
+            </div>
+
+            {error && (
             <p className="text-sm text-red-400 mb-2">
               {t('syncError')}
             </p>
-          )}
+            )}
 
-          {/* Countdown Timer */}
+            {/* Countdown Timer */}
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="bg-gray-800/80 rounded-xl p-4 border border-gray-700/50 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition-all">
               <div className="text-3xl md:text-5xl font-bold text-blue-400">{formatTime(timeLeft.hours)}</div>
@@ -293,7 +293,7 @@ function CountdownPage() {
 
                 {/* 命令结果 - 根据动画步骤显示 */}
                 {terminalStep >= 1 && currentCommand >= 0 && (
-                  <div className="text-gray-400">ChainFox v1.0.0 (2024-05-06)</div>
+                  <div className="text-gray-400">ChainFox v1.0.0 (2025-05-06)</div>
                 )}
 
                 {terminalStep >= 2 && currentCommand >= 1 && (
