@@ -31,8 +31,7 @@ function CountdownPage() {
     'chainfox analyze --deep --show-code contract.rs'
   ];
 
-  // For testing: set to true to force show completion message, false to follow countdown logic
-  const forceShowCompletion = false;
+  // 手动控制是否显示已启动信息，默认为false
   const [countdownEnded, setCountdownEnded] = useState(false);
 
   // Fetch countdown data from server once when page loads
@@ -78,33 +77,18 @@ function CountdownPage() {
     // setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
   }, [t]);
 
-  // Check if countdown has ended
-  useEffect(() => {
-    // Update countdownEnded based on timeLeft values
-    if (timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) {
-      setCountdownEnded(true);
-    } else {
-      setCountdownEnded(false);
-    }
-  }, [timeLeft]);
+  // 移除自动检查倒计时结束的逻辑，改为手动控制
 
   // Local countdown
   useEffect(() => {
     // Only start countdown after initial data is successfully loaded
     if (isLoading) return;
 
-    // Check if initial time is already zero or negative
-    if (timeLeft.hours <= 0 && timeLeft.minutes <= 0 && timeLeft.seconds <= 0) {
-      setCountdownEnded(true);
-      return; // Countdown has ended, don't start the timer
-    }
-
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        // If all time values are 0, the countdown has ended
+        // 如果倒计时已经到0，停止计时器
         if (prev.hours === 0 && prev.minutes === 0 && prev.seconds === 0) {
           clearInterval(timer);
-          setCountdownEnded(true);
           return { hours: 0, minutes: 0, seconds: 0 };
         }
 
@@ -125,9 +109,8 @@ function CountdownPage() {
           newHours -= 1;
         }
 
-        // If hours also become negative, return all zeros
+        // 如果小时变为负数，返回全0
         if (newHours < 0) {
-          setCountdownEnded(true);
           return { hours: 0, minutes: 0, seconds: 0 };
         }
 
@@ -341,7 +324,7 @@ function CountdownPage() {
             </p>
 
             <AnimatePresence mode="wait">
-              {!forceShowCompletion && !countdownEnded ? (
+              {!countdownEnded ? (
                 <div className="space-y-4">
                   <motion.a
                     key="follow-button"
