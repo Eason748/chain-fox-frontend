@@ -1,6 +1,6 @@
 {
   "title": "Coming Soon",
-  "comingSoon": "We're launching new features soon!",
+  "comingSoon": "We're launching our product on May 6th, 2024!",
   "syncError": "Failed to synchronize countdown timer",
   "syncFallback": "Using local time as fallback",
   "days": "Days",
@@ -8,5 +8,16 @@
   "minutes": "Minutes",
   "seconds": "Seconds",
   "stayTuned": "Stay tuned for updates and be the first to experience our new features!",
-  "followUs": "Follow us on X"
+  "followUs": "Follow us on X",
+  "productHighlights": "Product Highlights",
+  "aiAudit": "AI-Powered Audit",
+  "aiAuditDesc": "Intelligent code auditing powered by AI to quickly identify security vulnerabilities",
+  "multiChain": "Multi-Chain Support",
+  "multiChainDesc": "Support for smart contract auditing across multiple blockchain platforms",
+  "detailedReports": "Detailed Reports",
+  "detailedReportsDesc": "Generate professional security audit reports with detailed issue analysis",
+  "realTimeFeedback": "Real-Time Feedback",
+  "realTimeFeedbackDesc": "View audit progress and results in real-time to improve development efficiency",
+  "freeAccess": "The initial release will offer free access, stay tuned!",
+  "tryNow": "Try Now"
 }

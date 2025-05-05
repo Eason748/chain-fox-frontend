@@ -17,7 +17,7 @@
   },
   "buttons": {
     "getStarted": "开始使用",
-    "learnMore": "白皮书",
+    "learnMore": "新品发布",
     "uploadProject": "上传项目",
     "contactUs": "联系我们",
     "signIn": "登录",
@@ -327,6 +327,8 @@
   "copied": "已复制到剪贴板！",
   "common": {
     "score": "评分",
-    "comingSoon": "即将推出"
+    "comingSoon": "即将推出",
+    "launched": "已发布！",
+    "launchComplete": "我们的产品已成功发布，现在您可以体验所有功能。"
   }
 }

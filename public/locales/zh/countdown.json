@@ -1,6 +1,6 @@
 {
   "title": "敬请期待",
-  "comingSoon": "我们即将推出新功能！",
+  "comingSoon": "我们将于2024年5月6日发布产品！",
   "syncError": "同步倒计时失败",
   "syncFallback": "使用本地时间作为备用",
   "days": "天",
@@ -8,5 +8,16 @@
   "minutes": "分钟",
   "seconds": "秒",
   "stayTuned": "请持续关注更新，成为第一批体验新功能的用户！",
-  "followUs": "在X上关注我们"
+  "followUs": "在X上关注我们",
+  "productHighlights": "产品亮点",
+  "aiAudit": "智能代码审计",
+  "aiAuditDesc": "基于AI的智能代码审计，快速发现安全漏洞",
+  "multiChain": "多链支持",
+  "multiChainDesc": "支持多种区块链平台的智能合约审计",
+  "detailedReports": "详细报告",
+  "detailedReportsDesc": "生成专业的安全审计报告，包含详细的问题分析",
+  "realTimeFeedback": "实时反馈",
+  "realTimeFeedbackDesc": "实时查看审计进度和结果，提高开发效率",
+  "freeAccess": "首发版本将提供免费体验，敬请期待！",
+  "tryNow": "立即体验"
 }

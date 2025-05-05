@@ -17,7 +17,7 @@
   },
   "buttons": {
     "getStarted": "Get Started",
-    "learnMore": "White Paper",
+    "learnMore": "Launch",
     "uploadProject": "Upload Project",
     "contactUs": "Contact Us",
     "signIn": "Sign In",
@@ -325,6 +325,8 @@
   "copied": "Copied to clipboard!",
   "common": {
     "score": "Score",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "launched": "Launched!",
+    "launchComplete": "Our product has been successfully launched. You can now experience all the features."
   }
 }
