@@ -27,6 +27,9 @@ function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Audit Features Section */}
+      <AuditFeaturesSection />
+
       {/* Mission Section */}
       <MissionSection />
 
@@ -36,8 +39,7 @@ function HomePage() {
       {/* Features Section */}
       <FeaturesSection />
 
-      {/* Audit Features Section */}
-      <AuditFeaturesSection />
+
 
       {/* Roadmap Section */}
       <RoadmapSection />
