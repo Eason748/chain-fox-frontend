@@ -26,7 +26,9 @@
       "noRepositories": "Please enter at least one repository URL.",
       "invalidUrls": "One or more repository URLs are invalid. Please ensure they are in the format: https://github.com/owner/repo",
       "notAuthenticated": "You need to be logged in to submit repositories.",
-      "submissionFailed": "Failed to submit repositories. Please try again later."
+      "submissionFailed": "Failed to submit repositories. Please try again later.",
+      "repositoryExists": "Repository already exists in the system. Please submit a different repository.",
+      "maxRepositoriesReached": "You have reached the maximum limit of 5 repository submissions. Please wait for your existing submissions to be processed."
     }
   },
   "repositoryStatus": {
@@ -80,7 +82,7 @@
   },
   "detectionPage": {
     "github": {
-      "privateRepoNotice": "For private repositories, please grant access to our GitHub account @chainfox-security so we can review your code."
+      "privateRepoNotice": "For private repositories, please grant access to our GitHub account @Chain-Fox so we can review your code."
     }
   }
 }

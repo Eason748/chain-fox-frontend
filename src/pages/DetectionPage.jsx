@@ -648,6 +648,10 @@ fn process_instruction(
                         console.error('Error submitting repositories:', err);
                         if (err.message === 'User not authenticated') {
                           setError(t('repositorySubmission.error.notAuthenticated', { ns: 'repository' }));
+                        } else if (err.message && err.message.includes('Repository already exists')) {
+                          setError(t('repositorySubmission.error.repositoryExists', { ns: 'repository', defaultValue: 'Repository already exists in the system. Please submit a different repository.' }));
+                        } else if (err.message && err.message.includes('maximum limit of 5 repository')) {
+                          setError(t('repositorySubmission.error.maxRepositoriesReached', { ns: 'repository', defaultValue: 'You have reached the maximum limit of 5 repository submissions. Please wait for your existing submissions to be processed.' }));
                         } else {
                           setError(err.message || t('repositorySubmission.error.submissionFailed'));
                         }
