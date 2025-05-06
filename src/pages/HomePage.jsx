@@ -5,6 +5,7 @@ import HeroSection from '../components/HomePage/HeroSection';
 import MissionSection from '../components/HomePage/MissionSection';
 import WorkflowSection from '../components/HomePage/WorkflowSection';
 import FeaturesSection from '../components/HomePage/FeaturesSection';
+import AuditFeaturesSection from '../components/HomePage/AuditFeaturesSection';
 import RoadmapSection from '../components/HomePage/RoadmapSection';
 import TokenomicsSection from '../components/HomePage/TokenomicsSection';
 import FAQSection from '../components/HomePage/FAQSection';
@@ -34,6 +35,9 @@ function HomePage() {
 
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* Audit Features Section */}
+      <AuditFeaturesSection />
 
       {/* Roadmap Section */}
       <RoadmapSection />

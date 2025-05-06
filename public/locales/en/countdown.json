@@ -19,5 +19,25 @@
   "realTimeFeedback": "Real-Time Feedback",
   "realTimeFeedbackDesc": "View audit progress and results in real-time to improve development efficiency",
   "freeAccess": "The initial release will offer free access, stay tuned!",
-  "tryNow": "Try Now"
+  "tryNow": "Try Now",
+  "showCountdown": "Show Countdown",
+  "showFeatures": "Show Features",
+  "auditSolutions": "Smart Contract Security Audit Solutions",
+  "auditSolutionsDesc": "Chain Fox provides comprehensive Solana smart contract security audit services through two approaches to help developers identify and fix potential security vulnerabilities.",
+  "selfAudit": {
+    "title": "Self-service Audit",
+    "description": "Through our self-service audit system, developers can directly submit GitHub repository links, and the system will automatically analyze the code and generate detailed security reports.",
+    "feature1": "Submit GitHub repository links, system automatically detects Solana smart contract code",
+    "feature2": "AI-assisted analysis, real-time display of detection process and results",
+    "feature3": "Generate detailed security reports, including vulnerability analysis and fix recommendations",
+    "button": "Start Self-service Audit"
+  },
+  "sampleAudit": {
+    "title": "Sample Audit",
+    "description": "Our professional team regularly samples submitted projects for in-depth audits, providing more comprehensive security assessments and professional advice.",
+    "feature1": "Professional team samples submitted projects for in-depth audits",
+    "feature2": "Command-line style detailed issue reports, clearly showing security issues in each file",
+    "feature3": "Provide professional security assessments and fix recommendations",
+    "button": "View Audit Reports"
+  }
 }

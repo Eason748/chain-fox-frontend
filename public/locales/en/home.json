@@ -173,5 +173,50 @@
     "description": "Our detection tools are complete, but the platform is still under heavy development and coming soon. Feel free to ask questions on X (formerly Twitter).",
     "twitterButton": "Follow us on X",
     "contactButton": "Contact Us"
+  },
+  "auditFeatures": {
+    "title": "Smart Contract Security Audit Solutions",
+    "subtitle": "Chain Fox provides comprehensive Solana smart contract security audit services through two approaches to help developers identify and fix potential security vulnerabilities.",
+    "selfAudit": {
+      "title": "Self-service Audit",
+      "description": "Through our self-service audit system, developers can directly submit GitHub repository links, and the system will automatically analyze the code and generate detailed security reports.",
+      "features": [
+        "Submit GitHub repository links, system automatically detects Solana smart contract code",
+        "AI-assisted analysis, real-time display of analysis thinking and reasoning process",
+        "Generate detailed security reports, including vulnerability classification, severity, and fix recommendations"
+      ],
+      "button": "Start Self-service Audit"
+    },
+    "sampleAudit": {
+      "title": "Sample Audit",
+      "description": "Our professional team regularly samples submitted projects for in-depth audits, providing more comprehensive security assessments and professional advice.",
+      "features": [
+        "Professional team samples submitted projects for in-depth audits",
+        "Command-line style detailed issue reports, clearly showing security issues in each file",
+        "Provides exportable Markdown format reports for easy team sharing and discussion"
+      ],
+      "button": "View Audit Reports"
+    },
+    "process": {
+      "title": "Smart Contract Audit Process",
+      "steps": [
+        {
+          "title": "Submit Code",
+          "description": "Submit GitHub repository link or paste code directly"
+        },
+        {
+          "title": "Automatic Analysis",
+          "description": "System automatically analyzes code, identifies potential security issues"
+        },
+        {
+          "title": "Generate Report",
+          "description": "Generate detailed security audit report and fix recommendations"
+        },
+        {
+          "title": "Continuous Optimization",
+          "description": "Continuously optimize and update audit system based on feedback"
+        }
+      ]
+    }
   }
 }

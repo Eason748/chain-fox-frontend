@@ -19,5 +19,25 @@
   "realTimeFeedback": "实时反馈",
   "realTimeFeedbackDesc": "实时查看审计进度和结果，提高开发效率",
   "freeAccess": "首发版本将提供免费体验，敬请期待！",
-  "tryNow": "立即体验"
+  "tryNow": "立即体验",
+  "showCountdown": "显示倒计时",
+  "showFeatures": "显示功能介绍",
+  "auditSolutions": "智能合约安全审计解决方案",
+  "auditSolutionsDesc": "链狐提供全面的 Solana 智能合约安全审计服务，通过两种方式帮助开发者识别和修复潜在的安全漏洞。",
+  "selfAudit": {
+    "title": "自助审计",
+    "description": "通过我们的自助审计系统，开发者可以直接提交 GitHub 仓库链接，系统将自动分析代码并生成详细的安全报告。",
+    "feature1": "提交 GitHub 仓库链接，系统自动检测 Solana 智能合约代码",
+    "feature2": "AI 辅助分析，实时显示检测过程和结果",
+    "feature3": "生成详细的安全报告，包含漏洞分析和修复建议",
+    "button": "开始自助审计"
+  },
+  "sampleAudit": {
+    "title": "抽样审计",
+    "description": "我们的专业团队定期对提交的项目进行深入审计，提供更全面的安全评估和专业建议。",
+    "feature1": "专业团队对提交的项目进行深入审计",
+    "feature2": "命令行风格的详细问题报告，清晰展示每个文件中的安全问题",
+    "feature3": "提供专业的安全评估和修复建议",
+    "button": "查看审计报告"
+  }
 }
