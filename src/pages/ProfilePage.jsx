@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLayout } from '../contexts/LayoutContext';
 import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
-import StakingPanel from '../components/StakingPanel';
 
 /**
  * ProfilePage component - Displays user profile information and account linking options
@@ -36,8 +35,7 @@ const ProfilePage = () => {
     signInWithDiscord
   } = useAuth();
 
-  // State for showing staking panel
-  const [showStakingPanel, setShowStakingPanel] = useState(false);
+  // No longer using staking panel
 
   // No longer using tabs, showing only accounts section
 
@@ -99,9 +97,7 @@ const ProfilePage = () => {
         </h3>
 
         <p className="text-gray-300 mb-6">
-          {isWeb3User
-            ? t('linkAccountsDescWeb3', { ns: 'profile' })
-            : t('linkAccountsDesc', { ns: 'profile' })}
+          {t('linkAccountsDesc', { ns: 'profile' })}
         </p>
 
         {/* GitHub */}
@@ -305,28 +301,10 @@ const ProfilePage = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="lg:col-span-2"
             >
-              {/* Show staking panel or account linking based on state */}
-              {showStakingPanel && isWeb3User ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-white">{t('staking.title', { ns: 'profile' })}</h2>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowStakingPanel(false)}
-                      className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
-                    >
-                      ← {t('tabs.accounts', { ns: 'profile' })}
-                    </motion.button>
-                  </div>
-                  <StakingPanel cfxBalance={cfxBalance} />
-                </div>
-              ) : (
-                <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/10 backdrop-blur-md rounded-xl border border-white/10 p-6">
-                  {/* Account linking content */}
-                  {renderAccountLinking()}
-                </div>
-              )}
+              <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/10 backdrop-blur-md rounded-xl border border-white/10 p-6">
+                {/* Account linking content */}
+                {renderAccountLinking()}
+              </div>
             </motion.div>
           )}
         </div>

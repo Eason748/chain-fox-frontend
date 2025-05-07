@@ -39,6 +39,15 @@ export const checkPermission = async (options = {}) => {
 
     // 如果操作与特定报告相关，检查报告状态
     if (reportId && action !== 'read') {
+      // 验证reportId格式，防止SQL注入
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(reportId)) {
+        return {
+          allowed: false,
+          error: 'Invalid report ID format',
+          status: 400
+        };
+      }
+
       const { data: report, error: reportError } = await supabase
         .from('audit_reports')
         .select('status')
@@ -61,6 +70,18 @@ export const checkPermission = async (options = {}) => {
           error: 'This report is archived and cannot be modified',
           status: 403
         };
+      }
+
+      // 如果报告状态为 completed，只有白名单用户可以修改
+      if (report.status === 'completed' && !requireWhitelist) {
+        const isWhitelisted = await isWhitelistUser(session.user.id);
+        if (!isWhitelisted) {
+          return {
+            allowed: false,
+            error: 'Permission denied: Only whitelist users can modify completed reports',
+            status: 403
+          };
+        }
       }
     }
 

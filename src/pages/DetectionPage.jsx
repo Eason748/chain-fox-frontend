@@ -619,9 +619,11 @@ fn process_instruction(
                         return;
                       }
 
-                      // Validate all URLs
+                      // Validate all URLs with more strict validation
                       const validateGithubUrl = (url) => {
-                        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+$/.test(url);
+                        // More strict regex that only allows alphanumeric characters, hyphens, and underscores in username and repo name
+                        // Also ensures the URL doesn't contain any query parameters or fragments
+                        return /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/.test(url);
                       };
 
                       const invalidUrls = filteredUrls.filter(url => !validateGithubUrl(url));

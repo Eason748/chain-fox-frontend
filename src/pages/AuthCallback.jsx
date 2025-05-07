@@ -17,12 +17,15 @@ const AuthCallback = () => {
         console.log("URL:", window.location.href);
 
         // Get hash parameters and query parameters from URL
+        // Safely extract parameters by validating and sanitizing
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const queryParams = new URLSearchParams(window.location.search);
 
-        // Check for errors
-        const error = queryParams.get('error');
-        const errorDescription = queryParams.get('error_description');
+        // Check for errors - sanitize parameters to prevent XSS
+        const error = queryParams.get('error') ?
+          queryParams.get('error').replace(/[^\w\s.-]/g, '') : null;
+        const errorDescription = queryParams.get('error_description') ?
+          queryParams.get('error_description').replace(/[^\w\s.-]/g, '') : null;
 
         if (error) {
           console.error("AuthCallback: Error detected", { error, errorDescription });
@@ -65,14 +68,24 @@ const AuthCallback = () => {
             return;
           }
 
-          setError(`${error}: ${decodeURIComponent(errorDescription || '')}`);
+          // Safely decode and sanitize error description to prevent XSS
+          const safeErrorDescription = errorDescription ?
+            decodeURIComponent(errorDescription).replace(/<[^>]*>?/gm, '') : '';
+          setError(`${error}: ${safeErrorDescription}`);
           return;
         }
 
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const code = queryParams.get('code');
-        const provider = queryParams.get('provider') || localStorage.getItem('auth_provider');
+        // Sanitize tokens to prevent XSS
+        const accessToken = hashParams.get('access_token') ?
+          hashParams.get('access_token').replace(/[^\w\s.-]/g, '') : null;
+        const refreshToken = hashParams.get('refresh_token') ?
+          hashParams.get('refresh_token').replace(/[^\w\s.-]/g, '') : null;
+        const code = queryParams.get('code') ?
+          queryParams.get('code').replace(/[^\w\s.-]/g, '') : null;
+        const provider = queryParams.get('provider') ?
+          queryParams.get('provider').replace(/[^\w\s.-]/g, '') :
+          (localStorage.getItem('auth_provider') ?
+            localStorage.getItem('auth_provider').replace(/[^\w\s.-]/g, '') : null);
 
         console.log("AuthCallback: Token information", {
           provider,

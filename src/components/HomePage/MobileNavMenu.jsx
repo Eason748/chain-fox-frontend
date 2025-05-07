@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import WalletAvatar from '../WalletAvatar';
 
 function MobileNavMenu({ isOpen, onClose }) {
   const { t, i18n } = useTranslation(['common', 'repository']);
@@ -14,6 +13,7 @@ function MobileNavMenu({ isOpen, onClose }) {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [contentMenuOpen, setContentMenuOpen] = useState(false);
   const [auditMenuOpen, setAuditMenuOpen] = useState(false);
+  const [featuresMenuOpen, setFeaturesMenuOpen] = useState(false);
 
   // Reset dropdown states when main menu opens/closes
   useEffect(() => {
@@ -62,37 +62,19 @@ function MobileNavMenu({ isOpen, onClose }) {
             {user && (
               <div className="py-3 border-b border-white/10">
                 <div className="flex items-center space-x-2 mb-2">
-                  {/* For Web3 wallet users */}
-                  {user.type === 'solana' ? (
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        <WalletAvatar address={user.address} type={user.type} showAddress={false} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">{`${user.address.substring(0, 6)}...${user.address.substring(user.address.length - 4)}`}</div>
-                        {user.balance !== undefined && (
-                          <div className="text-sm text-gray-300">
-                            <span className="font-medium">{user.balance.toFixed(4)}</span>
-                            <span className="ml-1 text-xs text-gray-400">SOL</span>
-                          </div>
-                        )}
-                      </div>
+                  {/* OAuth users */}
+                  <>
+                    {user.user_metadata?.avatar_url && (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="User Avatar"
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <div className="text-sm">
+                      {user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User'}
                     </div>
-                  ) : (
-                    /* For OAuth users */
-                    <>
-                      {user.user_metadata?.avatar_url && (
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="User Avatar"
-                          className="w-8 h-8 rounded-full"
-                        />
-                      )}
-                      <div className="text-sm">
-                        {user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User'}
-                      </div>
-                    </>
-                  )}
+                  </>
                 </div>
               </div>
             )}

@@ -7,16 +7,22 @@ import supabase from '../services/supabase';
  */
 export const isWhitelistUser = async (userId) => {
   if (!userId) return false;
-  
+
+  // 验证userId格式，防止SQL注入
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
+    console.error('无效的用户ID格式:', userId);
+    return false;
+  }
+
   try {
     const { data, error } = await supabase
       .rpc('is_whitelist_user', { user_id: userId });
-    
+
     if (error) {
       console.error('检查白名单用户时出错:', error);
       return false;
     }
-    
+
     return data || false;
   } catch (error) {
     console.error('检查白名单用户时出错:', error);
@@ -45,7 +51,7 @@ export const getCurrentUserId = async () => {
 export const checkCurrentUserWhitelist = async () => {
   const userId = await getCurrentUserId();
   if (!userId) return false;
-  
+
   return await isWhitelistUser(userId);
 };
 

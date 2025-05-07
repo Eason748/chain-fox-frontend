@@ -89,9 +89,14 @@ export const repositories = {
   // Submit a new repository for audit
   submitRepository: async (repositoryUrl) => {
     try {
-      // Extract repository name and owner from URL
-      // Expected format: https://github.com/owner/repo
-      const urlPattern = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
+      // Validate URL format first
+      if (typeof repositoryUrl !== 'string') {
+        throw new Error('Repository URL must be a string');
+      }
+
+      // Sanitize input by ensuring it's a valid GitHub URL
+      // Only allow alphanumeric characters, hyphens, and underscores in username and repo name
+      const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)$/;
       const match = repositoryUrl.match(urlPattern);
 
       if (!match || match.length < 3) {
@@ -184,6 +189,11 @@ export const repositories = {
   // Submit multiple repositories at once
   submitMultipleRepositories: async (repositoryUrls) => {
     try {
+      // Validate input
+      if (!Array.isArray(repositoryUrls)) {
+        throw new Error('Repository URLs must be an array');
+      }
+
       // Get current user
       const user = await auth.getUser();
       if (!user) {
@@ -192,7 +202,14 @@ export const repositories = {
 
       // Prepare repository data
       const repositories = repositoryUrls.map(url => {
-        const urlPattern = /https:\/\/github\.com\/([^\/]+)\/([^\/]+)/;
+        // Validate URL type
+        if (typeof url !== 'string') {
+          throw new Error('Repository URL must be a string');
+        }
+
+        // Sanitize input by ensuring it's a valid GitHub URL
+        // Only allow alphanumeric characters, hyphens, and underscores in username and repo name
+        const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)$/;
         const match = url.match(urlPattern);
 
         if (!match || match.length < 3) {
