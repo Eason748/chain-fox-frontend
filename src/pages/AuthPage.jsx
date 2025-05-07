@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 
 const AuthPage = () => {
-  const { user, loading, error, signInWithGithub, signInWithGoogle, signInWithDiscord, signInWithSolana } = useAuth();
+  const { user, loading, error, signInWithGithub, signInWithGoogle, signInWithDiscord } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [recommendedProvider, setRecommendedProvider] = useState(null);
@@ -45,14 +45,12 @@ const AuthPage = () => {
           signInWithGoogle();
         } else if (recommendedProvider === 'discord') {
           signInWithDiscord();
-        } else if (recommendedProvider === 'solana') {
-          signInWithSolana();
         }
       }, 500);
 
       return () => clearTimeout(timer);
     }
-  }, [recommendedProvider, loading, autoLoginAttempted, signInWithGithub, signInWithGoogle, signInWithDiscord, signInWithSolana]);
+  }, [recommendedProvider, loading, autoLoginAttempted, signInWithGithub, signInWithGoogle, signInWithDiscord]);
 
   // Button animation variants
   const buttonVariants = {
@@ -160,7 +158,6 @@ const AuthPage = () => {
                   {recommendedProvider === 'github' && t('auth.error.recommendedGithub')}
                   {recommendedProvider === 'google' && t('auth.error.recommendedGoogle')}
                   {recommendedProvider === 'discord' && t('auth.error.recommendedDiscord')}
-                  {recommendedProvider === 'solana' && t('auth.error.recommendedSolana')}
                 </p>
               </div>
             </div>
@@ -234,47 +231,7 @@ const AuthPage = () => {
             <span className="text-base font-medium">{loading ? t('auth.loading') : t('auth.continueWithDiscord')}</span>
           </motion.button>
 
-          {/* Divider between traditional login and wallet login */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="relative my-6"
-          >
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <div className="px-4 bg-black/20 backdrop-blur-sm rounded-full border border-white/10">
-                <div className="flex items-center space-x-2">
-                  <svg className="h-4 w-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
-                  <span className="text-sm text-gray-300">{t('auth.orContinueWith')}</span>
-                  <svg className="h-4 w-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="6" width="20" height="12" rx="2" />
-                    <path d="M12 12h.01" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Solana wallet login button */}
-          <motion.button
-            onClick={signInWithSolana}
-            disabled={loading}
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            animate={loading ? "disabled" : ""}
-            className="w-full flex items-center justify-center px-6 py-3 rounded-full text-white bg-gradient-to-r from-purple-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="h-5 w-5 mr-3" viewBox="0 0 397 311" fill="currentColor">
-              <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM64.6 120.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" />
-            </svg>
-            <span className="text-base font-medium">{loading ? t('auth.loading') : t('auth.continueWithSolana')}</span>
-          </motion.button>
+          {/* All web3 authentication has been removed */}
         </motion.div>
 
         <motion.div

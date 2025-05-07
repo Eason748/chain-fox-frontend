@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import WalletAvatar from '../WalletAvatar';
 
 function UserMenu() {
   const { t } = useTranslation(['common']);
-  const { user, signOut, address, balance, isWeb3User, updateWalletBalance } = useAuth();
+  const { user, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const controls = useAnimation();
 
   // Close menu on outside click
   useEffect(() => {
@@ -26,21 +24,6 @@ function UserMenu() {
     };
   }, []);
 
-  // Start animation sequence for avatar
-  useEffect(() => {
-    if (isWeb3User) {
-      // Sequence of animations for the avatar
-      const sequence = async () => {
-        await controls.start({
-          scale: [1, 1.05, 1],
-          transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
-        });
-      };
-
-      sequence();
-    }
-  }, [controls, isWeb3User]);
-
   // If no user, return sign in button
   if (!user) {
     return (
@@ -53,74 +36,9 @@ function UserMenu() {
     );
   }
 
-  // Get user avatar or use wallet avatar for web3 users
+  // Get user avatar - Wallet functionality disabled
   const getAvatar = () => {
-    if (isWeb3User) {
-      // Generate a color based on the address (simple hash function)
-      const generateColor = (addr) => {
-        if (!addr) return '#3b82f6'; // Default blue
-
-        let hash = 0;
-        for (let i = 0; i < addr.length; i++) {
-          hash = addr.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        const hue = Math.abs(hash % 360);
-        // Use higher saturation and lightness for better visibility on dark backgrounds
-        return `hsl(${hue}, 85%, 65%)`;
-      };
-
-      // Get first two characters of the address for a more personalized avatar
-      const avatarText = address ? address.substring(0, 2).toUpperCase() : 'S';
-      const avatarColor = generateColor(address);
-
-      // Create a pulsing animation style for the avatar
-      const pulseAnimation = {
-        animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        '@keyframes pulse': {
-          '0%, 100%': {
-            opacity: 1,
-          },
-          '50%': {
-            opacity: 0.8,
-          },
-        },
-      };
-
-      return (
-        <motion.div
-          animate={controls}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold relative"
-          style={{
-            background: `linear-gradient(135deg, ${avatarColor}, ${avatarColor}dd)`,
-            boxShadow: `0 0 10px ${avatarColor}aa, 0 0 20px ${avatarColor}66`,
-            border: `2px solid ${avatarColor}`,
-          }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {/* Glowing ring effect */}
-          <motion.div
-            className="absolute inset-0 rounded-full opacity-30"
-            style={{
-              background: `radial-gradient(circle, ${avatarColor}99 0%, transparent 70%)`,
-              filter: 'blur(2px)',
-            }}
-            animate={{
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-
-          {/* Avatar text */}
-          <span className="relative z-10 text-sm font-bold">{avatarText}</span>
-        </motion.div>
-      );
-    } else if (user.user_metadata?.avatar_url) {
+    if (user.user_metadata?.avatar_url) {
       return (
         <img
           src={user.user_metadata.avatar_url}
@@ -140,13 +58,9 @@ function UserMenu() {
     }
   };
 
-  // Get user display name
+  // Get user display name - Wallet functionality disabled
   const getUserName = () => {
-    if (isWeb3User) {
-      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-    } else {
-      return user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User';
-    }
+    return user.user_metadata?.name || user.user_metadata?.full_name || user.email || 'User';
   };
 
   return (
@@ -180,22 +94,7 @@ function UserMenu() {
                   <p className="text-sm font-medium text-white truncate">
                     {getUserName()}
                   </p>
-                  {isWeb3User && (
-                    <p className="text-xs text-gray-400 flex items-center">
-                      <span>{balance.toFixed(4)} SOL</span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateWalletBalance();
-                        }}
-                        className="ml-2 p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-white"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      </button>
-                    </p>
-                  )}
+                  {/* Wallet functionality disabled */}
                 </div>
               </div>
             </div>

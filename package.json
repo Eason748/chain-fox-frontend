@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@solana/web3.js": "^1.89.1",
     "@supabase/supabase-js": "^2.49.4",
     "autoprefixer": "^10.4.16",
     "date-fns": "^4.1.0",

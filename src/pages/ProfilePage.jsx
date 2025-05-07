@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useLayout } from '../contexts/LayoutContext';
 import AuthRequired from '../components/AuthRequired';
-import WalletAvatar from '../components/WalletAvatar';
 import CustomSelect from '../components/ui/CustomSelect';
 import StakingPanel from '../components/StakingPanel';
 
@@ -32,15 +31,9 @@ const ProfilePage = () => {
   const {
     user,
     loading,
-    isWeb3User,
-    address,
-    balance,
-    cfxBalance, // Add CFX balance
     signInWithGithub,
     signInWithGoogle,
-    signInWithDiscord,
-    signInWithSolana,
-    updateWalletBalance
+    signInWithDiscord
   } = useAuth();
 
   // State for showing staking panel
@@ -48,53 +41,14 @@ const ProfilePage = () => {
 
   // No longer using tabs, showing only accounts section
 
-  // State for balance loading status
-  const [isBalanceLoading, setIsBalanceLoading] = useState(false);
-  const [balanceError, setBalanceError] = useState(null);
-
-  // Update wallet balance when component mounts or when manually refreshed
-  const refreshBalance = async () => {
-    if (isWeb3User && address) {
-      setIsBalanceLoading(true);
-      setBalanceError(null);
-      try {
-        const result = await updateWalletBalance();
-        console.log('ProfilePage: Balance update result', result);
-
-        // If result is null or undefined, it means the update failed
-        if (result === null || result === undefined) {
-          throw new Error('Failed to update wallet balance');
-        }
-      } catch (error) {
-        console.error('Error refreshing balance:', error);
-        setBalanceError(error.message || 'Failed to fetch balance');
-      } finally {
-        setIsBalanceLoading(false);
-      }
-    }
-  };
-
-  // Update wallet balance when component mounts
-  useEffect(() => {
-    if (isWeb3User && address) {
-      refreshBalance();
-    }
-  }, [isWeb3User, address]);
-
   // Get user display name
   const getUserName = () => {
-    if (isWeb3User) {
-      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-    } else {
-      return user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || 'User';
-    }
+    return user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || 'User';
   };
 
   // Get user avatar
   const getUserAvatar = () => {
-    if (isWeb3User) {
-      return <WalletAvatar address={address} type="solana" showAddress={false} />;
-    } else if (user?.user_metadata?.avatar_url) {
+    if (user?.user_metadata?.avatar_url) {
       return (
         <img
           src={user.user_metadata.avatar_url}
@@ -116,34 +70,22 @@ const ProfilePage = () => {
 
   // Get user email
   const getUserEmail = () => {
-    if (isWeb3User) {
-      return null;
-    } else {
-      return user?.email;
-    }
+    return user?.email;
   };
 
   // Get user provider
   const getUserProvider = () => {
-    if (isWeb3User) {
-      return t('auth.continueWithSolana', { ns: 'common' });
-    } else {
-      // Check user metadata for provider
-      const provider = localStorage.getItem('auth_provider');
-      if (provider === 'github') return 'GitHub';
-      if (provider === 'google') return 'Google';
-      if (provider === 'discord') return 'Discord';
-      return t('unknown', { ns: 'profile' });
-    }
+    // Check user metadata for provider
+    const provider = localStorage.getItem('auth_provider');
+    if (provider === 'github') return 'GitHub';
+    if (provider === 'google') return 'Google';
+    if (provider === 'discord') return 'Discord';
+    return t('unknown', { ns: 'profile' });
   };
 
   // Get raw provider name (not translated)
   const getRawProviderName = () => {
-    if (isWeb3User) {
-      return 'solana';
-    } else {
-      return localStorage.getItem('auth_provider') || 'unknown';
-    }
+    return localStorage.getItem('auth_provider') || 'unknown';
   };
 
   // Render account linking section
@@ -255,35 +197,7 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        {/* Solana Wallet */}
-        <div className="flex items-center justify-between p-4 rounded-lg bg-black/30 border border-white/10">
-          <div className="flex items-center">
-            <svg className="h-6 w-6 mr-3" viewBox="0 0 397 311" fill="#9945FF">
-              <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM333.1 120.9c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" />
-            </svg>
-            <div>
-              <div className="font-medium text-white">{t('auth.continueWithSolana', { ns: 'common' })}</div>
-              <div className="text-sm text-gray-400">
-                {currentProvider === 'solana'
-                  ? t('currentProvider', { ns: 'profile' })
-                  : t('connectProvider', { ns: 'profile' })}
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={signInWithSolana}
-            disabled={currentProvider === 'solana' || loading}
-            className={`px-4 py-2 rounded-md text-sm font-medium
-              ${currentProvider === 'solana'
-                ? 'bg-green-500/20 text-green-400 cursor-not-allowed'
-                : 'bg-blue-500/20 hover:bg-blue-500/30 text-white'}
-              transition-colors`}
-          >
-            {currentProvider === 'solana'
-              ? t('connected', { ns: 'profile' })
-              : t('connect', { ns: 'profile' })}
-          </button>
-        </div>
+        {/* Web3 authentication has been completely removed */}
       </div>
     );
   };
@@ -325,113 +239,7 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              {/* Wallet info (if applicable) */}
-              {isWeb3User && (
-                <div className="border-t border-white/10 pt-4 mt-4">
-                  <h3 className="text-sm font-medium text-gray-300 mb-3">
-                    {t('walletInfo', { ns: 'profile' })}
-                  </h3>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400 text-sm">{t('address', { ns: 'profile' })}</span>
-                      <span className="text-white text-sm font-mono">
-                        {`${address.substring(0, 6)}...${address.substring(address.length - 4)}`}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">{t('balance', { ns: 'profile' })}</span>
-                      <div className="flex items-center">
-                        {isBalanceLoading ? (
-                          <div className="flex items-center">
-                            <svg className="animate-spin h-4 w-4 text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span className="text-gray-300 text-sm">
-                              {t('loading', { ns: 'common' })}
-                            </span>
-                          </div>
-                        ) : balanceError ? (
-                          <div className="flex items-center">
-                            <span className="text-red-400 text-sm mr-2">
-                              {t('error', { ns: 'common' })}
-                            </span>
-                            <button
-                              onClick={refreshBalance}
-                              className="p-1 rounded-full hover:bg-white/10 text-red-400 hover:text-red-300 transition-colors"
-                              title={t('refreshBalance', { ns: 'profile' })}
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                              </svg>
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-white text-sm">
-                              {balance.toFixed(4)} SOL
-                            </span>
-                            <button
-                              onClick={refreshBalance}
-                              className="ml-2 p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                              title={t('refreshBalance', { ns: 'profile' })}
-                              disabled={isBalanceLoading}
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${isBalanceLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                              </svg>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* CFX Token Balance */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">CFX {t('balance', { ns: 'profile' })}</span>
-                      <div className="flex items-center">
-                        {isBalanceLoading ? (
-                          <div className="flex items-center">
-                            <svg className="animate-spin h-4 w-4 text-blue-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span className="text-gray-300 text-sm">
-                              {t('loading', { ns: 'common' })}
-                            </span>
-                          </div>
-                        ) : balanceError ? (
-                          <div className="flex items-center">
-                            <span className="text-red-400 text-sm mr-2">
-                              {t('error', { ns: 'common' })}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-white text-sm">
-                            {cfxBalance.toFixed(4)} CFX
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Stake CFX Button */}
-                    {!isBalanceLoading && !balanceError && cfxBalance > 0 && (
-                      <div className="mt-3">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => setShowStakingPanel(true)}
-                          className="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-lg transition-colors text-sm font-medium"
-                        >
-                          {t('stakeCfx', { ns: 'profile' })}
-                        </motion.button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              {/* Web3 wallet functionality has been completely removed */}
 
 
 
