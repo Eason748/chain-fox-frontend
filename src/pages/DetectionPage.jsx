@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import deepseekService from '../services/deepseek';
 import { repositories } from '../services/supabase';
 import AuditReport from '../components/AuditReport/AuditReport';
 import AuthRequired from '../components/AuthRequired';
