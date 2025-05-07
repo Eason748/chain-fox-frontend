@@ -147,16 +147,6 @@ function HomeLayout({ children }) {
                     </svg>
                   </SafeExternalLink>
                 </div>
-                <div>
-                  <SafeExternalLink
-                    href="/wallet-security.html"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                    allowedDomains={['chain-fox.com', window.location.hostname]}
-                    warningMessage={t('common:externalLink.generalWarning')}
-                  >
-                    钱包安全声明 | Wallet Security
-                  </SafeExternalLink>
-                </div>
               </div>
             </div>
           </div>
