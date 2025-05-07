@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import SafeExternalLink from '../common/SafeExternalLink';
 
 function NavMenu() {
   const { t } = useTranslation(['common', 'repository']);
@@ -126,16 +127,16 @@ function NavMenu() {
         </AnimatePresence>
       </div>
 
-      {/* White Paper Link */}
-      <a
+      {/* White Paper Link - 使用安全链接组件 */}
+      <SafeExternalLink
         href="https://chain-fox.github.io/white-paper/"
-        target="_blank"
-        rel="noopener noreferrer"
         className={menuItemClasses}
         onClick={closeDropdowns}
+        allowedDomains={['chain-fox.github.io']}
+        warningMessage={t('common:externalLink.generalWarning')}
       >
         <span>{t('navigation.whitePaper')}</span>
-      </a>
+      </SafeExternalLink>
 
       {/* Conditional Content Dropdown */}
       {isHomePage && (

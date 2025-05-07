@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { repositories } from '../services/supabase';
 import AuthRequired from '../components/AuthRequired';
+import SafeExternalLink from '../components/common/SafeExternalLink';
 
 const RepositoryResultPage = () => {
   const { id } = useParams();
@@ -66,14 +67,14 @@ const RepositoryResultPage = () => {
             <h2 className="text-2xl font-bold text-white">
               {repository.repository_owner}/{repository.repository_name}
             </h2>
-            <a
+            <SafeExternalLink
               href={repository.repository_url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+              allowedDomains={['github.com']}
+              warningMessage={t('common:externalLink.generalWarning')}
             >
               {repository.repository_url}
-            </a>
+            </SafeExternalLink>
           </div>
 
           <div className="flex flex-col items-start md:items-end gap-2">

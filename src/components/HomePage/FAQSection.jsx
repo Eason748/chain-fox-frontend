@@ -2,17 +2,27 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence } from 'framer-motion';
+import { openDexScreenerSafe } from '../../utils/safeExternalLink';
 
 function FAQSection() {
   const { t } = useTranslation(['home', 'common']);
   const [openIndex, setOpenIndex] = useState(null);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
+  // 硬编码合约地址，防止被篡改
   const contractAddress = "RhFVq1Zt81VvcoSEMSyCGZZv5SwBdA8MV7w4HEMpump";
 
+  // 使用安全的外部链接处理函数
   const openDexScreener = (e) => {
-    e.stopPropagation(); // Prevent toggling the FAQ when clicking the link
-    window.open(`https://dexscreener.com/solana/${contractAddress}`, '_blank');
+    // 使用自定义的国际化消息
+    const warningMessage = t('common:externalLink.dexscreenerWarning',
+      '您将被重定向到DexScreener查看合约信息。是否继续？');
+
+    // 使用安全的链接打开函数
+    openDexScreenerSafe(contractAddress, {
+      warningMessage,
+      onError: (error) => console.error('DexScreener链接错误:', error)
+    }, e);
   };
 
   const faqItems = [

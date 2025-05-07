@@ -330,5 +330,10 @@
     "comingSoon": "即将推出",
     "launched": "已发布！",
     "launchComplete": "我们的产品已成功发布，现在您可以体验所有功能。"
+  },
+  "externalLink": {
+    "dexscreenerWarning": "您将被重定向到DexScreener查看合约信息。是否继续？",
+    "generalWarning": "您将被重定向到外部网站。是否继续？",
+    "error": "打开外部链接失败。链接可能无效或被浏览器阻止。"
   }
 }

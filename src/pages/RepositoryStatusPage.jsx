@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { repositories } from '../services/supabase';
 import AuthRequired from '../components/AuthRequired';
 import { Link } from 'react-router-dom';
+import SafeExternalLink from '../components/common/SafeExternalLink';
 
 const RepositoryStatusPage = () => {
   const { t } = useTranslation('repository'); // 指定 repository namespace
@@ -19,11 +20,11 @@ const RepositoryStatusPage = () => {
       setLoading(true);
       try {
         const { data, error } = await repositories.getUserRepositories();
-        
+
         if (error) {
           throw error;
         }
-        
+
         setUserRepositories(data || []);
       } catch (err) {
         console.error('Error fetching repositories:', err);
@@ -32,19 +33,19 @@ const RepositoryStatusPage = () => {
         setLoading(false);
       }
     };
-    
+
     fetchRepositories();
   }, [t]);
 
   // Filter repositories based on search term and status filter
   const filteredRepositories = userRepositories.filter(repo => {
-    const matchesSearch = 
+    const matchesSearch =
       repo.repository_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       repo.repository_owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
       repo.repository_url.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
     const matchesStatus = statusFilter === 'all' || repo.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -67,7 +68,7 @@ const RepositoryStatusPage = () => {
   // Format date for better readability
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    
+
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -116,30 +117,30 @@ const RepositoryStatusPage = () => {
                   <h3 className="text-lg font-semibold text-white">
                     {repo.repository_owner}/{repo.repository_name}
                   </h3>
-                  <a 
-                    href={repo.repository_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <SafeExternalLink
+                    href={repo.repository_url}
                     className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                    allowedDomains={['github.com']}
+                    warningMessage={t('common:externalLink.generalWarning')}
                   >
                     {repo.repository_url}
-                  </a>
+                  </SafeExternalLink>
                   <div className="mt-2 text-sm text-gray-400">
                     {t('repositoryStatus.submitted')}: {formatDate(repo.created_at)}
                   </div>
-                  
+
                   {repo.completed_at && (
                     <div className="mt-1 text-sm text-gray-400">
                       {t('repositoryStatus.completed')}: {formatDate(repo.completed_at)}
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex flex-col items-start md:items-end gap-2">
                   <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(repo.status)}`}>
                     {t(`repositoryStatus.statusLabels.${repo.status}`)}
                   </div>
-                  
+
                   {repo.status === 'completed' && (
                     <Link
                       to={`/repository-result/${repo.id}`}
@@ -148,7 +149,7 @@ const RepositoryStatusPage = () => {
                       {t('repositoryStatus.viewResults')}
                     </Link>
                   )}
-                  
+
                   {repo.status === 'failed' && repo.error_message && (
                     <div className="mt-2 text-sm text-red-400">
                       {t('repositoryStatus.error')}: {repo.error_message}
@@ -180,18 +181,18 @@ const RepositoryStatusPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t('repositoryStatus.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300 
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
                 backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
             />
           </div>
         </div>
-        
+
         {/* Status filter */}
         <div className="w-full md:w-48">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300 
+            className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
               backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
           >
             <option value="all">{t('repositoryStatus.filters.all')}</option>
@@ -223,7 +224,7 @@ const RepositoryStatusPage = () => {
               <h1 className="text-3xl font-bold mb-2">{t('repositoryStatus.title')}</h1>
               <p className="text-gray-400">{t('repositoryStatus.description')}</p>
             </div>
-            
+
             {/* Submit New Repository button removed */}
           </motion.div>
 

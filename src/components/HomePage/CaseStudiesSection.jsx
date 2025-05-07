@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import SafeExternalLink from '../common/SafeExternalLink';
 
 function CaseStudiesSection() {
   const { t } = useTranslation(['home']);
@@ -64,10 +65,7 @@ function CaseStudiesSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
           {caseStudies.map((study) => (
-            <motion.a
-              href={study.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <motion.div
               key={study.key}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -76,13 +74,20 @@ function CaseStudiesSection() {
               whileHover={{ scale: 1.05 }}
               className="floating bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 flex flex-col items-center justify-center text-center cursor-pointer"
             >
-              <div className="h-16 w-16 mb-4 flex items-center justify-center">
-                <img src={study.logo} alt={t(`caseStudies.projects.${study.key}`)} className="max-h-full max-w-full object-contain" />
-              </div>
-              <h3 className="text-xl font-bold gradient-text">
-                {t(`caseStudies.projects.${study.key}`)}
-              </h3>
-            </motion.a>
+              <SafeExternalLink
+                href={study.url}
+                className="flex flex-col items-center justify-center w-full h-full"
+                allowedDomains={[new URL(study.url).hostname]}
+                warningMessage={t('common:externalLink.generalWarning')}
+              >
+                <div className="h-16 w-16 mb-4 flex items-center justify-center">
+                  <img src={study.logo} alt={t(`caseStudies.projects.${study.key}`)} className="max-h-full max-w-full object-contain" />
+                </div>
+                <h3 className="text-xl font-bold gradient-text">
+                  {t(`caseStudies.projects.${study.key}`)}
+                </h3>
+              </SafeExternalLink>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../services/supabase';
 import { Link } from 'react-router-dom';
+import SafeExternalLink from '../components/common/SafeExternalLink';
 
 function CountdownPage() {
   const { t } = useTranslation(['countdown', 'common']);
@@ -342,21 +343,24 @@ function CountdownPage() {
             <AnimatePresence mode="wait">
               {!countdownEnded ? (
                 <div className="space-y-4">
-                  <motion.a
+                  <motion.div
                     key="follow-button"
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    href="https://x.com/ChainFoxHQ"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-medium transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-                    </svg>
-                    {t('followUs')}
-                  </motion.a>
+                    <SafeExternalLink
+                      href="https://x.com/ChainFoxHQ"
+                      className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full text-white font-medium transition-colors"
+                      allowedDomains={['x.com', 'twitter.com']}
+                      warningMessage={t('common:externalLink.generalWarning')}
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                      </svg>
+                      {t('followUs')}
+                    </SafeExternalLink>
+                  </motion.div>
 
                   <p className="text-sm text-gray-500 mt-2">{t('freeAccess')}</p>
                 </div>

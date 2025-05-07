@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import SafeExternalLink from '../common/SafeExternalLink';
 
 function MobileNavMenu({ isOpen, onClose }) {
   const { t, i18n } = useTranslation(['common', 'repository']);
@@ -165,16 +166,16 @@ function MobileNavMenu({ isOpen, onClose }) {
               </AnimatePresence>
             </div>
 
-            {/* White Paper Link */}
-            <a
+            {/* White Paper Link - 使用安全链接组件 */}
+            <SafeExternalLink
               href="https://chain-fox.github.io/white-paper/"
-              target="_blank"
-              rel="noopener noreferrer"
               className={menuItemClasses}
               onClick={handleMenuItemClick}
+              allowedDomains={['chain-fox.github.io']}
+              warningMessage={t('common:externalLink.generalWarning')}
             >
               {t('navigation.whitePaper')}
-            </a>
+            </SafeExternalLink>
 
             {/* Conditional Content Dropdown */}
             {isHomePage && (
