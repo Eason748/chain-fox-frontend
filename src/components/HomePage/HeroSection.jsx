@@ -28,7 +28,7 @@ function HeroSection() {
           {t('home:hero.subtitle')}
         </motion.p>
 
-        {/* <motion.div
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -40,14 +40,14 @@ function HeroSection() {
           >
             {t('buttons.uploadProject')}
           </Link>
-
+{/* 
           <Link
             to="/countdown"
             className="px-8 py-4 border-2 border-purple-400/50 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:border-purple-400/80 transition-colors text-center"
           >
             {t('buttons.learnMore')}
-          </Link>
-        </motion.div> */}
+          </Link> */}
+        </motion.div>
       </div>
     </section>
   );

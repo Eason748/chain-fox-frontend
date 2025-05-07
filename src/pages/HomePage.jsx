@@ -27,14 +27,18 @@ function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Audit Features Section */}
-      <AuditFeaturesSection />
+
 
       {/* Mission Section */}
       <MissionSection />
 
+
       {/* Workflow Section */}
       <WorkflowSection />
+
+
+      {/* Audit Features Section */}
+      <AuditFeaturesSection />
 
       {/* Features Section */}
       <FeaturesSection />
