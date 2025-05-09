@@ -258,7 +258,9 @@
     "actions": {
       "approve": "Approve Audit",
       "updating": "Updating...",
-      "noActionNeeded": "No action needed"
+      "noActionNeeded": "No action needed",
+      "exportReport": "View Reports",
+      "viewReport": "View Reports"
     },
     "stats": {
       "totalScans": "Total Scans",

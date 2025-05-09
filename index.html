@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- CSP is primarily set via HTTP headers in _headers file, but can also be set via meta tag -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; connect-src 'self' https://api.deepseek.com https://*.supabase.co; frame-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://api.deepseek.com https://*.supabase.co https://*.solana.com https://*.solflare.com https://*.phantom.app https://*.helius-rpc.com; frame-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:; child-src 'self' blob:;" />
     <!-- Security headers are set via HTTP headers in _headers file, not meta tags -->
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="description" content="ChainFox - Blockchain Guard. Providing automated security analysis for blockchain projects and smart contracts." />

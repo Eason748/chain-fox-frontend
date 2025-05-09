@@ -44,10 +44,22 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue, isWhitelistU
 
   if (!currentIssue) return null;
 
+  // 处理文本中的转义序列，转换为实际字符
+  const processText = (text) => {
+    if (!text) return '';
+
+    // 直接替换常见的转义序列
+    return text
+      .replace(/\\n/g, '\n')
+      .replace(/\\t/g, '\t')
+      .replace(/\\r/g, '\r')
+      .replace(/\\\\/g, '\\')
+      .replace(/\\"/g, '"')
+      .replace(/\\'/g, "'");
+  };
+
   const formatMessage = (message) => {
-    return message
-      ? message.replace(/\\n/g, '\n').replace(/\\t/g, '    ').replace(/\\"/g, '"')
-      : '';
+    return processText(message);
   };
 
   const handleEditClick = () => {
@@ -379,16 +391,26 @@ const IssueDetailsModal = ({ issue, report, onClose, onUpdateIssue, isWhitelistU
                 <h4 className="text-sm font-medium text-gray-400 mb-2">
                   {t('reportPage.modal.codeSnippet', 'Code Snippet')}
                 </h4>
-                <pre className="text-white font-mono text-sm bg-black/30 p-4 rounded-lg border border-white/10 overflow-x-auto whitespace-pre-wrap" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                  {currentIssue.code_snippet.split('\n').map((line, index) => (
-                    <React.Fragment key={index}>
-                      {line}
-                      {index < currentIssue.code_snippet.split('\n').length - 1 && (
-                        <br />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </pre>
+                <div className="mt-2 overflow-hidden rounded-lg border border-white/10">
+                  {/* Terminal-like header */}
+                  <div className="bg-gray-800 px-2 py-1 flex items-center border-b border-gray-700">
+                    <div className="flex space-x-1.5 mr-4">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="text-gray-400 text-xs font-medium">Code Snippet</div>
+                  </div>
+                  {/* Terminal content */}
+                  <pre className="text-white font-mono text-sm bg-black/30 p-4 rounded-lg overflow-x-auto whitespace-pre"
+                       style={{
+                         maxHeight: '300px',
+                         overflowY: 'auto',
+                         lineHeight: 1.5
+                       }}>
+                    {processText(currentIssue.code_snippet)}
+                  </pre>
+                </div>
               </div>
             )}
           </div>

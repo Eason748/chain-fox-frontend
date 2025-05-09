@@ -258,7 +258,9 @@
     "actions": {
       "approve": "通过审计",
       "updating": "更新中...",
-      "noActionNeeded": "无需操作"
+      "noActionNeeded": "无需操作",
+      "exportReport": "查看报告",
+      "viewReport": "查看报告"
     },
     "stats": {
       "totalScans": "总扫描次数",

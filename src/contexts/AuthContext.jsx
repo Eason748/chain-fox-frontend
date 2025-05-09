@@ -10,33 +10,47 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check user session on initialization
+  // 会话检查状态跟踪
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  // Check user session on initialization - 优化会话检查，减少不必要的日志
   useEffect(() => {
+    // 防止重复检查会话
+    if (sessionChecked) return;
+
     const checkUser = async () => {
       try {
         setLoading(true);
-        console.log("AuthContext: Checking current user session");
+        // 移除日志输出，减少控制台噪音
 
         // Check Supabase session
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
-          console.error('Error getting session:', error);
+          // 只在开发环境中输出错误
+          if (import.meta.env.DEV) {
+            console.error('Error getting session:', error);
+          }
           setError(error);
           return;
         }
 
-        console.log("AuthContext: Session data", data);
+        // 移除会话数据日志
 
         if (data.session) {
-          console.log("AuthContext: User logged in", data.session.user);
+          // 移除用户登录日志
           setUser(data.session.user);
         } else {
-          console.log("AuthContext: User not logged in");
+          // 移除用户未登录日志
           setUser(null);
         }
+
+        // 标记会话已检查，避免重复检查
+        setSessionChecked(true);
       } catch (err) {
-        console.error('Error checking auth state:', err);
+        if (import.meta.env.DEV) {
+          console.error('Error checking auth state:', err);
+        }
         setError(err);
       } finally {
         setLoading(false);
@@ -48,8 +62,8 @@ export const AuthProvider = ({ children }) => {
 
     // Listen for authentication state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // console.log("AuthContext: Authentication state changed", event, session?.user);
+      async (_, session) => {
+        // 使用下划线忽略未使用的参数
         setUser(session?.user || null);
       }
     );
@@ -60,18 +74,16 @@ export const AuthProvider = ({ children }) => {
         authListener.subscription.unsubscribe();
       }
     };
-  }, []);
+  }, [sessionChecked]);
 
   // Sign in with GitHub
   const signInWithGithub = async () => {
     try {
-      console.log("AuthContext: Starting GitHub login flow");
-      console.log("AuthContext: Current environment variables", {
-        SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-        SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? "set" : "not set",
-        ORIGIN: window.location.origin,
-        REDIRECT_URL: `${window.location.origin}/auth/callback`
-      });
+      // 移除不必要的日志输出
+      if (import.meta.env.DEV) {
+        // 仅在开发环境中保留最基本的日志
+        console.log("AuthContext: Starting GitHub login flow");
+      }
 
       // Record current login provider
       localStorage.setItem('auth_provider', 'github');
@@ -88,32 +100,30 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      console.log("AuthContext: GitHub login response", { data, error });
-
       if (error) {
-        console.error("AuthContext: GitHub login error", error);
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: GitHub login error", error);
+        }
         setError(error);
         return;
       }
 
       // If no error but also no redirect, browser might have blocked the popup
       if (!data?.url) {
-        console.error("AuthContext: Failed to get OAuth URL");
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: Failed to get OAuth URL");
+        }
         setError(new Error("Login failed: Could not get authorization URL, please check if your browser is blocking popups"));
         return;
       }
 
-      // Normally, supabase will automatically redirect to the OAuth provider
-      console.log("AuthContext: Redirecting to OAuth URL", data.url);
-
-      // Force redirect to OAuth URL
-      setTimeout(() => {
-        console.log("AuthContext: Executing manual redirect");
-        window.location.href = data.url;
-      }, 500); // Delay 500ms to ensure logs are printed
+      // Force redirect to OAuth URL - 无需延迟和额外日志
+      window.location.href = data.url;
 
     } catch (err) {
-      console.error('Error signing in with GitHub:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error signing in with GitHub:', err);
+      }
       setError(err);
     } finally {
       setLoading(false);
@@ -123,7 +133,11 @@ export const AuthProvider = ({ children }) => {
   // Sign in with Google
   const signInWithGoogle = async () => {
     try {
-      console.log("AuthContext: Starting Google login flow");
+      // 移除不必要的日志输出
+      if (import.meta.env.DEV) {
+        // 仅在开发环境中保留最基本的日志
+        console.log("AuthContext: Starting Google login flow");
+      }
 
       // Record current login provider
       localStorage.setItem('auth_provider', 'google');
@@ -140,31 +154,30 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      console.log("AuthContext: Google login response", { data, error });
-
       if (error) {
-        console.error("AuthContext: Google login error", error);
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: Google login error", error);
+        }
         setError(error);
         return;
       }
 
       // If no error but also no redirect, browser might have blocked the popup
       if (!data?.url) {
-        console.error("AuthContext: Failed to get OAuth URL");
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: Failed to get OAuth URL");
+        }
         setError(new Error("Login failed: Could not get authorization URL, please check if your browser is blocking popups"));
         return;
       }
 
-      // Normally, supabase will automatically redirect to the OAuth provider
-      console.log("AuthContext: Redirecting to OAuth URL", data.url);
+      // Force redirect to OAuth URL - 无需延迟和额外日志
+      window.location.href = data.url;
 
-      // Force redirect to OAuth URL
-      setTimeout(() => {
-        console.log("AuthContext: Executing manual redirect");
-        window.location.href = data.url;
-      }, 500); // Delay 500ms to ensure logs are printed
     } catch (err) {
-      console.error('Error signing in with Google:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error signing in with Google:', err);
+      }
       setError(err);
     } finally {
       setLoading(false);
@@ -174,7 +187,11 @@ export const AuthProvider = ({ children }) => {
   // Sign in with Discord
   const signInWithDiscord = async () => {
     try {
-      console.log("AuthContext: Starting Discord login flow");
+      // 移除不必要的日志输出
+      if (import.meta.env.DEV) {
+        // 仅在开发环境中保留最基本的日志
+        console.log("AuthContext: Starting Discord login flow");
+      }
 
       // Record current login provider
       localStorage.setItem('auth_provider', 'discord');
@@ -191,31 +208,30 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      console.log("AuthContext: Discord login response", { data, error });
-
       if (error) {
-        console.error("AuthContext: Discord login error", error);
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: Discord login error", error);
+        }
         setError(error);
         return;
       }
 
       // If no error but also no redirect, browser might have blocked the popup
       if (!data?.url) {
-        console.error("AuthContext: Failed to get OAuth URL");
+        if (import.meta.env.DEV) {
+          console.error("AuthContext: Failed to get OAuth URL");
+        }
         setError(new Error("Login failed: Could not get authorization URL, please check if your browser is blocking popups"));
         return;
       }
 
-      // Normally, supabase will automatically redirect to the OAuth provider
-      console.log("AuthContext: Redirecting to OAuth URL", data.url);
+      // Force redirect to OAuth URL - 无需延迟和额外日志
+      window.location.href = data.url;
 
-      // Force redirect to OAuth URL
-      setTimeout(() => {
-        console.log("AuthContext: Executing manual redirect");
-        window.location.href = data.url;
-      }, 500); // Delay 500ms to ensure logs are printed
     } catch (err) {
-      console.error('Error signing in with Discord:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error signing in with Discord:', err);
+      }
       setError(err);
     } finally {
       setLoading(false);

@@ -231,7 +231,7 @@ const AuthPage = () => {
             <span className="text-base font-medium">{loading ? t('auth.loading') : t('auth.continueWithDiscord')}</span>
           </motion.button>
 
-          {/* All web3 authentication has been removed */}
+
         </motion.div>
 
         <motion.div

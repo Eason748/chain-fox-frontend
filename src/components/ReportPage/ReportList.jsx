@@ -6,10 +6,13 @@ import { getSeverityStyle } from './utils/constants';
 import supabase from '../../services/supabase';
 import { checkCurrentUserWhitelist } from '../../utils/supabaseQueries';
 import approveAudit from '../../services/approveAudit';
+import AuditReportModal from './AuditReportModal';
 
 const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportStatusChange }) => {
   const [isWhitelistUser, setIsWhitelistUser] = useState(false);
   const [updatingReportId, setUpdatingReportId] = useState(null);
+  const [selectedReportForExport, setSelectedReportForExport] = useState(null);
+  const [reportIssues, setReportIssues] = useState([]);
 
   // 检查当前用户是否在白名单中
   useEffect(() => {
@@ -77,6 +80,38 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
       setUpdatingReportId(null);
     }
   };
+
+  // 处理导出报告
+  const handleExportReport = async (e, report) => {
+    e.stopPropagation(); // 阻止事件冒泡，避免触发行点击事件
+
+    try {
+      // 获取报告的问题列表
+      const { data, error } = await supabase
+        .from('audit_issues')
+        .select('*')
+        .eq('report_id', report.id)
+        .order('severity')
+        .order('file_path')
+        .order('line_number');
+
+      if (error) {
+        throw error;
+      }
+
+      // 设置选中的报告和问题列表，打开模态窗口
+      setSelectedReportForExport(report);
+      setReportIssues(data || []);
+    } catch (error) {
+      console.error('获取报告问题时出错:', error);
+    }
+  };
+
+  // 关闭导出模态窗口
+  const handleCloseExportModal = () => {
+    setSelectedReportForExport(null);
+    setReportIssues([]);
+  };
   const { t } = useTranslation('common');
 
   if (isLoading) {
@@ -130,9 +165,7 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
             <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-yellow-400 uppercase tracking-wider">{t('reportPage.stats.medium', 'Medium')}</th>
             <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-blue-400 uppercase tracking-wider">{t('reportPage.stats.low', 'Low')}</th>
             <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">{t('reportPage.table.status', 'Status')}</th>
-            {isWhitelistUser && (
               <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider">{t('reportPage.table.actions', 'Actions')}</th>
-            )}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-800 bg-black/20">
@@ -192,9 +225,9 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
                    t('reportPage.status.pending', 'Pending')}
                 </span>
               </td>
-              {isWhitelistUser && (
-                <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
-                  {report.status === 'pending' ? (
+              <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
+                {report.status === 'pending' ? (
+                  isWhitelistUser ? (
                     <button
                       onClick={(e) => handleStatusChange(e, report)}
                       disabled={updatingReportId === report.id}
@@ -210,11 +243,24 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
                     </button>
                   ) : (
                     <span className="text-xs text-gray-500">
+                      {t('reportPage.actions.pending', 'Pending')}
+                    </span>
+                  )
+                ) : (
+                  report.status === 'completed' ? (
+                    <button
+                      onClick={(e) => handleExportReport(e, report)}
+                      className="px-3 py-1 rounded text-xs font-medium bg-blue-900/30 text-blue-400 hover:bg-blue-800/50 transition-colors"
+                    >
+                      {t('reportPage.actions.exportReport', 'Export Report')}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-gray-500">
                       {t('reportPage.actions.noActionNeeded', 'No action needed')}
                     </span>
-                  )}
-                </td>
-              )}
+                  )
+                )}
+              </td>
             </motion.tr>
           ))}
         </tbody>
@@ -293,21 +339,42 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
                    t('reportPage.status.pending', 'Pending')}
                 </span>
 
-                {isWhitelistUser && report.status === 'pending' && (
-                  <button
-                    onClick={(e) => handleStatusChange(e, report)}
-                    disabled={updatingReportId === report.id}
-                    className={`px-3 py-1 rounded text-xs font-medium ${
-                      updatingReportId === report.id
-                        ? 'bg-green-900/20 text-green-700 cursor-not-allowed'
-                        : 'bg-green-900/30 text-green-400 hover:bg-green-800/50 transition-colors'
-                    }`}
-                  >
-                    {updatingReportId === report.id
-                      ? t('reportPage.actions.updating', 'Updating...')
-                      : t('reportPage.actions.approve', 'Approve Audit')}
-                  </button>
-                )}
+                <div className="flex space-x-2">
+                  {report.status === 'pending' ? (
+                    isWhitelistUser ? (
+                      <button
+                        onClick={(e) => handleStatusChange(e, report)}
+                        disabled={updatingReportId === report.id}
+                        className={`px-3 py-1 rounded text-xs font-medium ${
+                          updatingReportId === report.id
+                            ? 'bg-green-900/20 text-green-700 cursor-not-allowed'
+                            : 'bg-green-900/30 text-green-400 hover:bg-green-800/50 transition-colors'
+                        }`}
+                      >
+                        {updatingReportId === report.id
+                          ? t('reportPage.actions.updating', 'Updating...')
+                          : t('reportPage.actions.approve', 'Approve Audit')}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-gray-500 px-3 py-1">
+                        {t('reportPage.actions.pending', 'Pending')}
+                      </span>
+                    )
+                  ) : (
+                    report.status === 'completed' ? (
+                      <button
+                        onClick={(e) => handleExportReport(e, report)}
+                        className="px-3 py-1 rounded text-xs font-medium bg-blue-900/30 text-blue-400 hover:bg-blue-800/50 transition-colors"
+                      >
+                        {t('reportPage.actions.exportReport', 'Export Report')}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-gray-500 px-3 py-1">
+                        {t('reportPage.actions.noActionNeeded', 'No action needed')}
+                      </span>
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -347,6 +414,15 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
       )}
       <TableView />
       <CardView />
+
+      {/* 审计报告导出模态窗口 */}
+      {selectedReportForExport && (
+        <AuditReportModal
+          report={selectedReportForExport}
+          issues={reportIssues}
+          onClose={handleCloseExportModal}
+        />
+      )}
     </>
   );
 };

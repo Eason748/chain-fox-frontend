@@ -105,7 +105,7 @@ const RepositoryResultPage = () => {
       );
     }
 
-    const { meta, summary, detailedReport } = repository.audit_result;
+    const { meta, summary } = repository.audit_result;
 
     // 风险评分卡片已隐藏
     const renderRiskScoreCard = () => {
@@ -294,36 +294,7 @@ const RepositoryResultPage = () => {
           </div>
         </div>
 
-        {/* 导出按钮 */}
-        <div className="flex justify-end">
-          <button
-            onClick={() => {
-              // 创建一个包含报告内容的Blob，不包含建议部分
-              const reportContent = `# ${meta.repository} Security Audit Report\n\n${summary}\n\n${detailedReport}`;
-              const blob = new Blob([reportContent], { type: 'text/markdown' });
-              const url = URL.createObjectURL(blob);
 
-              // 创建一个临时链接并触发下载
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `${meta.repository.replace('/', '-')}-audit-report.md`;
-              document.body.appendChild(a);
-              a.click();
-
-              // 清理
-              setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }, 0);
-            }}
-            className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg text-white flex items-center transition-colors shadow-lg shadow-purple-900/30"
-          >
-            <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Export Report (Markdown)
-          </button>
-        </div>
       </div>
     );
   };

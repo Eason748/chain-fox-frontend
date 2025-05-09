@@ -12,13 +12,14 @@ import ReportPage from './pages/ReportPage';
 import RepositoryStatusPage from './pages/RepositoryStatusPage';
 import RepositoryResultPage from './pages/RepositoryResultPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import NotificationContainer from './components/ui/Notification';
 
 // Import i18n instance
 import './i18n';
 
 // Import Providers
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { LayoutProvider } from './contexts/LayoutContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { WalletProvider } from './contexts/WalletContext';
 
 // Layout wrapper component
 const HomeLayoutWrapper = () => {
@@ -29,11 +30,11 @@ const HomeLayoutWrapper = () => {
   );
 };
 
-const AppContent = () => {
-  // Use useAuth hook to get user information and loading state
-  const { user, loading } = useAuth();
-
-  console.log("AppContent: User status", { user, loading });
+// 使用 React.memo 包装 AppContent 组件以避免不必要的重新渲染
+const AppContent = React.memo(() => {
+  // 不再需要 useAuth hook，因为我们不再使用 user 和 loading 变量
+  // 移除日志输出，避免每次渲染都打印日志
+  // 如果需要调试，可以使用 useEffect 在组件挂载时打印一次
 
   return (
     <Routes>
@@ -79,18 +80,19 @@ const AppContent = () => {
       </Route>
     </Routes>
   );
-};
+});
 
 export const App = () => {
   return (
     <ErrorBoundary>
       <Router>
         <AuthProvider>
-          <LayoutProvider>
+          <WalletProvider>
             <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
               <AppContent />
+              <NotificationContainer />
             </Suspense>
-          </LayoutProvider>
+          </WalletProvider>
         </AuthProvider>
       </Router>
     </ErrorBoundary>
