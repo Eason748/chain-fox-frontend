@@ -124,7 +124,7 @@ function NavMenu() {
         className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
         onClick={closeDropdowns}
       >
-        <span>{t('navigation.airdropCheck')}</span>
+        <span>Airdrop</span>
       </Link>
 
       {/* White Paper Link - 使用安全链接组件 */}
