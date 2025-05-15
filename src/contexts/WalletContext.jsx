@@ -255,13 +255,27 @@ export const WalletProvider = ({ children }) => {
           error: null,
           signature: result.signature || null,
           signedMessage: result.signedMessage || null,
-          signatureWarning: null
+          signatureWarning: null,
+          balance: null,  // 确保设置为 null，以触发余额获取
+          cfxBalance: null  // 确保设置为 null，以触发 CFX 余额获取
         });
 
         // Log signature information for debugging
         if (result.signature) {
           // 移除日志输出
         }
+
+        // 立即获取余额，不等待 useEffect
+        setTimeout(async () => {
+          try {
+            await refreshBalance(true);
+            await refreshCfxBalance(true);
+          } catch (error) {
+            if (import.meta.env.DEV) {
+              console.error('Error fetching balances after wallet connection:', error);
+            }
+          }
+        }, 500);
 
         return result;
       } else {
@@ -273,7 +287,13 @@ export const WalletProvider = ({ children }) => {
           error: result.message || 'Failed to connect wallet',
           signature: null,
           signedMessage: null,
-          signatureWarning: null
+          signatureWarning: null,
+          balance: null,
+          balanceLoading: false,
+          balanceError: null,
+          cfxBalance: null,
+          cfxBalanceLoading: false,
+          cfxBalanceError: null
         });
         return result;
       }
@@ -289,7 +309,13 @@ export const WalletProvider = ({ children }) => {
         error: error.message || 'Failed to connect wallet',
         signature: null,
         signedMessage: null,
-        signatureWarning: null
+        signatureWarning: null,
+        balance: null,
+        balanceLoading: false,
+        balanceError: null,
+        cfxBalance: null,
+        cfxBalanceLoading: false,
+        cfxBalanceError: null
       });
       return { success: false, error };
     }
@@ -313,7 +339,13 @@ export const WalletProvider = ({ children }) => {
           error: null,
           signature: null,
           signedMessage: null,
-          signatureWarning: null
+          signatureWarning: null,
+          balance: null,
+          balanceLoading: false,
+          balanceError: null,
+          cfxBalance: null,
+          cfxBalanceLoading: false,
+          cfxBalanceError: null
         });
         return result;
       } else {

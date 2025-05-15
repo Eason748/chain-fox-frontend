@@ -13,7 +13,10 @@
     "content": "内容导航",
     "audit": "安全审计",
     "whitePaper": "白皮书",
-    "sampleAudit": "抽样审计"
+    "sampleAudit": "抽样审计",
+    "exploration": "探索之旅",
+    "dao": "DAO",
+    "airdropCheck": "空投查询"
   },
   "buttons": {
     "getStarted": "开始使用",

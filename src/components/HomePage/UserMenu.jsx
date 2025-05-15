@@ -9,7 +9,7 @@ import { notify } from '../ui/Notification';
 // Define the component
 function UserMenu() {
   const { t } = useTranslation(['common', 'profile']);
-  const { user, signOut } = useAuth();
+  const { user, signOut, userCredits, creditsLoading, refreshUserCredits } = useAuth();
   const {
     isConnected: isWalletConnected,
     address: walletAddress,
@@ -19,7 +19,9 @@ function UserMenu() {
     refreshBalance,
     cfxBalance: walletCfxBalance,
     cfxBalanceLoading,
-    refreshCfxBalance
+    refreshCfxBalance,
+    connectWallet,
+    disconnectWallet
   } = useWallet();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -123,6 +125,47 @@ function UserMenu() {
                   </p>
                 </div>
               </div>
+
+              {/* Points Display */}
+              <div className="mt-3 pt-3 border-t border-white/10 flex justify-between items-center">
+                <div className="text-xs text-gray-400">{t('points.balance', { ns: 'profile', defaultValue: '积分余额' })}</div>
+                <div className="flex items-center">
+                  {creditsLoading ? (
+                    <span className="text-gray-400 flex items-center">
+                      <svg className="w-3 h-3 mr-1 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      {t('auth.loading', { ns: 'common' })}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-sm font-medium text-green-300">{userCredits !== null ? userCredits : '--'}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (creditsLoading) return;
+
+                          refreshUserCredits().then(() => {
+                            notify.success(t('points.refreshed', { ns: 'profile', defaultValue: '积分已刷新' }));
+                          }).catch(error => {
+                            if (import.meta.env.DEV) {
+                              console.error("Error refreshing credits:", error);
+                            }
+                            notify.error(t('points.refreshError', { ns: 'profile', defaultValue: '刷新积分失败' }));
+                          });
+                        }}
+                        className={`ml-2 ${creditsLoading ? 'text-gray-500' : 'text-blue-400 hover:text-blue-300'}`}
+                        disabled={creditsLoading}
+                        title={t('points.refresh', { ns: 'profile', defaultValue: '刷新积分' })}
+                      >
+                        <svg className={`w-3 h-3 ${creditsLoading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Wallet Section */}
@@ -155,10 +198,10 @@ function UserMenu() {
                         </span>
                       ) : (
                         <>
-                          {walletBalance !== null ? (
+                          {walletBalance !== null && !isNaN(walletBalance) ? (
                             <span>{Number(walletBalance).toFixed(4)}</span>
                           ) : (
-                            <span className="text-yellow-300">--</span>
+                            <span className="text-yellow-300">0.0000</span>
                           )}
                           <button
                             onClick={(e) => {
@@ -208,10 +251,10 @@ function UserMenu() {
                         </span>
                       ) : (
                         <>
-                          {walletCfxBalance !== null ? (
+                          {walletCfxBalance !== null && !isNaN(walletCfxBalance) ? (
                             <span>{Number(walletCfxBalance).toFixed(4)}</span>
                           ) : (
-                            <span className="text-yellow-300">--</span>
+                            <span className="text-yellow-300">0.0000</span>
                           )}
                           <button
                             onClick={(e) => {
@@ -248,31 +291,34 @@ function UserMenu() {
                   <button
                     onClick={() => {
                       setMenuOpen(false);
-                      window.location.href = '/profile';
+                      disconnectWallet().then(result => {
+                        if (result.success) {
+                          notify.success('Wallet disconnected successfully!');
+                        } else {
+                          notify.error(result.message || 'Failed to disconnect wallet');
+                        }
+                      });
                     }}
-                    className="w-full mt-2 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded text-xs font-medium transition-colors flex items-center justify-center"
+                    className="w-full mt-2 px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded text-xs font-medium transition-colors flex items-center justify-center"
                   >
                     <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    {t('wallet.connected', { ns: 'profile' })}
+                    {t('wallet.disconnect', { ns: 'profile' })}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => {
                     setMenuOpen(false);
-                    // Import dynamically to avoid CSP issues during page load
-                    import('../../services/solanaWalletService').then(module => {
-                      const solanaWalletService = module.solanaWalletService;
-                      solanaWalletService.connect().then(result => {
-                        if (!result.success) {
-                          console.error('Failed to connect wallet:', result.error || result.message);
-                          notify.error(result.message || 'Failed to connect wallet');
-                        } else {
-                          notify.success('Wallet connected successfully!');
-                        }
-                      });
+                    // 直接使用 WalletContext 提供的 connectWallet 函数
+                    connectWallet().then(result => {
+                      if (!result.success) {
+                        console.error('Failed to connect wallet:', result.error || result.message);
+                        notify.error(result.message || 'Failed to connect wallet');
+                      } else {
+                        notify.success('Wallet connected successfully!');
+                      }
                     });
                   }}
                   className="w-full px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded text-xs font-medium transition-colors flex items-center justify-center"

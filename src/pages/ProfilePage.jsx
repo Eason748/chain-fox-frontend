@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +6,7 @@ import { useWallet } from '../contexts/WalletContext';
 import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
 import { notify } from '../components/ui/Notification';
+import CreditsTransfer from '../components/CreditsTransfer';
 
 /**
  * ProfilePage component - Displays user profile information and account linking options
@@ -13,19 +14,24 @@ import { notify } from '../components/ui/Notification';
 const ProfilePage = () => {
   const { t, i18n } = useTranslation(['profile', 'common']);
   const [forceUpdate, setForceUpdate] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const userIdRef = useRef(null);
+
+  // Active feature state to control which feature is displayed in the right panel
+  const [activeFeature, setActiveFeature] = useState(null); // null, 'transfer', 'future-feature-1', etc.
 
   // Ensure profile namespace is loaded
-  useEffect(() => {
+  // useEffect(() => {
+  //   // Force reload namespaces to ensure translations are available
+  //   i18n.loadNamespaces(['profile', 'common']).then(() => {
 
-    // Force reload namespaces to ensure translations are available
-    i18n.loadNamespaces(['profile', 'common']).then(() => {
-      console.log('ProfilePage: Namespaces loaded');
-      // Force a reload of the translations
-      const profileTranslations = i18n.getResourceBundle(i18n.language, 'profile');
-      console.log('Profile translations:', profileTranslations);
-    });
-  }, [i18n, forceUpdate]);
-  const { user } = useAuth();
+  //     // Force a reload of the translations
+  //     const profileTranslations = i18n.getResourceBundle(i18n.language, 'profile');
+  //     console.log('Profile translations:', profileTranslations);
+  //   });
+  // }, [i18n, forceUpdate]);
+
+  const { user, userCredits } = useAuth();
 
   // Get wallet state
   const {
@@ -90,9 +96,19 @@ const ProfilePage = () => {
     return t('unknown', { ns: 'profile' });
   };
 
-  // Raw provider name function has been removed
+  // Copy user ID to clipboard
+  const copyUserIdToClipboard = () => {
+    if (userIdRef.current) {
+      userIdRef.current.select();
+      document.execCommand('copy');
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  };
 
-  // Account linking section has been completely removed
+
+
+
 
   return (
     <AuthRequired>
@@ -104,7 +120,7 @@ const ProfilePage = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-3 max-w-md mx-auto"
+            className="lg:col-span-1 max-w-md mx-auto lg:mx-0"
           >
             <div className="bg-gradient-to-br from-blue-900/40 to-purple-900/20 backdrop-blur-md rounded-xl border border-white/10 p-6 sticky top-24">
               <div className="flex flex-col items-center text-center mb-6">
@@ -128,6 +144,65 @@ const ProfilePage = () => {
                 {/* User provider badge */}
                 <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300">
                   {getUserProvider()}
+                </div>
+
+                {/* User ID with copy button */}
+                {user && (
+                  <div className="mt-3 flex items-center justify-center">
+                    <div className="relative flex items-center bg-black/30 rounded-lg border border-white/10 overflow-hidden">
+                      <input
+                        ref={userIdRef}
+                        type="text"
+                        value={user.id}
+                        readOnly
+                        className="w-48 px-3 py-1 text-xs text-gray-300 bg-transparent focus:outline-none"
+                      />
+                      <button
+                        onClick={copyUserIdToClipboard}
+                        className="px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 transition-colors"
+                        title={t('points.userId.copy', { defaultValue: 'Copy User ID' })}
+                      >
+                        {copySuccess ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Credits Section */}
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <h3 className="text-sm font-medium text-gray-300 mb-3">
+                  {t('credits.title', { defaultValue: 'Credits', ns: 'profile' })}
+                </h3>
+                <div className="bg-black/30 rounded-lg p-3 border border-white/10 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-400">{t('credits.amount', { defaultValue: 'Amount', ns: 'profile' })}</div>
+                    <div className="text-sm font-medium text-green-300">{userCredits !== null ? userCredits : '--'}</div>
+                  </div>
+                </div>
+
+                {/* Credits Feature Buttons */}
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setActiveFeature(activeFeature === 'transfer' ? null : 'transfer')}
+                    className={`w-full px-3 py-2 ${
+                      activeFeature === 'transfer'
+                        ? 'bg-purple-500/40 text-purple-200'
+                        : 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300'
+                    } rounded-md text-sm font-medium transition-colors`}
+                  >
+                    {t('credits.transfer.show', { defaultValue: 'Transfer Credits', ns: 'profile' })}
+                  </button>
+
+                  {/* Additional feature buttons can be added here */}
                 </div>
               </div>
 
@@ -306,6 +381,36 @@ const ProfilePage = () => {
 
               {/* Account linking section has been removed */}
             </div>
+          </motion.div>
+
+          {/* Right column - Features */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-2"
+          >
+            {/* Credits Transfer */}
+            {activeFeature === 'transfer' && (
+              <CreditsTransfer onClose={() => setActiveFeature(null)} />
+            )}
+
+            {/* Welcome message when no feature is selected */}
+            {!activeFeature && (
+              <div className="bg-gradient-to-br from-blue-900/40 to-purple-900/20 backdrop-blur-md rounded-xl border border-white/10 p-6 mb-6 flex flex-col items-center justify-center min-h-[300px] text-center">
+                <h2 className="text-xl font-semibold text-white mb-4">
+                  {t('features.welcome', { defaultValue: 'Select a Feature', ns: 'profile' })}
+                </h2>
+                <p className="text-gray-300 mb-6 max-w-md">
+                  {t('features.selectPrompt', { defaultValue: 'Please select a feature from the left panel to get started.', ns: 'profile' })}
+                </p>
+                <svg className="w-16 h-16 text-blue-400/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </div>
+            )}
+
+            {/* Additional feature panels can be added here with their own activeFeature condition */}
           </motion.div>
         </div>
       </div>

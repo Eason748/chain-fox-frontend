@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, supabase } from '../services/supabase';
+import { getUserCredits } from '../services/creditsService';
 
 // Create authentication context
 const AuthContext = createContext(null);
@@ -9,9 +10,42 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userCredits, setUserCredits] = useState(null);
+  const [creditsLoading, setCreditsLoading] = useState(false);
 
   // 会话检查状态跟踪
   const [sessionChecked, setSessionChecked] = useState(false);
+
+  // 获取用户积分
+  const fetchUserCredits = async (userId) => {
+    if (!userId) return;
+
+    try {
+      setCreditsLoading(true);
+      const { credits, error } = await getUserCredits(userId);
+
+      if (error) {
+        if (import.meta.env.DEV) {
+          console.error('Error fetching user credits:', error);
+        }
+        return;
+      }
+
+      setUserCredits(credits);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('Error fetching user credits:', err);
+      }
+    } finally {
+      setCreditsLoading(false);
+    }
+  };
+
+  // 刷新用户积分
+  const refreshUserCredits = async () => {
+    if (!user) return;
+    return fetchUserCredits(user.id);
+  };
 
   // Check user session on initialization - 优化会话检查，减少不必要的日志
   useEffect(() => {
@@ -40,9 +74,13 @@ export const AuthProvider = ({ children }) => {
         if (data.session) {
           // 移除用户登录日志
           setUser(data.session.user);
+
+          // 获取用户积分
+          await fetchUserCredits(data.session.user.id);
         } else {
           // 移除用户未登录日志
           setUser(null);
+          setUserCredits(null);
         }
 
         // 标记会话已检查，避免重复检查
@@ -64,7 +102,15 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_, session) => {
         // 使用下划线忽略未使用的参数
-        setUser(session?.user || null);
+        const newUser = session?.user || null;
+        setUser(newUser);
+
+        // 如果用户登录，获取积分
+        if (newUser) {
+          await fetchUserCredits(newUser.id);
+        } else {
+          setUserCredits(null);
+        }
       }
     );
 
@@ -261,6 +307,10 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     error,
+    // Credits related
+    userCredits,
+    creditsLoading,
+    refreshUserCredits,
     // Auth methods
     signInWithGithub,
     signInWithGoogle,

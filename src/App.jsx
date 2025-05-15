@@ -9,8 +9,12 @@ import WhitePaperPage from './pages/WhitePaperPage';
 import CountdownPage from './pages/CountdownPage';
 import ProfilePage from './pages/ProfilePage';
 import ReportPage from './pages/ReportPage';
+import AuditReportDetailPage from './pages/AuditReportDetailPage';
 import RepositoryStatusPage from './pages/RepositoryStatusPage';
 import RepositoryResultPage from './pages/RepositoryResultPage';
+import ExplorationPage from './pages/ExplorationPage';
+// import DaoPage from './pages/DaoPage';
+import AirdropCheckPage from './pages/AirdropCheckPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import NotificationContainer from './components/ui/Notification';
 
@@ -53,8 +57,9 @@ const AppContent = React.memo(() => {
         {/* Detection Page */}
         <Route path="/detect" element={<DetectionPage />} />
 
-        {/* Report Page */}
+        {/* Report Pages */}
         <Route path="/reports" element={<ReportPage />} />
+        <Route path="/reports/:reportId" element={<AuditReportDetailPage />} />
 
         {/* Repository Status Page */}
         <Route path="/repository-status" element={<RepositoryStatusPage />} />
@@ -67,6 +72,15 @@ const AppContent = React.memo(() => {
 
         {/* Countdown Page */}
         <Route path="/countdown" element={<CountdownPage />} />
+
+        {/* Exploration Page */}
+        <Route path="/exploration" element={<ExplorationPage />} />
+
+        {/* DAO Page - Temporarily disabled */}
+        {/* <Route path="/dao" element={<DaoPage />} /> */}
+
+        {/* Airdrop Check Page */}
+        <Route path="/airdrop-check" element={<AirdropCheckPage />} />
 
         {/* 404 page */}
         <Route
@@ -88,10 +102,10 @@ export const App = () => {
       <Router>
         <AuthProvider>
           <WalletProvider>
-            <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-              <AppContent />
-              <NotificationContainer />
-            </Suspense>
+              <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+                <AppContent />
+                <NotificationContainer />
+              </Suspense>
           </WalletProvider>
         </AuthProvider>
       </Router>

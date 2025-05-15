@@ -25,7 +25,33 @@
     "signatureWarning": "已连接但未进行签名验证",
     "signMessage": "请签名以验证钱包所有权",
     "signatureSuccess": "签名验证成功",
-    "signatureFailure": "签名验证失败"
+    "signatureFailure": "签名验证失败",
+    "credits": {
+      "title": "钱包积分",
+      "available": "可用积分",
+      "sourceWallet": "源钱包地址",
+      "targetWallet": "目标钱包地址",
+      "loadError": "加载钱包积分失败",
+      "transfer": {
+        "title": "从钱包转移积分",
+        "show": "钱包积分转移",
+        "hide": "隐藏转移表单",
+        "targetWallet": "目标钱包地址",
+        "targetWalletPlaceholder": "输入钱包地址",
+        "amount": "数量",
+        "amountPlaceholder": "输入积分数量",
+        "description": "描述（可选）",
+        "descriptionPlaceholder": "输入描述",
+        "submit": "转移积分",
+        "processing": "处理中...",
+        "success": "成功转移 {{amount}} 积分，剩余 {{remaining}} 积分",
+        "confirm": "确定要向钱包 {{wallet}} 转移 {{amount}} 积分吗？",
+        "errorNoWallet": "请输入目标钱包地址",
+        "errorInvalidAmount": "请输入有效的积分数量（正整数）",
+        "errorGeneral": "转移积分失败",
+        "defaultDescription": "钱包积分转移"
+      }
+    }
   },
   "linkAccounts": "关联账户",
   "linkAccountsDesc": "关联其他登录方式到您的账户，以便更轻松地访问",
@@ -79,6 +105,93 @@
         "used": "使用积分",
         "stakeChanged": "质押变更"
       }
+    }
+  },
+  "features": {
+    "title": "功能区",
+    "welcome": "选择功能",
+    "selectPrompt": "请从左侧面板选择一个功能开始使用"
+  },
+  "credits": {
+    "title": "积分",
+    "amount": "数量",
+    "transfer": {
+      "title": "向其他用户转移积分",
+      "show": "转移积分",
+      "hide": "隐藏转移表单",
+      "targetUserId": "目标用户ID",
+      "targetUserIdPlaceholder": "输入用户ID",
+      "amount": "数量",
+      "amountPlaceholder": "输入积分数量",
+      "description": "描述（可选）",
+      "descriptionPlaceholder": "输入描述",
+      "submit": "转移积分",
+      "processing": "处理中...",
+      "success": "成功转移 {{amount}} 积分，剩余 {{remaining}} 积分",
+      "confirm": "确定要向用户 {{userId}} 转移 {{amount}} 积分吗？",
+      "errorNoUserId": "请输入目标用户ID",
+      "errorInvalidAmount": "请输入有效的积分数量（正整数）",
+      "errorGeneral": "转移积分失败",
+      "defaultDescription": "积分转移"
+    }
+  },
+  "points": {
+    "balance": "积分余额",
+    "refresh": "刷新积分",
+    "refreshed": "积分已刷新",
+    "refreshError": "刷新积分失败",
+    "history": "积分历史",
+    "noHistory": "暂无积分历史记录",
+    "currentBalance": "当前积分",
+    "viewReportCost": "查看报告详情需要支付 {{cost}} 积分。",
+    "submitRepositoryCost": "提交每个仓库需要 {{cost}} 积分。",
+    "confirmDeduction": "查看此报告将消耗 {{points}} 积分，确定要继续吗？",
+    "confirmSubmissionDeduction": "提交 {{count}} 个仓库将消耗 {{points}} 积分，确定要继续吗？",
+    "deductSuccess": "已扣除 {{points}} 积分，剩余 {{remaining}} 积分",
+    "deductError": "扣除积分失败",
+    "insufficientPoints": "积分不足",
+    "generalError": "处理请求时出错",
+    "checking": "检查积分中...",
+    "checkSubmitterError": "检查用户权限时出错",
+    "userId": {
+      "copy": "复制用户ID",
+      "copied": "用户ID已复制到剪贴板"
+    },
+    "transfer": {
+      "title": "转移积分",
+      "show": "转移积分",
+      "hide": "隐藏转移表单",
+      "method": "转移方式",
+      "methodUserId": "用户ID",
+      "methodWallet": "钱包地址",
+      "targetUserId": "目标用户ID",
+      "targetUserIdPlaceholder": "输入用户ID",
+      "amount": "数量",
+      "amountPlaceholder": "输入积分数量",
+      "description": "描述（可选）",
+      "descriptionPlaceholder": "输入描述",
+      "submit": "转移积分",
+      "processing": "处理中...",
+      "success": "成功转移 {{amount}} 积分，剩余 {{remaining}} 积分",
+      "confirm": "确定要向用户 {{userId}} 转移 {{amount}} 积分吗？",
+      "errorNoUserId": "请输入目标用户ID",
+      "errorInvalidAmount": "请输入有效的积分数量（正整数）",
+      "errorGeneral": "转移积分失败",
+      "defaultDescription": "积分转移"
+    },
+    "transaction": {
+      "date": "日期",
+      "amount": "数量",
+      "type": "类型",
+      "description": "描述",
+      "balance": "余额"
+    },
+    "types": {
+      "view_report": "查看报告",
+      "submit_repository": "提交仓库",
+      "admin_adjustment": "管理员调整",
+      "transfer_in": "收到积分",
+      "transfer_out": "发送积分"
     }
   }
 }

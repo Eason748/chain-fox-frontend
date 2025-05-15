@@ -25,7 +25,33 @@
     "signatureWarning": "Connected without signature verification",
     "signMessage": "Please sign the message to verify wallet ownership",
     "signatureSuccess": "Signature verified successfully",
-    "signatureFailure": "Signature verification failed"
+    "signatureFailure": "Signature verification failed",
+    "credits": {
+      "title": "Wallet Credits",
+      "available": "Available Credits",
+      "sourceWallet": "Source Wallet Address",
+      "targetWallet": "Target Wallet Address",
+      "loadError": "Failed to load wallet credits",
+      "transfer": {
+        "title": "Transfer Credits from Wallet",
+        "show": "Wallet Credits Transfer",
+        "hide": "Hide Transfer Form",
+        "targetWallet": "Target Wallet Address",
+        "targetWalletPlaceholder": "Enter wallet address",
+        "amount": "Amount",
+        "amountPlaceholder": "Enter amount",
+        "description": "Description (Optional)",
+        "descriptionPlaceholder": "Enter description",
+        "submit": "Transfer Credits",
+        "processing": "Processing...",
+        "success": "Successfully transferred {{amount}} credits. Remaining: {{remaining}}",
+        "confirm": "Are you sure you want to transfer {{amount}} credits to wallet {{wallet}}?",
+        "errorNoWallet": "Please enter a target wallet address",
+        "errorInvalidAmount": "Please enter a valid amount (positive integer)",
+        "errorGeneral": "Failed to transfer credits",
+        "defaultDescription": "Wallet credits transfer"
+      }
+    }
   },
   "linkAccounts": "Link Accounts",
   "linkAccountsDesc": "Connect additional login methods to your account for easier access",
@@ -61,13 +87,13 @@
       "high": "High Priority"
     },
     "points": {
-      "title": "Points Rewards",
-      "description": "Earn points by staking CFX. Points can be used to boost audit priority",
-      "yourPoints": "Your Points",
+      "title": "Credits Rewards",
+      "description": "Earn Credits by staking CFX. Credits can be used to boost audit priority",
+      "yourPoints": "Your Credits",
       "rate": "Reward Rate",
       "perBlock": "Per Block",
       "perDay": "Per Day",
-      "history": "Points History",
+      "history": "Credits History",
       "earned": "Earned",
       "used": "Used",
       "balance": "Balance",
@@ -75,10 +101,97 @@
       "viewAll": "View All",
       "recentActivity": "Recent Activity",
       "activities": {
-        "earned": "Points Earned",
-        "used": "Points Used",
+        "earned": "Credits Earned",
+        "used": "Credits Used",
         "stakeChanged": "Stake Changed"
       }
+    }
+  },
+  "features": {
+    "title": "Features",
+    "welcome": "Select a Feature",
+    "selectPrompt": "Please select a feature from the left panel to get started."
+  },
+  "credits": {
+    "title": "Credits",
+    "amount": "Amount",
+    "transfer": {
+      "title": "Transfer Credits",
+      "show": "Transfer Credits",
+      "hide": "Hide Form",
+      "method": "Transfer Method",
+      "methodUserId": "UID",
+      "methodWallet": "Wallet Address",
+      "targetUserId": "Target UID",
+      "targetUserIdPlaceholder": "Enter UID",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "description": "Description (Optional)",
+      "descriptionPlaceholder": "Enter description",
+      "submit": "Transfer Credits",
+      "processing": "Processing...",
+      "success": "Successfully transferred {{amount}} credits. Remaining: {{remaining}}",
+      "confirm": "Are you sure you want to transfer {{amount}} credits to user {{userId}}?",
+      "errorNoUserId": "Please enter a target UID",
+      "errorInvalidAmount": "Please enter a valid amount (positive integer)",
+      "errorGeneral": "Failed to transfer credits",
+      "defaultDescription": "Credits transfer"
+    }
+  },
+  "points": {
+    "balance": "Credits",
+    "refresh": "Refresh Points",
+    "refreshed": "Points refreshed",
+    "refreshError": "Failed to refresh points",
+    "history": "Points History",
+    "noHistory": "No points history found",
+    "currentBalance": "Current Balance",
+    "viewReportCost": "Viewing report details costs {{cost}} points.",
+    "submitRepositoryCost": "Submitting each repository costs {{cost}} points.",
+    "confirmDeduction": "Viewing this report will cost {{points}} points. Do you want to continue?",
+    "confirmSubmissionDeduction": "Submitting {{count}} repositories will cost {{points}} points. Do you want to continue?",
+    "deductSuccess": "Deducted {{points}} points. Remaining: {{remaining}} points",
+    "deductError": "Failed to deduct points",
+    "insufficientPoints": "Insufficient points",
+    "generalError": "An error occurred while processing your request",
+    "checking": "Checking points...",
+    "checkSubmitterError": "Error checking user permissions",
+    "userId": {
+      "copy": "Copy UID",
+      "copied": "UID copied to clipboard"
+    },
+    "transfer": {
+      "title": "Transfer Points to Another User",
+      "show": "Transfer Points",
+      "hide": "Hide Transfer Form",
+      "targetUserId": "Target UID",
+      "targetUserIdPlaceholder": "Enter UID",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "description": "Description (Optional)",
+      "descriptionPlaceholder": "Enter description",
+      "submit": "Transfer Points",
+      "processing": "Processing...",
+      "success": "Successfully transferred {{amount}} points. Remaining: {{remaining}}",
+      "confirm": "Are you sure you want to transfer {{amount}} points to user {{userId}}?",
+      "errorNoUserId": "Please enter a target UID",
+      "errorInvalidAmount": "Please enter a valid amount (positive integer)",
+      "errorGeneral": "Failed to transfer points",
+      "defaultDescription": "Points transfer"
+    },
+    "transaction": {
+      "date": "Date",
+      "amount": "Amount",
+      "type": "Type",
+      "description": "Description",
+      "balance": "Balance After"
+    },
+    "types": {
+      "view_report": "View Report",
+      "submit_repository": "Submit Repository",
+      "admin_adjustment": "Admin Adjustment",
+      "transfer_in": "Points Received",
+      "transfer_out": "Points Sent"
     }
   }
 }

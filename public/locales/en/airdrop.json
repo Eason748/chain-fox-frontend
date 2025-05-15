@@ -1,0 +1,87 @@
+{
+  "title": "Credits Airdrop Check",
+  "description": "Enter your Solana wallet address to check if you are eligible for credits airdrop and how many credits you can receive.",
+  "form": {
+    "walletAddress": "Solana Wallet Address",
+    "walletPlaceholder": "Enter your Solana wallet address",
+    "check": "Check Airdrop Eligibility",
+    "checking": "Checking..."
+  },
+  "errors": {
+    "emptyWallet": "Please enter a wallet address",
+    "invalidWallet": "Invalid wallet address format",
+    "checkFailed": "Check failed, please try again later"
+  },
+  "result": {
+    "title": "Check Result",
+    "walletAddress": "Wallet Address",
+    "eligibility": "Airdrop Eligibility",
+    "eligible": "Eligible",
+    "notEligible": "Not Eligible",
+    "amount": "Credits Amount",
+    "reason": "Reason",
+    "notes": "Notes",
+    "nextSteps": "You are eligible for credits airdrop! The airdrop will be automatically distributed to your platform account during the event period. Please stay tuned."
+  },
+  "info": {
+    "title": "Platform Credits FAQ",
+    "faqItems": [
+      {
+        "question": "What are Chain-Fox Platform Credits?",
+        "answer": "The Chain-Fox Credits System is designed to reward community participation and provide access to various platform features. It explains how the credits system works, how to earn credits, and how to use them within the Chain-Fox ecosystem.\n\nChain-Fox Credits are a derivative of CFX tokens, obtained through holding or staking CFX. They represent your ability to access premium features and will play a significant role in the future governance of the Chain-Fox ecosystem.\n\nKey characteristics of the credits system:\n- Built on a transparent UTXO (Unspent Transaction Output) model, similar to Bitcoin\n- Credits can be transferred between users within the platform\n- Credits represent future DAO governance weight\n- Credits will eventually function as node equity in the future Chain-Fox ecosystem\n- Credits are not financial instruments and have no monetary value"
+      },
+      {
+        "question": "How do I earn Credits?",
+        "answer": "Credits are primarily derived from holding or staking CFX tokens. There are several ways to earn credits on the Chain-Fox platform:\n\n1. Holding CFX: Users who hold CFX tokens are eligible for credits based on their holdings\n2. Staking CFX: Users who stake CFX tokens receive credits proportional to their stake\n3. Airdrops: Eligible users can receive credits through periodic airdrops\n4. Community Participation: Active participation in the community and ecosystem\n5. Special Events: Participating in special events and promotions\n6. Referrals: Inviting new users to the platform (coming soon)"
+      },
+      {
+        "question": "How is Airdrop Eligibility determined?",
+        "answer": "Airdrop eligibility is based on various factors, including but not limited to:\n\n- Your wallet activity\n- Token holdings\n- Previous participation in the ecosystem"
+      },
+      {
+        "question": "How are Airdrop Credits calculated?",
+        "answer": "For airdrops based on token holdings, we use a tiered system to ensure fair distribution:\n\n0-999 tokens: 50 credits\n1,000-4,999 tokens: 100 credits\n5,000-9,999 tokens: 150 credits\n10,000-49,999 tokens: 200 credits\n50,000-99,999 tokens: 300 credits\n100,000-499,999 tokens: 500 credits\n500,000-999,999 tokens: 750 credits\n1,000,000+ tokens: 1,000 credits\n\nThis tiered approach ensures that even users with small token holdings receive meaningful credits, the difference between the highest and lowest credit awards is reasonable, and the distribution is more balanced than a purely proportional system."
+      },
+      {
+        "question": "How can I use Credits?",
+        "answer": "Credits can be used for various purposes on the Chain-Fox platform:\n\n1. Submit Repositories for Audit: 100 credits per submission\n2. View Audit Reports: 10 credits per report\n3. Access Premium Features: Various credit costs depending on the feature\n4. DAO Governance: Voting weight in future DAO governance (coming soon)"
+      },
+      {
+        "question": "How do I check my Credit Balance?",
+        "answer": "You can check your credit balance at any time by:\n\n1. Logging into your Chain-Fox account\n2. Navigating to your profile page\n3. Viewing the credits section"
+      },
+      {
+        "question": "How do I check my Airdrop Eligibility?",
+        "answer": "To check if you're eligible for an airdrop:\n\n1. Navigate to the Airdrop Check page\n2. Enter your Solana wallet address\n3. The system will display your eligibility status and potential credit amount"
+      },
+      {
+        "question": "What is the future of the Credits System?",
+        "answer": "The Chain-Fox Credits System will evolve over time with additional features:\n\n- DAO Governance: Credits will determine voting power in platform governance\n- Node Equity: Credits will represent ownership stakes in the Chain-Fox network\n- Enhanced Utility: More ways to earn and use credits will be added\n- Ecosystem Integration: Deeper integration with the broader blockchain ecosystem"
+      },
+      {
+        "question": "Can I transfer my credits to another user?",
+        "answer": "Yes, you can use the 'Transfer Credits' feature on your profile page to transfer credits to other users by entering their User ID or wallet address."
+      },
+      {
+        "question": "Do credits expire?",
+        "answer": "No, credits do not expire. They remain in your account until used."
+      },
+      {
+        "question": "How often are airdrops distributed?",
+        "answer": "Airdrops are distributed in batches during specific event periods. Check the platform announcements for details."
+      },
+      {
+        "question": "What happens if I don't have enough credits for a feature?",
+        "answer": "You'll need to earn more credits before accessing that feature. Consider participating in community activities or waiting for the next airdrop."
+      },
+      {
+        "question": "Will credits have monetary value in the future?",
+        "answer": "No, credits will never have monetary value. They are designed purely as utility points within the Chain-Fox ecosystem, derived from CFX tokens. While they represent value in terms of access and governance, they are not financial instruments and cannot be exchanged for monetary value."
+      },
+      {
+        "question": "Where can I get support for Credits-related questions?",
+        "answer": "If you have any questions about the Credits System, please contact our support team through the platform or join our community channels for assistance."
+      }
+    ]
+  }
+}

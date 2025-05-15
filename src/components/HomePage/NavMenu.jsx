@@ -52,24 +52,6 @@ function NavMenu() {
         <span>{t('navigation.home')}</span>
       </Link>
 
-      {/* About Link (Scroll on Home, link to /#about otherwise) */}
-      {isHomePage ? (
-        <a
-          href="#about"
-          onClick={closeDropdowns}
-          className={menuItemClasses}
-        >
-          <span>{t('navigation.about')}</span>
-        </a>
-      ) : (
-        <Link
-          to="/#about"
-          className={menuItemClasses}
-        >
-          <span>{t('navigation.about')}</span>
-        </Link>
-      )}
-
       {/* Audit Dropdown Menu */}
       <div className="relative" ref={auditMenuRef}>
         <button
@@ -126,6 +108,24 @@ function NavMenu() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* DAO Link - Temporarily disabled */}
+      {/* <Link
+        to="/dao"
+        className={location.pathname === '/dao' ? activeMenuItemClasses : menuItemClasses}
+        onClick={closeDropdowns}
+      >
+        <span>{t('navigation.dao', 'DAO')}</span>
+      </Link> */}
+
+      {/* Airdrop Check Link */}
+      <Link
+        to="/airdrop-check"
+        className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
+        onClick={closeDropdowns}
+      >
+        <span>{t('navigation.airdropCheck')}</span>
+      </Link>
 
       {/* White Paper Link - 使用安全链接组件 */}
       <SafeExternalLink

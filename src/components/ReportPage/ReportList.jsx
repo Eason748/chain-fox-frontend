@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LoadingIndicator from './LoadingIndicator';
 import { getSeverityStyle } from './utils/constants';
 import supabase from '../../services/supabase';
 import { checkCurrentUserWhitelist } from '../../utils/supabaseQueries';
 import approveAudit from '../../services/approveAudit';
-import AuditReportModal from './AuditReportModal';
 
-const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportStatusChange }) => {
+const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportStatusChange, userPoints, pointsCost }) => {
   const [isWhitelistUser, setIsWhitelistUser] = useState(false);
   const [updatingReportId, setUpdatingReportId] = useState(null);
-  const [selectedReportForExport, setSelectedReportForExport] = useState(null);
-  const [reportIssues, setReportIssues] = useState([]);
+  const navigate = useNavigate();
 
   // 检查当前用户是否在白名单中
   useEffect(() => {
@@ -81,36 +80,12 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
     }
   };
 
-  // 处理导出报告
-  const handleExportReport = async (e, report) => {
+  // 处理查看报告详情
+  const handleViewReport = (e, report) => {
     e.stopPropagation(); // 阻止事件冒泡，避免触发行点击事件
 
-    try {
-      // 获取报告的问题列表
-      const { data, error } = await supabase
-        .from('audit_issues')
-        .select('*')
-        .eq('report_id', report.id)
-        .order('severity')
-        .order('file_path')
-        .order('line_number');
-
-      if (error) {
-        throw error;
-      }
-
-      // 设置选中的报告和问题列表，打开模态窗口
-      setSelectedReportForExport(report);
-      setReportIssues(data || []);
-    } catch (error) {
-      console.error('获取报告问题时出错:', error);
-    }
-  };
-
-  // 关闭导出模态窗口
-  const handleCloseExportModal = () => {
-    setSelectedReportForExport(null);
-    setReportIssues([]);
+    // 导航到报告详情页面
+    navigate(`/reports/${report.id}`);
   };
   const { t } = useTranslation('common');
 
@@ -249,10 +224,10 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
                 ) : (
                   report.status === 'completed' ? (
                     <button
-                      onClick={(e) => handleExportReport(e, report)}
+                      onClick={(e) => handleViewReport(e, report)}
                       className="px-3 py-1 rounded text-xs font-medium bg-blue-900/30 text-blue-400 hover:bg-blue-800/50 transition-colors"
                     >
-                      {t('reportPage.actions.exportReport', 'Export Report')}
+                      {t('reportPage.actions.viewReport', 'View Report')}
                     </button>
                   ) : (
                     <span className="text-xs text-gray-500">
@@ -363,10 +338,10 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
                   ) : (
                     report.status === 'completed' ? (
                       <button
-                        onClick={(e) => handleExportReport(e, report)}
+                        onClick={(e) => handleViewReport(e, report)}
                         className="px-3 py-1 rounded text-xs font-medium bg-blue-900/30 text-blue-400 hover:bg-blue-800/50 transition-colors"
                       >
-                        {t('reportPage.actions.exportReport', 'Export Report')}
+                        {t('reportPage.actions.viewReport', 'View Report')}
                       </button>
                     ) : (
                       <span className="text-xs text-gray-500 px-3 py-1">
@@ -412,17 +387,33 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
           </div>
         </div>
       )}
+
+      {/* 积分提示 */}
+      {!isWhitelistUser && pointsCost > 0 && (
+        <div className="mb-4 p-3 bg-green-900/30 border border-green-700/50 rounded-lg text-green-300 text-sm">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+              <span>
+                {t('points.viewReportCost', {
+                  cost: pointsCost,
+                  defaultValue: `查看报告详情需要支付 ${pointsCost} 积分。`
+                })}
+              </span>
+              <span className="ml-2 font-medium">
+                {t('points.currentBalance', {
+                  balance: userPoints !== null ? userPoints : '--',
+                  defaultValue: `当前积分: ${userPoints !== null ? userPoints : '--'}`
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
       <TableView />
       <CardView />
-
-      {/* 审计报告导出模态窗口 */}
-      {selectedReportForExport && (
-        <AuditReportModal
-          report={selectedReportForExport}
-          issues={reportIssues}
-          onClose={handleCloseExportModal}
-        />
-      )}
     </>
   );
 };

@@ -90,25 +90,6 @@ function MobileNavMenu({ isOpen, onClose }) {
               {t('navigation.home')}
             </Link>
 
-            {/* About Link */}
-            {isHomePage ? (
-              <a
-                href="#about"
-                className={menuItemClasses}
-                onClick={handleMenuItemClick}
-              >
-                {t('navigation.about')}
-              </a>
-            ) : (
-              <Link
-                to="/#about"
-                className={menuItemClasses}
-                onClick={handleMenuItemClick}
-              >
-                {t('navigation.about')}
-              </Link>
-            )}
-
             {/* Audit Dropdown */}
             <div className="py-2 border-b border-white/10">
               <button
@@ -165,6 +146,24 @@ function MobileNavMenu({ isOpen, onClose }) {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* DAO Link - Temporarily disabled */}
+            {/* <Link
+              to="/dao"
+              className={location.pathname === '/dao' ? activeMenuItemClasses : menuItemClasses}
+              onClick={handleMenuItemClick}
+            >
+              {t('navigation.dao', 'DAO')}
+            </Link> */}
+
+            {/* Airdrop Check Link */}
+            <Link
+              to="/airdrop-check"
+              className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
+              onClick={handleMenuItemClick}
+            >
+              {t('navigation.airdropCheck')}
+            </Link>
 
             {/* White Paper Link - 使用安全链接组件 */}
             <SafeExternalLink

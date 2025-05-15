@@ -183,7 +183,7 @@ const AuditReportPDF = React.forwardRef(({ report, issues }, ref) => {
   };
 
   return (
-    <div ref={ref} className="p-8 bg-white text-black font-sans max-w-4xl mx-auto" style={{ lineHeight: 1.5 }}>
+    <div ref={ref} className="p-8 bg-white text-black font-sans max-w-5xl mx-auto" style={{ lineHeight: 1.5 }}>
       {/* Report Cover Page */}
       <div className="mb-12 text-center">
         {/* 使用logo2.png */}

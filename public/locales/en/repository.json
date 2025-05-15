@@ -83,6 +83,10 @@
   "detectionPage": {
     "github": {
       "privateRepoNotice": "For private repositories, please grant access to our GitHub account @Chain-Fox so we can review your code."
+    },
+    "rustOnly": {
+      "title": "IMPORTANT: Rust Repositories Only",
+      "description": "Currently, our platform only supports security detection for Rust language repositories. Please do not submit repositories in any other programming languages, as this will result in credit deduction without successful detection. Any credit loss due to this reason will be the user's responsibility."
     }
   }
 }

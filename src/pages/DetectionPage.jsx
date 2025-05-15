@@ -6,15 +6,20 @@ import { repositories } from '../services/supabase';
 import AuditReport from '../components/AuditReport/AuditReport';
 import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
+import { useAuth } from '../contexts/AuthContext';
+import { deductCredits, hasEnoughCredits, CREDITS_CONFIG } from '../services/creditsService';
+import { notify } from '../components/ui/Notification';
 
 
 function DetectionPage() {
-  const { t } = useTranslation(['common', 'repository']);
+  const { t } = useTranslation(['common', 'repository', 'profile']);
+  const { user, userCredits, refreshUserCredits } = useAuth(); // Get user and credits information
   const [activeTab, setActiveTab] = useState('github');
   const [codeContent, setCodeContent] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
   const [repositoryUrls, setRepositoryUrls] = useState(['']); // For multiple repository submissions
   const [isLoading, setIsLoading] = useState(false);
+  const [checkingPoints, setCheckingPoints] = useState(false); // Checking points status
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [scanProgress, setScanProgress] = useState(0);
@@ -489,11 +494,6 @@ fn process_instruction(
     return (
       <div>
         <h3 className="text-lg font-medium mb-3 text-white/80">{t('detectionPage.github.title')}</h3>
-        <p className="text-gray-400 mb-6">
-          <span className="text-yellow-400">
-            {t('repository:detectionPage.github.privateRepoNotice')}
-          </span>
-        </p>
 
         {/* Success message */}
         {success && (
@@ -547,7 +547,54 @@ fn process_instruction(
               {/* Single repository input removed - we only use the multiple repository submission form */}
 
               <div className="mb-6">
-                {/* <h4 className="text-md font-medium text-white/80 mb-4">{t('repositorySubmission.form.title', { ns: 'repository' })}</h4> */}
+                {/* Combined Repository Information */}
+                <div className="mb-4 p-5 bg-purple-900/30 border border-purple-700/50 rounded-lg text-purple-300 text-sm">
+                  <div className="flex flex-col space-y-4">
+                    {/* Repository Type Information */}
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 mr-3 text-purple-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <div>
+                        <h4 className="font-bold text-purple-200 mb-1">{t('repository:detectionPage.rustOnly.title', '重要提示：仅支持 Rust 仓库')}</h4>
+                        <p className="text-purple-200/90">{t('repository:detectionPage.rustOnly.description', '目前平台仅支持 Rust 语言仓库的安全检测。请勿提交其他语言的代码仓库，否则将导致积分扣除但无法完成有效检测。因此类原因造成的积分损失需由用户自行承担。')}</p>
+                      </div>
+                    </div>
+
+                    {/* Private Repository Notice */}
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 mr-3 text-purple-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                      </svg>
+                      <div>
+                        <p className="text-purple-200/90">{t('repository:detectionPage.github.privateRepoNotice')}</p>
+                      </div>
+                    </div>
+
+                    {/* Credits Information */}
+                    <div className="flex items-start pt-2 border-t border-purple-700/30">
+                      <svg className="w-5 h-5 mr-3 text-purple-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <div>
+                        <p>
+                          <span>
+                            {t('points.submitRepositoryCost', {
+                              cost: CREDITS_CONFIG.SUBMIT_REPOSITORY,
+                              ns: 'profile'
+                            })}
+                          </span>
+                          <span className="ml-2 font-medium">
+                            {t('points.currentBalance', {
+                              balance: userCredits !== null ? userCredits : '--',
+                              ns: 'profile'
+                            })}: {userCredits !== null ? userCredits : '--'}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {repositoryUrls.map((url, index) => (
                   <div key={index} className="flex items-center gap-2 mb-3">
@@ -563,7 +610,7 @@ fn process_instruction(
                         placeholder={t('repositorySubmission.form.placeholder', { ns: 'repository' })}
                         className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
                           backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
-                        disabled={isLoading}
+                        disabled={isLoading || checkingPoints}
                       />
                     </div>
 
@@ -576,8 +623,8 @@ fn process_instruction(
                           updatedUrls.splice(index, 1);
                           setRepositoryUrls(updatedUrls);
                         }}
-                        className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                        disabled={isLoading}
+                        className="p-2 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:hover:text-gray-400"
+                        disabled={isLoading || checkingPoints}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -592,8 +639,8 @@ fn process_instruction(
                   <button
                     type="button"
                     onClick={() => setRepositoryUrls([...repositoryUrls, ''])}
-                    className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
-                    disabled={isLoading}
+                    className="flex items-center text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-50 disabled:text-blue-700 disabled:hover:text-blue-700"
+                    disabled={isLoading || checkingPoints}
                   >
                     <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -631,15 +678,72 @@ fn process_instruction(
                         return;
                       }
 
-                      setIsLoading(true);
+                      // Check if user has enough points
+                      setCheckingPoints(true);
 
                       try {
-                        // Submit repositories to Supabase
+                        // Calculate required credits
+                        const creditsNeeded = CREDITS_CONFIG.SUBMIT_REPOSITORY * filteredUrls.length;
+
+                        // Confirm credit deduction
+                        if (!window.confirm(t('points.confirmSubmissionDeduction', {
+                          points: creditsNeeded,
+                          count: filteredUrls.length,
+                          ns: 'profile'
+                        }))) {
+                          setCheckingPoints(false);
+                          return;
+                        }
+
+                        // First check if user has enough credits without deducting
+                        const { hasEnough, currentCredits, error: checkError } = await hasEnoughCredits(creditsNeeded);
+
+                        if (checkError) {
+                          console.error('Error checking points:', checkError);
+                          setError(t('points.generalError', { ns: 'profile' }));
+                          setCheckingPoints(false);
+                          return;
+                        }
+
+                        if (!hasEnough) {
+                          setError(t('points.insufficientPoints', { ns: 'profile' }));
+                          setCheckingPoints(false);
+                          return;
+                        }
+
+                        // Continue submitting repositories
+                        setCheckingPoints(false);
+                        setIsLoading(true);
+
+                        // Submit repositories to Supabase FIRST
                         const { data, error } = await repositories.submitMultipleRepositories(filteredUrls);
 
                         if (error) {
                           throw error;
                         }
+
+                        // Only deduct credits AFTER successful submission
+                        const { success: deductSuccess, message, remainingCredits, error: deductError } = await deductCredits(
+                          creditsNeeded,
+                          t('points.types.submit_repository', { ns: 'profile' }),
+                          'submit_repository'
+                        );
+
+                        if (deductError) {
+                          console.error('Error deducting credits:', deductError);
+                          // We don't want to show this error to the user since the submission was successful
+                          // Just log it for administrators to handle
+                        }
+
+                        // Refresh user credits
+                        await refreshUserCredits();
+
+                        // Show success message
+                        notify.success(t('points.deductSuccess', {
+                          points: creditsNeeded,
+                          remaining: remainingCredits || (currentCredits - creditsNeeded),
+                          ns: 'profile'
+                        }));
 
                         // Success
                         setSuccess(true);
@@ -658,20 +762,24 @@ fn process_instruction(
                         }
                       } finally {
                         setIsLoading(false);
+                        setCheckingPoints(false);
                       }
                     }}
-                    disabled={isLoading || repositoryUrls.every(url => url.trim() === '')}
+                    disabled={isLoading || checkingPoints || repositoryUrls.every(url => url.trim() === '')}
                     className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(147, 51, 234, 0.5)" }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {isLoading ? (
+                    {isLoading || checkingPoints ? (
                       <div className="flex items-center">
                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        {t('repositorySubmission.form.submitting', { ns: 'repository' })}
+                        {checkingPoints
+                          ? t('points.checking', { ns: 'profile' })
+                          : t('repositorySubmission.form.submitting', { ns: 'repository' })
+                        }
                       </div>
                     ) : (
                       <span className="flex items-center">
@@ -746,7 +854,7 @@ fn process_instruction(
           {/* Security stats banner */}
           <div className="mb-8 grid grid-cols-3 gap-4 p-4 rounded-lg bg-blue-900/10 border border-blue-500/20">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">24/7</div>
+              <div className="text-2xl font-bold text-blue-400">43</div>
               <div className="text-xs text-gray-400">{t('detectionPage.stats.monitoring')}</div>
             </div>
             <div className="text-center">
@@ -754,7 +862,7 @@ fn process_instruction(
               <div className="text-xs text-gray-400">{t('detectionPage.stats.accuracy')}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400">500+</div>
+              <div className="text-2xl font-bold text-green-400">20+</div>
               <div className="text-xs text-gray-400">{t('detectionPage.stats.vulnerabilities')}</div>
             </div>
           </div>

@@ -13,7 +13,10 @@
     "content": "Content",
     "audit": "Audit",
     "whitePaper": "White Paper",
-    "sampleAudit": "Sample Audit"
+    "sampleAudit": "Sample Audit",
+    "exploration": "Exploration",
+    "dao": "DAO",
+    "airdropCheck": "Airdrop Check"
   },
   "buttons": {
     "getStarted": "Get Started",

@@ -13,8 +13,8 @@ const AuthCallback = () => {
     // Handle OAuth callback
     const handleAuthCallback = async () => {
       try {
+        // Process callback silently without logging URL
         console.log("AuthCallback: Starting to process callback");
-        console.log("URL:", window.location.href);
 
         // Get hash parameters and query parameters from URL
         // Safely extract parameters by validating and sanitizing
@@ -87,12 +87,7 @@ const AuthCallback = () => {
           (localStorage.getItem('auth_provider') ?
             localStorage.getItem('auth_provider').replace(/[^\w\s.-]/g, '') : null);
 
-        console.log("AuthCallback: Token information", {
-          provider,
-          hasAccessToken: !!accessToken,
-          hasRefreshToken: !!refreshToken,
-          hasCode: !!code
-        });
+        // Process token information silently
 
         // Check if there is an authorization code (code), which is part of the OAuth flow
         if (code) {
@@ -286,7 +281,7 @@ const AuthCallback = () => {
       {/* Grid background */}
       <div className="fixed top-0 left-0 w-full h-full bg-grid" style={{ zIndex: -5 }} />
 
-      {/* Main content */}
+      {/* Main content - simplified version */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -493,40 +488,22 @@ const AuthCallback = () => {
               {t('auth.error.verifyingIdentity')}
             </motion.p>
 
-            {/* Debug Information */}
-            {process.env.NODE_ENV === 'development' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-8 p-4 bg-black/30 border border-white/10 rounded-md text-xs font-mono text-left overflow-auto max-h-60 w-full"
+            {/* Continue button */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-8 flex justify-center space-x-3"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 text-sm bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full"
+                onClick={() => navigate('/')}
               >
-                <p className="font-bold mb-2 text-purple-300">{t('auth.callback.debugInfo')}:</p>
-                <p className="text-gray-300">URL: {window.location.href}</p>
-                <p className="text-gray-300">Hash: {window.location.hash}</p>
-                <p className="text-gray-300">Search: {window.location.search}</p>
-
-                <div className="mt-4 flex space-x-3">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-3 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full"
-                    onClick={() => navigate('/')}
-                  >
-                    Force Navigate to Home
-                  </motion.button>
-
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-3 py-1 text-xs bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full"
-                    onClick={() => navigate('/debug')}
-                  >
-                    View Debug Page
-                  </motion.button>
-                </div>
-              </motion.div>
-            )}
+                {t('auth.callback.continueToHome')}
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </motion.div>

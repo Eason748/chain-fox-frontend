@@ -83,6 +83,10 @@
   "detectionPage": {
     "github": {
       "privateRepoNotice": "对于私有仓库，请授权访问我们的 GitHub 帐户 @Chain-Fox，以便我们审核您的代码。"
+    },
+    "rustOnly": {
+      "title": "重要提示：仅支持 Rust 仓库",
+      "description": "目前平台仅支持 Rust 语言仓库的安全检测。请勿提交其他语言的代码仓库，否则将导致积分扣除但无法完成有效检测。因此类原因造成的积分损失需由用户自行承担。"
     }
   }
 }

@@ -1,0 +1,23 @@
+{
+  "pageTitle": "Exploration Journey",
+  "pageDescription": "Our journey exploring blockchain security through code audits and patches for critical repositories. This is not about showcasing our expertise, but rather documenting our exploration of a new direction, the challenges we faced, and how we helped projects improve their code security one step at a time.",
+  "introNarrative": "Like humanity's journey to the moon and Mars exploration, this page documents our exploration driven by a simple goal: to make blockchain code more secure. Here's the story of our challenges, discoveries, and achievements along the way.",
+  "repositoriesTitle": "Core Repositories",
+  "repositoriesSubtitle": "Important blockchain projects we've audited and helped improve",
+  "timelineTitle": "Journey Timeline",
+  "timelineSubtitle": "Key milestones in our exploration",
+  "conclusionTitle": "Continuing the Journey",
+  "viewRepository": "View Repository",
+  "viewIssue": "View Issue",
+  "viewPR": "View Pull Request",
+  "severity": "Severity",
+  "auditDate": "Audit Date",
+  "importance": "Importance",
+  "challenges": "Challenges",
+  "approach": "Our Approach",
+  "findings": "Key Findings",
+  "outcome": "Outcome",
+  "navigation": {
+    "exploration": "Exploration"
+  }
+}

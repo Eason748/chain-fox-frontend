@@ -1,0 +1,23 @@
+{
+  "pageTitle": "探索之旅",
+  "pageDescription": "通过对关键仓库的代码审计和补丁，探索区块链安全的旅程。这不是为了展示我们的专业知识，而是记录我们探索新方向的过程，我们面临的挑战，以及我们如何一步步帮助项目改进代码安全。",
+  "introNarrative": "就像人类登月和探索火星一样，这个页面记录了我们由一个简单目标驱动的探索：让区块链代码变得更安全。这是我们在旅途中面临的挑战、发现和成就的故事。",
+  "repositoriesTitle": "核心仓库",
+  "repositoriesSubtitle": "我们审计并帮助改进的重要区块链项目",
+  "timelineTitle": "旅程时间线",
+  "timelineSubtitle": "我们探索过程中的关键里程碑",
+  "conclusionTitle": "继续旅程",
+  "viewRepository": "查看仓库",
+  "viewIssue": "查看问题",
+  "viewPR": "查看拉取请求",
+  "severity": "严重程度",
+  "auditDate": "审计日期",
+  "importance": "重要性",
+  "challenges": "挑战",
+  "approach": "我们的方法",
+  "findings": "主要发现",
+  "outcome": "结果",
+  "navigation": {
+    "exploration": "探索"
+  }
+}

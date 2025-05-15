@@ -1,0 +1,209 @@
+{
+  "pageTitle": {
+    "en": "Exploration Journey",
+    "zh": "探索之旅"
+  },
+  "pageDescription": {
+    "en": "Our journey exploring blockchain security through code audits and patches for critical repositories. This is not about showcasing our expertise, but rather documenting our exploration of a new direction, the challenges we faced, and how we helped projects improve their code security one step at a time.",
+    "zh": "通过对关键仓库的代码审计和补丁，探索区块链安全的旅程。这不是为了展示我们的专业知识，而是记录我们探索新方向的过程，我们面临的挑战，以及我们如何一步步帮助项目改进代码安全。"
+  },
+  "introNarrative": {
+    "en": "Like humanity's journey to the moon and Mars exploration, this page documents our exploration driven by a simple goal: to make blockchain code more secure. Here's the story of our challenges, discoveries, and achievements along the way.",
+    "zh": "就像人类登月和探索火星一样，这个页面记录了我们由一个简单目标驱动的探索：让区块链代码变得更安全。这是我们在旅途中面临的挑战、发现和成就的故事。"
+  },
+  "repositories": [
+    {
+      "id": "repo1",
+      "name": "Solana Program Library",
+      "url": "https://github.com/solana-labs/solana-program-library",
+      "description": {
+        "en": "A collection of Solana programs maintained by Solana Labs",
+        "zh": "由 Solana Labs 维护的 Solana 程序集合"
+      },
+      "auditDate": "2023-09-15",
+      "importance": {
+        "en": "Core infrastructure used by hundreds of Solana projects",
+        "zh": "被数百个 Solana 项目使用的核心基础设施"
+      },
+      "challenges": {
+        "en": "Complex codebase with minimal documentation and rapidly evolving APIs",
+        "zh": "复杂的代码库，文档最小化，API 快速发展"
+      },
+      "approach": {
+        "en": "Systematic review of token-swap and token-lending programs focusing on mathematical operations",
+        "zh": "系统性审查 token-swap 和 token-lending 程序，重点关注数学运算"
+      },
+      "findings": [
+        {
+          "id": "SPL-01",
+          "title": {
+            "en": "Integer Overflow in Fee Calculation",
+            "zh": "费用计算中的整数溢出"
+          },
+          "severity": "Critical",
+          "description": {
+            "en": "Potential integer overflow in fee calculation could lead to incorrect fees being charged",
+            "zh": "费用计算中的潜在整数溢出可能导致收取不正确的费用"
+          },
+          "issueLink": "https://github.com/solana-labs/solana-program-library/issues/123",
+          "prLink": "https://github.com/solana-labs/solana-program-library/pull/456"
+        },
+        {
+          "id": "SPL-02",
+          "title": {
+            "en": "Rounding Error in Token Swap",
+            "zh": "代币交换中的舍入错误"
+          },
+          "severity": "High",
+          "description": {
+            "en": "Rounding errors in token swap calculations could be exploited for financial gain",
+            "zh": "代币交换计算中的舍入错误可能被利用获取经济利益"
+          },
+          "issueLink": "https://github.com/solana-labs/solana-program-library/issues/789",
+          "prLink": "https://github.com/solana-labs/solana-program-library/pull/901"
+        }
+      ],
+      "outcome": {
+        "en": "Both issues were fixed and deployed, improving security for all projects using these components",
+        "zh": "两个问题都已修复并部署，提高了使用这些组件的所有项目的安全性"
+      }
+    },
+    {
+      "id": "repo2",
+      "name": "Serum DEX",
+      "url": "https://github.com/project-serum/serum-dex",
+      "description": {
+        "en": "Core orderbook program for Serum decentralized exchange",
+        "zh": "Serum 去中心化交易所的核心订单簿程序"
+      },
+      "auditDate": "2023-11-20",
+      "importance": {
+        "en": "Powers trading for many Solana DeFi applications with billions in trading volume",
+        "zh": "为许多 Solana DeFi 应用提供交易功能，交易量达数十亿"
+      },
+      "challenges": {
+        "en": "Highly optimized code with complex market mechanics and concurrency considerations",
+        "zh": "高度优化的代码，复杂的市场机制和并发考虑"
+      },
+      "approach": {
+        "en": "Focused on order matching logic and settlement processes",
+        "zh": "专注于订单匹配逻辑和结算流程"
+      },
+      "findings": [
+        {
+          "id": "SERUM-01",
+          "title": {
+            "en": "Race Condition in Order Matching",
+            "zh": "订单匹配中的竞态条件"
+          },
+          "severity": "Critical",
+          "description": {
+            "en": "Potential race condition could allow orders to be matched incorrectly under high load",
+            "zh": "潜在的竞态条件可能导致在高负载下订单匹配不正确"
+          },
+          "issueLink": "https://github.com/project-serum/serum-dex/issues/234",
+          "prLink": "https://github.com/project-serum/serum-dex/pull/567"
+        }
+      ],
+      "outcome": {
+        "en": "Issue was fixed with a more robust locking mechanism, preventing potential market manipulation",
+        "zh": "通过更强大的锁定机制修复了问题，防止潜在的市场操纵"
+      }
+    },
+    {
+      "id": "repo3",
+      "name": "Anchor Framework",
+      "url": "https://github.com/coral-xyz/anchor",
+      "description": {
+        "en": "Solana's most popular development framework",
+        "zh": "Solana 最流行的开发框架"
+      },
+      "auditDate": "2024-01-10",
+      "importance": {
+        "en": "Used by the majority of Solana programs, affecting ecosystem security",
+        "zh": "被大多数 Solana 程序使用，影响生态系统安全"
+      },
+      "challenges": {
+        "en": "Complex macro system and code generation with security implications",
+        "zh": "复杂的宏系统和代码生成，具有安全隐患"
+      },
+      "approach": {
+        "en": "Audited the constraint system and account validation logic",
+        "zh": "审计约束系统和账户验证逻辑"
+      },
+      "findings": [
+        {
+          "id": "ANCHOR-01",
+          "title": {
+            "en": "Insufficient Account Validation",
+            "zh": "账户验证不足"
+          },
+          "severity": "High",
+          "description": {
+            "en": "Certain account validation checks could be bypassed in specific scenarios",
+            "zh": "在特定场景下，某些账户验证检查可能被绕过"
+          },
+          "issueLink": "https://github.com/coral-xyz/anchor/issues/890",
+          "prLink": "https://github.com/coral-xyz/anchor/pull/912"
+        },
+        {
+          "id": "ANCHOR-02",
+          "title": {
+            "en": "Unsafe Deserialization",
+            "zh": "不安全的反序列化"
+          },
+          "severity": "Medium",
+          "description": {
+            "en": "Potential memory corruption during account deserialization",
+            "zh": "账户反序列化期间潜在的内存损坏"
+          },
+          "issueLink": "https://github.com/coral-xyz/anchor/issues/1045",
+          "prLink": "https://github.com/coral-xyz/anchor/pull/1102"
+        }
+      ],
+      "outcome": {
+        "en": "Framework security was significantly improved, benefiting all projects built with Anchor",
+        "zh": "框架安全性显著提高，使所有使用 Anchor 构建的项目受益"
+      }
+    }
+  ],
+  "journeyMilestones": [
+    {
+      "date": "2023-08-01",
+      "title": {
+        "en": "Beginning the Exploration",
+        "zh": "开始探索"
+      },
+      "description": {
+        "en": "Started with the mission to improve blockchain security through systematic code audits",
+        "zh": "开始通过系统性代码审计改善区块链安全的使命"
+      }
+    },
+    {
+      "date": "2023-10-15",
+      "title": {
+        "en": "First Major Vulnerability Fixed",
+        "zh": "修复第一个重大漏洞"
+      },
+      "description": {
+        "en": "Successfully identified and helped fix a critical vulnerability in a core protocol",
+        "zh": "成功识别并帮助修复核心协议中的关键漏洞"
+      }
+    },
+    {
+      "date": "2024-02-01",
+      "title": {
+        "en": "Expanding Our Approach",
+        "zh": "扩展我们的方法"
+      },
+      "description": {
+        "en": "Developed more sophisticated audit methodologies based on lessons learned",
+        "zh": "根据经验教训开发更复杂的审计方法"
+      }
+    }
+  ],
+  "conclusion": {
+    "en": "This journey is just beginning. As we continue to explore and improve blockchain security, we invite you to join us in this mission. Together, we can build a more secure foundation for the decentralized future.",
+    "zh": "这个旅程才刚刚开始。随着我们继续探索和改进区块链安全，我们邀请您加入我们的使命。一起，我们可以为去中心化的未来建立更安全的基础。"
+  }
+}
