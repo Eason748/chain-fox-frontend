@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import SafeExternalLink from '../common/SafeExternalLink';
 
 function NavMenu() {
-  const { t } = useTranslation(['common', 'repository']);
+  const { t } = useTranslation(['common', 'repository', 'airdrop']);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
@@ -124,7 +124,7 @@ function NavMenu() {
         className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
         onClick={closeDropdowns}
       >
-        <span>{t('navigation.airdropCheck', '空投查询')}</span>
+        <span>{t('navigation.airdropCheck')}</span>
       </Link>
 
       {/* White Paper Link - 使用安全链接组件 */}

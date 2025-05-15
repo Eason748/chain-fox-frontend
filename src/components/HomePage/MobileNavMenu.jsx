@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import SafeExternalLink from '../common/SafeExternalLink';
 
 function MobileNavMenu({ isOpen, onClose }) {
-  const { t, i18n } = useTranslation(['common', 'repository']);
+  const { t, i18n } = useTranslation(['common', 'repository', 'airdrop']);
   const location = useLocation(); // Get current location
   const isHomePage = location.pathname === '/'; // Check if it's the home page
   const { user, signOut } = useAuth(); // Get user info and sign out function
@@ -162,7 +162,7 @@ function MobileNavMenu({ isOpen, onClose }) {
               className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
-              {t('navigation.airdropCheck', '空投查询')}
+              {t('navigation.airdropCheck')}
             </Link>
 
             {/* White Paper Link - 使用安全链接组件 */}

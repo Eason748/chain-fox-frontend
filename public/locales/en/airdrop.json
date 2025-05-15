@@ -1,4 +1,7 @@
 {
+  "navigation": {
+    "airdropCheck": "Airdrop Check"
+  },
   "title": "Credits Airdrop Check",
   "description": "Enter your Solana wallet address to check if you are eligible for credits airdrop and how many credits you can receive.",
   "form": {
