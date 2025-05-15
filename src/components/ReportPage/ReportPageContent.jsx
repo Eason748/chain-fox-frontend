@@ -261,9 +261,17 @@ const ReportPageContent = () => {
   };
 
   const handleReportClick = useCallback(async (report) => {
-    // 白名单用户可以免费查看所有报告
+    // 白名单用户（审计员）点击行时进入审计界面，而不是直接查看报告
     if (isWhitelistUser) {
-      navigate(`/reports/${report.id}`);
+      // 进入审计模式，显示报告详情
+      setSelectedReport(report);
+      setView('detail');
+      return;
+    }
+
+    // 以下是普通用户查看报告的逻辑，只有已完成的报告可以查看
+    if (report.status !== 'completed' && report.status !== 'archived') {
+      notify.warning(t('reportPage.pendingReportNotice', { defaultValue: '此报告尚未完成审计，无法查看详情' }));
       return;
     }
 
@@ -333,7 +341,7 @@ const ReportPageContent = () => {
     } finally {
       setCheckingPoints(false);
     }
-  }, [isWhitelistUser, refreshUserCredits, t, navigate]);
+  }, [isWhitelistUser, refreshUserCredits, t, navigate, setSelectedReport, setView]);
 
   const handleBackToList = useCallback(() => {
     setView('list');

@@ -25,9 +25,16 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
 
   // 处理报告点击
   const handleReportClick = (report) => {
-    // 白名单用户可以查看所有状态的报告详情
-    // 普通用户只能查看 completed 或 archived 状态的报告
-    if (isWhitelistUser || report.status === 'completed' || report.status === 'archived') {
+    // 白名单用户（审计员）点击行时进入审计界面
+    // 普通用户点击行时查看报告详情（如果报告已完成）
+    if (isWhitelistUser) {
+      // 审计员进入审计界面，而不是直接查看报告
+      // 设置选中的报告，进入审计模式
+      console.log('审计员点击行，进入审计界面');
+      // 这里不直接导航到报告详情页面，而是通知父组件进入审计模式
+      onReportClick(report);
+    } else if (report.status === 'completed' || report.status === 'archived') {
+      // 普通用户只能查看已完成的报告
       onReportClick(report);
     } else {
       // 对于 pending 状态的报告，不执行任何操作或显示提示
