@@ -2,6 +2,7 @@
   "navigation": {
     "airdropCheck": "空投查询"
   },
+  "snapshotDate": "快照日期",
   "title": "积分空投查询",
   "description": "输入您的 Solana 钱包地址，查询您是否有资格获得积分空投以及可获得的积分数量。",
   "form": {

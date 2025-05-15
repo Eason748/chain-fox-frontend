@@ -202,6 +202,15 @@ const AirdropCheckPage = () => {
           <p className="text-gray-400 mt-2">
             {t('description', { ns: 'airdrop' })}
           </p>
+          <div className="mt-4 p-3 bg-purple-900/30 border border-purple-500/30 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-purple-300 font-medium">{t('snapshotDate', { ns: 'airdrop', defaultValue: 'Snapshot Date' })}: </span>
+              <span className="ml-2 text-white font-bold">May 7, 2025</span>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
