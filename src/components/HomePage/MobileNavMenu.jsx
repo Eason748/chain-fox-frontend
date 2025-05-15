@@ -162,7 +162,7 @@ function MobileNavMenu({ isOpen, onClose }) {
               className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
-              {t('navigation.airdropCheck')}
+              {t('navigation.airdropCheck', '空投查询')}
             </Link>
 
             {/* White Paper Link - 使用安全链接组件 */}
