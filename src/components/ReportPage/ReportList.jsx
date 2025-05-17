@@ -88,11 +88,33 @@ const ReportList = ({ reports, isLoading, searchTerm, onReportClick, onReportSta
   };
 
   // 处理查看报告详情
-  const handleViewReport = (e, report) => {
+  const handleViewReport = async (e, report) => {
     e.stopPropagation(); // 阻止事件冒泡，避免触发行点击事件
 
-    // 导航到报告详情页面
-    navigate(`/reports/${report.id}`);
+    // 白名单用户可以免费查看报告
+    if (isWhitelistUser) {
+      navigate(`/reports/${report.id}?confirmed=true`);
+      return;
+    }
+
+    // 检查用户是否有足够的积分
+    if (userPoints < pointsCost) {
+      alert(t('points.insufficientPoints', {
+        defaultValue: `积分不足。您需要 ${pointsCost} 积分，但只有 ${userPoints} 积分。`
+      }));
+      return;
+    }
+
+    // 确认扣除积分
+    if (!window.confirm(t('points.confirmDeduction', {
+      points: pointsCost,
+      defaultValue: `查看此报告需要 ${pointsCost} 积分，确定要继续吗？`
+    }))) {
+      return;
+    }
+
+    // 导航到报告详情页面，添加confirmed=true参数表示已确认扣除积分
+    navigate(`/reports/${report.id}?confirmed=true`);
   };
   const { t } = useTranslation('common');
 

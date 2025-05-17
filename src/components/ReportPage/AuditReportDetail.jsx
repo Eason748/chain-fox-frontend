@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import logo from '/public/logo2.png';
 
 /**
- * Audit Report PDF Template Component
+ * Audit Report Detail Component
  * This component renders a professional security audit report based on the provided data
- * It is designed to be exported as PDF
+ * It is designed for online viewing of audit reports
  */
-const AuditReportPDF = React.forwardRef(({ report, issues }, ref) => {
+const AuditReportDetail = React.forwardRef(({ report, issues }, ref) => {
   const { t } = useTranslation();
 
   if (!report) return null;
@@ -168,8 +168,6 @@ const AuditReportPDF = React.forwardRef(({ report, issues }, ref) => {
     low: 'The risk is relatively small and limited in scope, unlikely to pose significant danger to the system or its users in its current implementation.',
     info: 'The issue does not pose an immediate risk, but is relevant to security best practices or defense in depth.'
   };
-
-  // Severity color classes are now directly used in the component
 
   // Get severity badge class
   const getSeverityBadgeClass = (severity) => {
@@ -487,4 +485,4 @@ const AuditReportPDF = React.forwardRef(({ report, issues }, ref) => {
   );
 });
 
-export default AuditReportPDF;
+export default AuditReportDetail;

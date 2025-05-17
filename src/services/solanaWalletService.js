@@ -62,7 +62,7 @@ class SolanaWalletService {
       }
 
       // 检查存储的钱包连接
-      this.checkStoredConnection();
+      await this.checkStoredConnection();
 
       this.isInitialized = true;
       // 移除日志输出
@@ -78,14 +78,14 @@ class SolanaWalletService {
 
   /**
    * Check if there's a stored wallet connection
-   * @returns {Object|null} Stored connection data including signature if available
+   * @returns {Promise<Object|null>} Stored connection data including signature if available
    */
-  checkStoredConnection() {
+  async checkStoredConnection() {
     try {
       const storedConnection = localStorage.getItem(WALLET_CONNECTION_KEY);
       if (storedConnection) {
         const connectionData = JSON.parse(storedConnection);
-        const { connected, address, adapter, timestamp, signature, signedMessage } = connectionData;
+        const { connected, address, adapter, timestamp } = connectionData;
 
         // Check if the connection is recent (within the last day)
         const isRecent = Date.now() - timestamp < 24 * 60 * 60 * 1000;
@@ -97,14 +97,44 @@ class SolanaWalletService {
           // Try to auto-connect to the wallet in the background
           this.tryAutoConnect(adapter);
 
-          // 移除日志输出
+          // 尝试从服务器获取签名信息
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
 
-          // Return the stored connection data including signature if available
-          return {
-            address,
-            signature,
-            signedMessage
-          };
+            if (user) {
+              // 用户已登录，从服务器获取签名
+              const { data: signatureData, error: signatureError } = await supabase
+                .from('wallet_signatures')
+                .select('signature, signed_message')
+                .eq('user_id', user.id)
+                .eq('wallet_address', address)
+                .eq('is_active', true)
+                .or('expires_at.gte.now,expires_at.is.null')  // 过期时间大于当前时间或为空
+                .maybeSingle();
+
+              if (!signatureError && signatureData) {
+                if (import.meta.env.DEV) {
+                  console.log("SolanaWalletService: Signature retrieved from server successfully");
+                }
+
+                // 返回从服务器获取的签名信息
+                return {
+                  address,
+                  signature: signatureData.signature,
+                  signedMessage: signatureData.signed_message
+                };
+              } else if (import.meta.env.DEV) {
+                console.log("SolanaWalletService: No valid signature found on server");
+              }
+            }
+          } catch (serverError) {
+            if (import.meta.env.DEV) {
+              console.error("SolanaWalletService: Error retrieving signature from server", serverError);
+            }
+          }
+
+          // 如果从服务器获取签名失败，返回基本连接信息
+          return { address };
         }
       }
       return null;
@@ -294,34 +324,69 @@ class SolanaWalletService {
 
       // Check if already connected
       if (this.isConnected && this.adapter && this.walletAddress) {
-        // Check if we have a stored signature
-        const storedConnection = localStorage.getItem(WALLET_CONNECTION_KEY);
-        if (storedConnection) {
-          try {
-            const { signature, signedMessage } = JSON.parse(storedConnection);
-            if (signature && signedMessage) {
-              // If we have a stored signature, return it
+        // 尝试从服务器获取签名信息
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+
+          if (user) {
+            // 用户已登录，从服务器获取签名
+            const { data: signatureData, error: signatureError } = await supabase
+              .from('wallet_signatures')
+              .select('signature, signed_message')
+              .eq('user_id', user.id)
+              .eq('wallet_address', this.walletAddress)
+              .eq('is_active', true)
+              .or('expires_at.gte.now,expires_at.is.null')  // 过期时间大于当前时间或为空
+              .maybeSingle();
+
+            if (!signatureError && signatureData && signatureData.signature && signatureData.signed_message) {
+              // 如果从服务器获取到有效签名，返回它
               return {
                 success: true,
                 address: this.walletAddress,
-                signature,
-                signedMessage,
-                message: "Already connected with signature"
+                signature: signatureData.signature,
+                signedMessage: signatureData.signed_message,
+                message: "Already connected with signature from server"
+              };
+            }
+          }
+        } catch (serverError) {
+          if (import.meta.env.DEV) {
+            console.error("SolanaWalletService: Error retrieving signature from server", serverError);
+          }
+        }
+
+        // 如果从服务器获取签名失败，检查本地存储
+        const storedConnection = localStorage.getItem(WALLET_CONNECTION_KEY);
+        if (storedConnection) {
+          try {
+            const connectionData = JSON.parse(storedConnection);
+            // 注意：新版本的本地存储不再包含签名信息
+            // 这里是为了兼容旧版本
+            if (connectionData.signature && connectionData.signedMessage) {
+              if (import.meta.env.DEV) {
+                console.log("SolanaWalletService: Using legacy signature from local storage");
+              }
+              return {
+                success: true,
+                address: this.walletAddress,
+                signature: connectionData.signature,
+                signedMessage: connectionData.signedMessage,
+                message: "Already connected with signature from local storage"
               };
             }
           } catch (e) {
-            // 只在开发环境中输出详细错误
             if (import.meta.env.DEV) {
               console.error("SolanaWalletService: Error parsing stored connection", e);
             }
           }
         }
 
-        // If no stored signature, just return the connection
+        // 如果没有找到有效签名，只返回连接状态
         return {
           success: true,
           address: this.walletAddress,
-          message: "Already connected"
+          message: "Already connected without signature"
         };
       }
 
@@ -379,15 +444,43 @@ class SolanaWalletService {
       // 移除日志输出
 
       if (signatureResult.success) {
-        // Store connection with signature in local storage
+        // Store basic connection info in local storage (without full signature)
         localStorage.setItem(WALLET_CONNECTION_KEY, JSON.stringify({
           connected: true,
           address: this.walletAddress,
           adapter: this.adapter.name,
-          timestamp: Date.now(),
-          signature: signatureResult.signature,
-          signedMessage: signatureMessage
+          timestamp: Date.now()
+          // 不再在本地存储完整签名信息
         }));
+
+        // 尝试将签名存储到服务器端
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+
+          if (user) {
+            // 用户已登录，使用数据库函数存储签名
+            const { data, error: signatureError } = await supabase.rpc('store_wallet_signature', {
+              p_user_id: user.id,
+              p_wallet_address: this.walletAddress,
+              p_signature: signatureResult.signature,
+              p_signed_message: signatureMessage
+            });
+
+            if (signatureError && import.meta.env.DEV) {
+              console.error("SolanaWalletService: Failed to store signature on server", signatureError);
+              // 继续执行，不阻止用户连接钱包
+            } else if (import.meta.env.DEV) {
+              console.log("SolanaWalletService: Signature stored on server successfully");
+            }
+          } else if (import.meta.env.DEV) {
+            console.log("SolanaWalletService: User not logged in, signature not stored on server");
+          }
+        } catch (serverError) {
+          if (import.meta.env.DEV) {
+            console.error("SolanaWalletService: Error storing signature on server", serverError);
+          }
+          // 继续执行，不阻止用户连接钱包
+        }
 
         // Only notify listeners if signature is successful
         this.notifyConnectionListeners();
@@ -460,6 +553,9 @@ class SolanaWalletService {
         return { success: true, message: "Not connected" };
       }
 
+      // 保存钱包地址，以便在断开连接后仍能使用
+      const walletAddressToDisconnect = this.walletAddress;
+
       await this.adapter.disconnect();
 
       this.adapter = null;
@@ -468,6 +564,35 @@ class SolanaWalletService {
 
       // Remove connection from local storage
       localStorage.removeItem(WALLET_CONNECTION_KEY);
+
+      // 尝试从服务器清除签名信息
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          // 用户已登录，使用数据库函数停用签名
+          const { data, error: signatureError } = await supabase.rpc('deactivate_wallet_signature', {
+            p_user_id: user.id,
+            p_wallet_address: walletAddressToDisconnect
+          });
+
+          if (signatureError) {
+            if (import.meta.env.DEV) {
+              console.error("SolanaWalletService: Failed to deactivate signature on server", signatureError);
+            }
+          } else if (!data || !data.success) {
+            if (import.meta.env.DEV) {
+              console.error("SolanaWalletService: Failed to deactivate signature on server", data?.message || "Unknown error");
+            }
+          } else if (import.meta.env.DEV) {
+            console.log("SolanaWalletService: Signature deactivated on server successfully");
+          }
+        }
+      } catch (serverError) {
+        if (import.meta.env.DEV) {
+          console.error("SolanaWalletService: Error deactivating signature on server", serverError);
+        }
+      }
 
       // Update user metadata if user is logged in
       await this.updateUserMetadata();

@@ -140,29 +140,29 @@
   },
   "points": {
     "balance": "Credits",
-    "refresh": "Refresh Points",
-    "refreshed": "Points refreshed",
-    "refreshError": "Failed to refresh points",
-    "history": "Points History",
-    "noHistory": "No points history found",
+    "refresh": "Refresh Credits",
+    "refreshed": "Credits refreshed",
+    "refreshError": "Failed to refresh Credits",
+    "history": "Credits History",
+    "noHistory": "No Credits history found",
     "currentBalance": "Current Balance",
-    "viewReportCost": "Viewing report details costs {{cost}} points.",
-    "submitRepositoryCost": "Submitting each repository costs {{cost}} points.",
-    "confirmDeduction": "Viewing this report will cost {{points}} points. Do you want to continue?",
-    "confirmSubmissionDeduction": "Submitting {{count}} repositories will cost {{points}} points. Do you want to continue?",
-    "deductSuccess": "Deducted {{points}} points. Remaining: {{remaining}} points",
-    "deductError": "Failed to deduct points",
-    "insufficientPoints": "Insufficient points",
+    "viewReportCost": "Viewing report details costs {{cost}} Credits.",
+    "submitRepositoryCost": "Submitting each repository costs {{cost}} Credits.",
+    "confirmDeduction": "Viewing this report will cost {{points}} Credits. Do you want to continue?",
+    "confirmSubmissionDeduction": "Submitting {{count}} repositories will cost {{points}} Credits. Do you want to continue?",
+    "deductSuccess": "Deducted {{points}} Credits. Remaining: {{remaining}} Credits",
+    "deductError": "Failed to deduct Credits",
+    "insufficientPoints": "Insufficient Credits",
     "generalError": "An error occurred while processing your request",
-    "checking": "Checking points...",
+    "checking": "Checking Credits...",
     "checkSubmitterError": "Error checking user permissions",
     "userId": {
       "copy": "Copy UID",
       "copied": "UID copied to clipboard"
     },
     "transfer": {
-      "title": "Transfer Points to Another User",
-      "show": "Transfer Points",
+      "title": "Transfer Credits to Another User",
+      "show": "Transfer Credits",
       "hide": "Hide Transfer Form",
       "targetUserId": "Target UID",
       "targetUserIdPlaceholder": "Enter UID",
@@ -170,14 +170,14 @@
       "amountPlaceholder": "Enter amount",
       "description": "Description (Optional)",
       "descriptionPlaceholder": "Enter description",
-      "submit": "Transfer Points",
+      "submit": "Transfer Credits",
       "processing": "Processing...",
-      "success": "Successfully transferred {{amount}} points. Remaining: {{remaining}}",
-      "confirm": "Are you sure you want to transfer {{amount}} points to user {{userId}}?",
+      "success": "Successfully transferred {{amount}} Credits. Remaining: {{remaining}}",
+      "confirm": "Are you sure you want to transfer {{amount}} Credits to user {{userId}}?",
       "errorNoUserId": "Please enter a target UID",
       "errorInvalidAmount": "Please enter a valid amount (positive integer)",
-      "errorGeneral": "Failed to transfer points",
-      "defaultDescription": "Points transfer"
+      "errorGeneral": "Failed to transfer Credits",
+      "defaultDescription": "Credits transfer"
     },
     "transaction": {
       "date": "Date",
@@ -190,8 +190,8 @@
       "view_report": "View Report",
       "submit_repository": "Submit Repository",
       "admin_adjustment": "Admin Adjustment",
-      "transfer_in": "Points Received",
-      "transfer_out": "Points Sent"
+      "transfer_in": "Credits Received",
+      "transfer_out": "Credits Sent"
     }
   }
 }

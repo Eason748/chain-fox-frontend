@@ -6,8 +6,6 @@ import supabase from '../../services/supabase';
 import { formatDateCode, groupIssuesByFile, extractCategories } from './utils/helpers';
 import { defaultSeverityFilters } from './utils/constants';
 import { usePermission } from '../../hooks/usePermission';
-import { useAuth } from '../../contexts/AuthContext';
-import { deductCredits, isReportSubmitter, CREDITS_CONFIG } from '../../services/creditsService';
 import { notify } from '../../components/ui/Notification';
 
 // Import components
@@ -23,14 +21,12 @@ import IssueDetailsModal from './IssueDetailsModal';
 const ReportPageContent = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const { isWhitelistUser, loading: permissionLoading } = usePermission(); // 使用权限钩子
-  const { user, userCredits, refreshUserCredits } = useAuth(); // 获取用户和积分信息
+  const { isWhitelistUser } = usePermission(); // 使用权限钩子
   const [view, setView] = useState('list'); // 'list' or 'detail'
   const [loadingDates, setLoadingDates] = useState(true);
   const [loadingReports, setLoadingReports] = useState(false);
   const [loadingIssues, setLoadingIssues] = useState(false);
   const [loadingDateStats, setLoadingDateStats] = useState(false);
-  const [checkingPoints, setCheckingPoints] = useState(false); // 检查积分状态
   const [error, setError] = useState(null);
 
   const [availableDates, setAvailableDates] = useState([]); // [{ date_code: 'YYYYMMDD', formatted_date: 'YYYY-MM-DD' }]
@@ -58,7 +54,7 @@ const ReportPageContent = () => {
       setLoadingDates(true);
       setError(null);
       try {
-        const { data, error: dbError, status } = await supabase
+        const { data, error: dbError } = await supabase
           .from('audit_dates')
           .select('date_code, formatted_date')
           .order('formatted_date', { ascending: false });
@@ -275,73 +271,10 @@ const ReportPageContent = () => {
       return;
     }
 
-    try {
-      setCheckingPoints(true);
+    // 直接导航到报告详情页面
+    navigate(`/reports/${report.id}?confirmed=true`);
 
-      // Check if user is the report submitter, if yes, view for free
-      const { isSubmitter, error: submitterError } = await isReportSubmitter(report.id);
-
-      if (submitterError) {
-        console.error('Error checking if user is report submitter:', submitterError);
-        notify.error(t('points.checkSubmitterError', { defaultValue: '检查用户权限时出错' }));
-        return;
-      }
-
-      // If user is the report submitter, view for free
-      if (isSubmitter) {
-        navigate(`/reports/${report.id}`);
-        return;
-      }
-
-      // If not the report submitter, need to deduct credits
-      const creditsNeeded = CREDITS_CONFIG.VIEW_REPORT;
-
-      // Confirm credit deduction
-      if (!window.confirm(t('points.confirmDeduction', {
-        points: creditsNeeded,
-        defaultValue: `查看此报告需要 ${creditsNeeded} 积分，确定要继续吗？`
-      }))) {
-        return;
-      }
-
-      // 扣除积分
-      const { success, message, remainingCredits, error: deductError } = await deductCredits(
-        creditsNeeded,
-        `查看报告 ${report.repo_name}`,
-        'view_report',
-        report.id
-      );
-
-      if (deductError) {
-        console.error('扣除积分时出错:', deductError);
-        notify.error(t('points.deductError', { defaultValue: '扣除积分时出错' }));
-        return;
-      }
-
-      if (!success) {
-        notify.error(message || t('points.insufficientPoints', { defaultValue: '积分不足' }));
-        return;
-      }
-
-      // 刷新用户积分
-      await refreshUserCredits();
-
-      // 显示成功消息
-      notify.success(t('points.deductSuccess', {
-        points: creditsNeeded,
-        remaining: remainingCredits,
-        defaultValue: `已扣除 ${creditsNeeded} 积分，剩余 ${remainingCredits} 积分`
-      }));
-
-      // 导航到报告详情页面
-      navigate(`/reports/${report.id}`);
-    } catch (err) {
-      console.error('处理报告点击时出错:', err);
-      notify.error(t('points.generalError', { defaultValue: '处理请求时出错' }));
-    } finally {
-      setCheckingPoints(false);
-    }
-  }, [isWhitelistUser, refreshUserCredits, t, navigate, setSelectedReport, setView]);
+  }, [isWhitelistUser, t, navigate, setSelectedReport, setView]);
 
   const handleBackToList = useCallback(() => {
     setView('list');
@@ -464,12 +397,10 @@ const ReportPageContent = () => {
                 />
                 <ReportList
                   reports={filteredReports}
-                  isLoading={loadingReports || checkingPoints}
+                  isLoading={loadingReports}
                   searchTerm={searchTerm}
                   onReportClick={handleReportClick}
                   onReportStatusChange={handleReportStatusChange}
-                  userPoints={userCredits}
-                  pointsCost={CREDITS_CONFIG.VIEW_REPORT}
                 />
               </motion.div>
             ) : (

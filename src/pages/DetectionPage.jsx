@@ -6,6 +6,8 @@ import { repositories } from '../services/supabase';
 import AuditReport from '../components/AuditReport/AuditReport';
 import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
+import ValidationError from '../components/ui/ValidationError';
 import { useAuth } from '../contexts/AuthContext';
 import { deductCredits, hasEnoughCredits, CREDITS_CONFIG } from '../services/creditsService';
 import { notify } from '../components/ui/Notification';
@@ -17,11 +19,12 @@ function DetectionPage() {
   const [activeTab, setActiveTab] = useState('github');
   const [codeContent, setCodeContent] = useState('');
   const [githubUrl, setGithubUrl] = useState('');
-  const [repositoryUrls, setRepositoryUrls] = useState(['']); // For multiple repository submissions
+  const [repositoryUrl, setRepositoryUrl] = useState(''); // Single repository submission
   const [isLoading, setIsLoading] = useState(false);
   const [checkingPoints, setCheckingPoints] = useState(false); // Checking points status
   const [result, setResult] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // Backend error message
+  const [validationError, setValidationError] = useState(''); // Frontend validation error message
   const [scanProgress, setScanProgress] = useState(0);
   const [scanStage, setScanStage] = useState('');
   const [showFullReport, setShowFullReport] = useState(false);
@@ -36,10 +39,18 @@ function DetectionPage() {
   const [submittedRepos, setSubmittedRepos] = useState([]); // For tracking submitted repositories
   const reportRef = useRef(null); // Reference to the report component
 
+  // Confirmation dialog state
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [confirmDialogData, setConfirmDialogData] = useState({
+    creditsNeeded: 0,
+    onConfirm: () => {}
+  });
+
   // Reset state when changing tabs
   useEffect(() => {
     setResult(null);
     setError('');
+    setValidationError(''); // Also reset frontend validation error
     setScanProgress(0);
     setScanStage('');
     setShowFullReport(false);
@@ -47,9 +58,9 @@ function DetectionPage() {
     setShowReport(false);
     setSuccess(false);
 
-    // Reset repository URLs when switching to GitHub tab
+    // Reset repository URL when switching to GitHub tab
     if (activeTab === 'github') {
-      setRepositoryUrls(['']);
+      setRepositoryUrl('');
     }
   }, [activeTab]);
 
@@ -528,17 +539,7 @@ fn process_instruction(
           </motion.div>
         )}
 
-        {/* Error message */}
-        {error && !isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300"
-          >
-            <h3 className="font-semibold mb-1">{t('repositorySubmission.error.title', { ns: 'repository' })}</h3>
-            <p>{error}</p>
-          </motion.div>
-        )}
+        {/* Error message removed - using combined error message area instead */}
 
         <div className="space-y-4">
           {/* Single repository mode for quick scan */}
@@ -596,85 +597,45 @@ fn process_instruction(
                   </div>
                 </div>
 
-                {repositoryUrls.map((url, index) => (
-                  <div key={index} className="flex items-center gap-2 mb-3">
-                    <div className="flex-1">
-                      <input
-                        type="url"
-                        value={url}
-                        onChange={(e) => {
-                          const updatedUrls = [...repositoryUrls];
-                          updatedUrls[index] = e.target.value;
-                          setRepositoryUrls(updatedUrls);
-                        }}
-                        placeholder={t('repositorySubmission.form.placeholder', { ns: 'repository' })}
-                        className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
-                          backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
-                        disabled={isLoading || checkingPoints}
-                      />
-                    </div>
-
-                    {/* Remove button (only show if there's more than one input) */}
-                    {repositoryUrls.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updatedUrls = [...repositoryUrls];
-                          updatedUrls.splice(index, 1);
-                          setRepositoryUrls(updatedUrls);
-                        }}
-                        className="p-2 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50 disabled:hover:text-gray-400"
-                        disabled={isLoading || checkingPoints}
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    )}
+                {/* Single repository input */}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-1">
+                    <input
+                      type="url"
+                      value={repositoryUrl}
+                      onChange={(e) => setRepositoryUrl(e.target.value)}
+                      placeholder={t('repositorySubmission.form.placeholder', { ns: 'repository' })}
+                      className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/20 text-gray-300
+                        backdrop-blur-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/30"
+                      disabled={isLoading || checkingPoints}
+                    />
                   </div>
-                ))}
-
-                {/* Add repository button */}
-                <div className="mb-4 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => setRepositoryUrls([...repositoryUrls, ''])}
-                    className="flex items-center text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-50 disabled:text-blue-700 disabled:hover:text-blue-700"
-                    disabled={isLoading || checkingPoints}
-                  >
-                    <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    {t('repositorySubmission.form.addAnother', { ns: 'repository' })}
-                  </button>
                 </div>
 
-                {/* Submit button for multiple repositories */}
+                {/* Submit button for single repository */}
                 <div className="mt-4 flex justify-center">
                   <motion.button
                     onClick={async () => {
                       // Reset states
                       setError('');
+                      setValidationError('');
                       setSuccess(false);
 
-                      // Filter out empty URLs
-                      const filteredUrls = repositoryUrls.filter(url => url.trim() !== '');
-
-                      if (filteredUrls.length === 0) {
-                        setError(t('repositorySubmission.error.noRepositories', { ns: 'repository' }));
+                      // Check if URL is empty
+                      if (!repositoryUrl.trim()) {
+                        setValidationError(t('repositorySubmission.error.noRepositories', { ns: 'repository' }));
                         return;
                       }
 
-                      // Validate all URLs with more strict validation
+                      // Validate URL with strict validation
                       const validateGithubUrl = (url) => {
                         // More strict regex that only allows alphanumeric characters, hyphens, and underscores in username and repo name
                         // Also ensures the URL doesn't contain any query parameters or fragments
                         return /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/.test(url);
                       };
 
-                      const invalidUrls = filteredUrls.filter(url => !validateGithubUrl(url));
-                      if (invalidUrls.length > 0) {
-                        setError(t('repositorySubmission.error.invalidUrls', { ns: 'repository' }));
+                      if (!validateGithubUrl(repositoryUrl)) {
+                        setValidationError(t('repositorySubmission.error.invalidUrls', { ns: 'repository' }));
                         return;
                       }
 
@@ -682,75 +643,119 @@ fn process_instruction(
                       setCheckingPoints(true);
 
                       try {
-                        // Calculate required credits
-                        const creditsNeeded = CREDITS_CONFIG.SUBMIT_REPOSITORY * filteredUrls.length;
+                        // Calculate required credits - always just one repository
+                        const creditsNeeded = CREDITS_CONFIG.SUBMIT_REPOSITORY;
 
-                        // Confirm credit deduction
-                        if (!window.confirm(t('points.confirmSubmissionDeduction', {
-                          points: creditsNeeded,
-                          count: filteredUrls.length,
-                          ns: 'profile'
-                        }))) {
-                          setCheckingPoints(false);
-                          return;
-                        }
-
-                        // First check if user has enough credits without deducting
+                        // First check if user has enough credits before showing confirmation dialog
                         const { hasEnough, currentCredits, error: checkError } = await hasEnoughCredits(creditsNeeded);
 
                         if (checkError) {
-                          console.error('Error checking points:', checkError);
-                          setError(t('points.generalError', { ns: 'profile' }));
+                          console.error('Error checking credits:', checkError);
+                          setValidationError(t('points.generalError', { ns: 'profile', defaultValue: 'Error checking your credit balance. Please try again.' }));
                           setCheckingPoints(false);
                           return;
                         }
 
                         if (!hasEnough) {
-                          setError(t('points.insufficientPoints', { ns: 'profile' }));
+                          const errorMessage = t('points.insufficientPoints', {
+                            ns: 'profile',
+                            defaultValue: 'You do not have enough credits. Required: {required}, Available: {available}.',
+                            required: creditsNeeded,
+                            available: currentCredits
+                          });
+                          setValidationError(errorMessage);
+
+                          // Also show a notification for insufficient credits
+                          notify.warning(errorMessage);
+
                           setCheckingPoints(false);
                           return;
                         }
 
-                        // Continue submitting repositories
-                        setCheckingPoints(false);
-                        setIsLoading(true);
+                        // Clear any previous validation errors
+                        setValidationError('');
 
-                        // Submit repositories to Supabase FIRST
-                        const { data, error } = await repositories.submitMultipleRepositories(filteredUrls);
-
-                        if (error) {
-                          throw error;
-                        }
-
-                        // Only deduct credits AFTER successful submission
-                        const { success: deductSuccess, message, remainingCredits, error: deductError } = await deductCredits(
+                        // Set up confirmation dialog only if user has enough credits
+                        setConfirmDialogData({
                           creditsNeeded,
-                          t('points.types.submit_repository', { ns: 'profile' }),
-                          'submit_repository'
-                        );
+                          onConfirm: async () => {
+                            // Continue with submission process after confirmation
+                            try {
 
-                        if (deductError) {
-                          console.error('Error deducting credits:', deductError);
-                          // We don't want to show this error to the user since the submission was successful
-                          // Just log it for administrators to handle
-                        }
+                              // Continue with submission process
+                              setIsLoading(true);
 
-                        // Refresh user credits
-                        await refreshUserCredits();
+                              // Submit repository to Supabase FIRST
+                              const { data, error } = await repositories.submitRepository(repositoryUrl);
 
-                        // Show success message
-                        notify.success(t('points.deductSuccess', {
-                          points: creditsNeeded,
-                          remaining: remainingCredits || (currentCredits - creditsNeeded),
-                          ns: 'profile'
-                        }));
+                              if (error) {
+                                throw error;
+                              }
 
-                        // Success
-                        setSuccess(true);
-                        setSubmittedRepos(data || []);
-                        setRepositoryUrls(['']); // Reset form with one empty field
+                              // Only deduct credits AFTER successful submission
+                              const { remainingCredits, error: deductError } = await deductCredits(
+                                creditsNeeded,
+                                t('points.types.submit_repository', { ns: 'profile' }),
+                                'submit_repository'
+                              );
+
+                              if (deductError) {
+                                console.error('Error deducting credits:', deductError);
+                                // We don't want to show this error to the user since the submission was successful
+                                // Just log it for administrators to handle
+                              }
+
+                              // Refresh user credits
+                              await refreshUserCredits();
+
+                              // Show success message
+                              notify.success(t('points.deductSuccess', {
+                                points: creditsNeeded,
+                                remaining: remainingCredits || (currentCredits - creditsNeeded),
+                                ns: 'profile'
+                              }));
+
+                              // Success
+                              setSuccess(true);
+                              setSubmittedRepos(data ? [data] : []);
+                              setRepositoryUrl(''); // Reset form
+                            } catch (err) {
+                              console.error('Error submitting repository:', err);
+
+                              // Clear any validation errors
+                              setValidationError('');
+
+                              // Set appropriate error message
+                              if (err.message === 'User not authenticated') {
+                                setError(t('repositorySubmission.error.notAuthenticated', { ns: 'repository' }));
+                              } else if (err.message && err.message.includes('Repository already exists')) {
+                                setError(t('repositorySubmission.error.repositoryExists', { ns: 'repository', defaultValue: 'Repository already exists in the system. Please submit a different repository.' }));
+                              } else if (err.message && err.message.includes('maximum limit of 5 repository')) {
+                                setError(t('repositorySubmission.error.maxRepositoriesReached', { ns: 'repository', defaultValue: 'You have reached the maximum limit of 5 repository submissions. Please wait for your existing submissions to be processed.' }));
+                              } else {
+                                setError(err.message || t('repositorySubmission.error.submissionFailed', { ns: 'repository', defaultValue: 'Failed to submit repository. Please try again later.' }));
+
+                                // Also show a notification for server errors
+                                notify.error(t('repositorySubmission.error.submissionFailed', { ns: 'repository', defaultValue: 'Failed to submit repository. Please try again later.' }));
+                              }
+                            } finally {
+                              setIsLoading(false);
+                              setCheckingPoints(false);
+                            }
+                          }
+                        });
+
+                        // Open the confirmation dialog
+                        setConfirmDialogOpen(true);
+                        setCheckingPoints(false);
+                        return;
                       } catch (err) {
-                        console.error('Error submitting repositories:', err);
+                        console.error('Error checking credits or preparing submission:', err);
+
+                        // Clear any validation errors
+                        setValidationError('');
+
+                        // Set appropriate error message
                         if (err.message === 'User not authenticated') {
                           setError(t('repositorySubmission.error.notAuthenticated', { ns: 'repository' }));
                         } else if (err.message && err.message.includes('Repository already exists')) {
@@ -758,14 +763,17 @@ fn process_instruction(
                         } else if (err.message && err.message.includes('maximum limit of 5 repository')) {
                           setError(t('repositorySubmission.error.maxRepositoriesReached', { ns: 'repository', defaultValue: 'You have reached the maximum limit of 5 repository submissions. Please wait for your existing submissions to be processed.' }));
                         } else {
-                          setError(err.message || t('repositorySubmission.error.submissionFailed'));
+                          setError(err.message || t('repositorySubmission.error.submissionFailed', { ns: 'repository', defaultValue: 'Failed to submit repository. Please try again later.' }));
+
+                          // Also show a notification for server errors
+                          notify.error(t('repositorySubmission.error.submissionFailed', { ns: 'repository', defaultValue: 'Failed to submit repository. Please try again later.' }));
                         }
                       } finally {
                         setIsLoading(false);
                         setCheckingPoints(false);
                       }
                     }}
-                    disabled={isLoading || checkingPoints || repositoryUrls.every(url => url.trim() === '')}
+                    disabled={isLoading || checkingPoints || !repositoryUrl.trim()}
                     className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(147, 51, 234, 0.5)" }}
                     whileTap={{ scale: 0.95 }}
@@ -795,15 +803,7 @@ fn process_instruction(
             </>
           )}
 
-          <div className="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 mt-8">
-            <h4 className="text-sm font-medium text-blue-300 mb-2">{t('detectionPage.github.features')}</h4>
-            <ul className="text-sm text-gray-300 space-y-1 list-disc pl-5">
-              <li>{t('detectionPage.github.feature1')}</li>
-              <li>{t('detectionPage.github.feature2')}</li>
-              <li>{t('detectionPage.github.feature3')}</li>
-              <li>{t('detectionPage.github.feature4')}</li>
-            </ul>
-          </div>
+
         </div>
       </div>
     );
@@ -854,7 +854,7 @@ fn process_instruction(
           {/* Security stats banner */}
           <div className="mb-8 grid grid-cols-3 gap-4 p-4 rounded-lg bg-blue-900/10 border border-blue-500/20">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">43</div>
+              <div className="text-2xl font-bold text-blue-400">49</div>
               <div className="text-xs text-gray-400">{t('detectionPage.stats.monitoring')}</div>
             </div>
             <div className="text-center">
@@ -922,18 +922,37 @@ fn process_instruction(
 
         {/* Error Message Area */}
         <AnimatePresence>
-          {error && (
+          {validationError && (
+            <ValidationError
+              message={validationError}
+              onClose={() => setValidationError('')}
+            />
+          )}
+          {error && !validationError && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="mt-6 p-4 bg-red-900/50 border border-red-700/70 text-red-200 rounded-lg shadow-md"
             >
-              <div className="flex items-start">
-                <svg className="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>{error}</span>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 mr-2 mt-0.5 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <div className="text-sm font-medium text-red-300 mb-1">{t('repositorySubmission.error.title', { ns: 'repository', defaultValue: 'Submission Error' })}</div>
+                    <span>{error}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setError('')}
+                  className="ml-4 text-red-300 hover:text-red-100 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
             </motion.div>
           )}
@@ -964,7 +983,7 @@ fn process_instruction(
                   </div>
                   <h4 className="text-lg font-medium text-white">{t('detectionPage.features.feature1.title')}</h4>
                 </div>
-                <p className="text-sm text-gray-400">{t('detectionPage.features.feature1.description')}</p>
+                <p className="text-sm text-gray-400">{t('detectionPage.github.feature1')}</p>
               </div>
 
               <div className="p-4 rounded-lg bg-black/30 border border-white/10 hover:border-purple-500/30 transition-colors">
@@ -976,7 +995,7 @@ fn process_instruction(
                   </div>
                   <h4 className="text-lg font-medium text-white">{t('detectionPage.features.feature2.title')}</h4>
                 </div>
-                <p className="text-sm text-gray-400">{t('detectionPage.features.feature2.description')}</p>
+                <p className="text-sm text-gray-400">{t('detectionPage.github.feature2')}</p>
               </div>
 
               <div className="p-4 rounded-lg bg-black/30 border border-white/10 hover:border-green-500/30 transition-colors">
@@ -988,7 +1007,7 @@ fn process_instruction(
                   </div>
                   <h4 className="text-lg font-medium text-white">{t('detectionPage.features.feature3.title')}</h4>
                 </div>
-                <p className="text-sm text-gray-400">{t('detectionPage.features.feature3.description')}</p>
+                <p className="text-sm text-gray-400">{t('detectionPage.github.feature4')}</p>
               </div>
             </div>
           </motion.div>
@@ -1024,6 +1043,22 @@ fn process_instruction(
           onClose={() => setShowReport(false)}
         />
       )}
+
+      {/* Custom Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogData.onConfirm}
+        title={t('points.confirmTitle', { ns: 'profile', defaultValue: 'Confirm Submission' })}
+        message={t('points.confirmSubmissionDeduction', {
+          points: confirmDialogData.creditsNeeded,
+          count: 1,
+          ns: 'profile',
+          defaultValue: `Submitting 1 repository will cost ${confirmDialogData.creditsNeeded} Credits. Do you want to continue?`
+        })}
+        confirmText={t('buttons.confirm', { defaultValue: 'Confirm' })}
+        cancelText={t('buttons.cancel', { defaultValue: 'Cancel' })}
+      />
     </motion.div>
   );
 }

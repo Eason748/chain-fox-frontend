@@ -25,7 +25,35 @@
     "amount": "可获得积分",
     "reason": "原因",
     "notes": "备注",
-    "nextSteps": "您有资格获得积分空投！空投将在活动期间自动发放到您的平台账户中。请保持关注。"
+    "nextSteps": "您有资格获得积分空投！现在可以连接钱包并点击下方的领取按钮来获取您的积分。"
+  },
+  "claim": {
+    "title": "领取您的积分",
+    "instructions": "要领取积分，您需要登录并连接与资格检查相同的钱包地址。",
+    "walletStatus": "钱包连接状态",
+    "walletConnected": "已连接：{{address}}",
+    "walletNotConnected": "未连接",
+    "connectWallet": "连接钱包",
+    "claimNow": "领取积分",
+    "claiming": "领取中...",
+    "signing": "签名中...",
+    "signAndClaim": "签名并领取",
+    "claimed": "积分已领取",
+    "success": "成功领取 {{amount}} 积分！",
+    "successMessage": "恭喜！您已成功领取 {{amount}} 积分。积分已添加到您的账户余额中。",
+    "claimSuccess": "积分领取成功",
+    "alreadyClaimed": "您已领取过积分",
+    "noSignature": "未找到有效的钱包签名，请点击下方按钮进行签名验证。",
+    "errors": {
+      "notLoggedIn": "您必须登录才能领取积分",
+      "walletNotConnected": "请先连接您的钱包",
+      "walletMismatch": "连接的钱包与检查的钱包地址不匹配",
+      "notEligible": "此钱包没有空投资格",
+      "claimFailed": "领取积分失败，请稍后再试。",
+      "noSignature": "未找到有效的钱包签名，请重新连接钱包。",
+      "signatureFailed": "钱包签名失败，请重试。",
+      "signatureVerificationFailed": "签名验证失败，请重试。"
+    }
   },
   "info": {
     "title": "平台积分常见问题",

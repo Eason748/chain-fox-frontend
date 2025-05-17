@@ -25,7 +25,35 @@
     "amount": "Credits Amount",
     "reason": "Reason",
     "notes": "Notes",
-    "nextSteps": "You are eligible for credits airdrop! The airdrop will be automatically distributed to your platform account during the event period. Please stay tuned."
+    "nextSteps": "You are eligible for credits airdrop! You can claim your credits now by connecting your wallet and clicking the claim button below."
+  },
+  "claim": {
+    "title": "Claim Your Credits",
+    "instructions": "To claim your credits, you need to be logged in and connect the same wallet address you used for the eligibility check.",
+    "walletStatus": "Wallet Connection Status",
+    "walletConnected": "Connected: {{address}}",
+    "walletNotConnected": "Not Connected",
+    "connectWallet": "Connect Wallet",
+    "claimNow": "Claim Credits",
+    "claiming": "Claiming...",
+    "signing": "Signing...",
+    "signAndClaim": "Sign & Claim",
+    "claimed": "Credits Claimed",
+    "success": "Successfully claimed {{amount}} credits!",
+    "successMessage": "Congratulations! You have successfully claimed {{amount}} credits. The credits have been added to your account balance.",
+    "claimSuccess": "Credits Claimed Successfully",
+    "alreadyClaimed": "Credits Already Claimed",
+    "noSignature": "No valid wallet signature found. Please click the button below to verify your wallet ownership.",
+    "errors": {
+      "notLoggedIn": "You must be logged in to claim credits",
+      "walletNotConnected": "Please connect your wallet first",
+      "walletMismatch": "Connected wallet does not match the checked wallet address",
+      "notEligible": "This wallet is not eligible for airdrop",
+      "claimFailed": "Failed to claim credits. Please try again later.",
+      "noSignature": "No valid signature found for this wallet. Please reconnect your wallet.",
+      "signatureFailed": "Wallet signature failed. Please try again.",
+      "signatureVerificationFailed": "Signature verification failed. Please try again."
+    }
   },
   "info": {
     "title": "Platform Credits FAQ",
