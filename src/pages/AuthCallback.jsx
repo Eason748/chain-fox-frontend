@@ -389,20 +389,40 @@ const AuthCallback = () => {
                         console.log(t('auth.callback.validSessionDetected'));
                         navigate('/');
                       } else {
-                        // If no session after 500ms, try again after a bit longer
-                        setTimeout(async () => {
-                          try {
-                            const { data } = await supabase.auth.getSession();
-                            if (data?.session) {
-                              navigate('/');
-                            }
-                          } catch (e) {
-                            console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                        // If no session after 300ms, try again immediately
+                        try {
+                          const { data } = await supabase.auth.getSession();
+                          if (data?.session) {
+                            navigate('/');
+                          } else {
+                            // 如果仍然没有会话，最后再尝试一次
+                            setTimeout(async () => {
+                              try {
+                                const { data } = await supabase.auth.getSession();
+                                if (data?.session) {
+                                  navigate('/');
+                                } else {
+                                  // 如果三次尝试后仍然没有会话，强制跳转到首页
+                                  // 因为用户已经看到了登录界面，可能已经登录成功
+                                  navigate('/');
+                                }
+                              } catch (e) {
+                                console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                                // 即使出错也跳转到首页
+                                navigate('/');
+                              }
+                            }, 500);
                           }
-                        }, 1000);
+                        } catch (e) {
+                          console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                          // 即使出错也尝试最后一次
+                          setTimeout(() => navigate('/'), 500);
+                        }
                       }
                     } catch (e) {
                       console.error(t('auth.callback.autoCheckFailed') + ":", e);
+                      // 即使出错也尝试最后一次
+                      setTimeout(() => navigate('/'), 500);
                     }
                   }, 300); // Reduced timeout for faster redirect
                   return null; // Return null to not render anything
@@ -458,6 +478,16 @@ const AuthCallback = () => {
             animate={{ opacity: 1 }}
             className="text-center"
           >
+            {/* 添加自动跳转功能 */}
+            {(() => {
+              // 使用IIFE立即执行函数，在渲染时执行
+              setTimeout(() => {
+                // 1秒后自动跳转到首页
+                navigate('/');
+              }, 1000);
+              return null; // 不渲染任何内容
+            })()}
+
             <motion.div
               animate={{
                 rotate: 360,
@@ -488,7 +518,7 @@ const AuthCallback = () => {
               {t('auth.error.verifyingIdentity')}
             </motion.p>
 
-            {/* Continue button */}
+            {/* Continue button - 保留按钮以防自动跳转失败 */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

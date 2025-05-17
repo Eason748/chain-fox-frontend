@@ -5,6 +5,7 @@ import supabase from '../services/supabase';
 import { notify } from '../components/ui/Notification';
 import { useWallet } from '../contexts/WalletContext';
 import { useAuth } from '../contexts/AuthContext';
+import AuthRequired from '../components/AuthRequired';
 
 /**
  * FaqItem - Component for displaying a single FAQ item with collapsible answer
@@ -436,12 +437,13 @@ const AirdropCheckPage = () => {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md p-6 md:p-8 rounded-xl shadow-2xl border border-white/10"
-        >
+        <AuthRequired>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-gradient-to-b from-black/40 to-black/20 backdrop-blur-md p-6 md:p-8 rounded-xl shadow-2xl border border-white/10"
+          >
           {/* Wallet Connection Form */}
           <div className="space-y-4">
             {/* 只显示钱包地址 */}
@@ -517,6 +519,7 @@ const AirdropCheckPage = () => {
             ))}
           </div>
         </motion.div>
+        </AuthRequired>
       </div>
     </motion.div>
   );
