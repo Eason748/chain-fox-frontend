@@ -7,6 +7,9 @@ import { formatDateCode, groupIssuesByFile, extractCategories } from './utils/he
 import { defaultSeverityFilters } from './utils/constants';
 import { usePermission } from '../../hooks/usePermission';
 import { notify } from '../../components/ui/Notification';
+import { enhancedQuery } from '../../utils/requestUtils';
+import { useAuth } from '../../contexts/AuthContext';
+import '../../styles/loadingAnimation.css';
 
 // Import components
 import PageHeader from './PageHeader';
@@ -22,12 +25,16 @@ const ReportPageContent = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { isWhitelistUser } = usePermission(); // 使用权限钩子
+  const { user, loading: authLoading } = useAuth(); // 获取认证状态
   const [view, setView] = useState('list'); // 'list' or 'detail'
   const [loadingDates, setLoadingDates] = useState(true);
   const [loadingReports, setLoadingReports] = useState(false);
   const [loadingIssues, setLoadingIssues] = useState(false);
   const [loadingDateStats, setLoadingDateStats] = useState(false);
   const [error, setError] = useState(null);
+
+  // 全局加载状态
+  const isLoading = authLoading || loadingDates || loadingReports || loadingIssues || loadingDateStats;
 
   const [availableDates, setAvailableDates] = useState([]); // [{ date_code: 'YYYYMMDD', formatted_date: 'YYYY-MM-DD' }]
   const [selectedDate, setSelectedDate] = useState(''); // 'YYYYMMDD'
@@ -50,14 +57,37 @@ const ReportPageContent = () => {
 
   // Fetch available dates on mount
   useEffect(() => {
+    // 如果认证尚未完成，不执行数据获取
+    if (authLoading) return;
+
     const fetchDates = async () => {
       setLoadingDates(true);
       setError(null);
+
       try {
-        const { data, error: dbError } = await supabase
-          .from('audit_dates')
-          .select('date_code, formatted_date')
-          .order('formatted_date', { ascending: false });
+        // 使用增强的查询函数，带缓存、重试和超时机制
+        const { data, error: dbError } = await enhancedQuery(
+          () => supabase
+            .from('audit_dates')
+            .select('date_code, formatted_date')
+            .order('formatted_date', { ascending: false }),
+          {
+            withCacheOptions: {
+              cacheKey: 'audit_dates_list',
+              ttl: 5 * 60 * 1000 // 缓存5分钟
+            },
+            withRetryOptions: {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt) => {
+                console.log(`重试获取日期列表 (${attempt}/3)...`);
+              }
+            },
+            withTimeoutOptions: {
+              timeoutMs: 10000 // 10秒超时
+            }
+          }
+        );
 
         if (dbError) {
           throw dbError;
@@ -73,16 +103,19 @@ const ReportPageContent = () => {
       } catch (err) {
         console.error('Error fetching available dates:', err);
         setError(t('reportPage.errors.fetchDates', 'Failed to load available dates.'));
+        notify.error(t('reportPage.errors.fetchDates', '加载日期列表失败，请刷新页面重试。'));
       } finally {
         setLoadingDates(false);
       }
     };
+
     fetchDates();
-  }, [t]);
+  }, [t, authLoading]);
 
   // Fetch date statistics when selectedDate changes
   useEffect(() => {
-    if (!selectedDate) {
+    // 如果认证尚未完成或没有选择日期，不执行数据获取
+    if (authLoading || !selectedDate) {
       setDateStatistics(null);
       return;
     }
@@ -90,12 +123,32 @@ const ReportPageContent = () => {
     const fetchStats = async () => {
       setLoadingDateStats(true);
       setError(null);
+
       try {
-        const { data, error: dbError } = await supabase
-          .from('audit_dates')
-          .select('*')
-          .eq('date_code', selectedDate)
-          .single();
+        // 使用增强的查询函数，带缓存、重试和超时机制
+        const { data, error: dbError } = await enhancedQuery(
+          () => supabase
+            .from('audit_dates')
+            .select('*')
+            .eq('date_code', selectedDate)
+            .single(),
+          {
+            withCacheOptions: {
+              cacheKey: `audit_date_stats_${selectedDate}`,
+              ttl: 5 * 60 * 1000 // 缓存5分钟
+            },
+            withRetryOptions: {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt) => {
+                console.log(`重试获取日期统计 (${attempt}/3)...`);
+              }
+            },
+            withTimeoutOptions: {
+              timeoutMs: 10000 // 10秒超时
+            }
+          }
+        );
 
         if (dbError) {
           if (dbError.code === 'PGRST116') {
@@ -110,17 +163,20 @@ const ReportPageContent = () => {
       } catch (err) {
         console.error(`Error fetching date statistics for ${selectedDate}:`, err);
         setError(t('reportPage.errors.fetchDateStats', 'Failed to load statistics for the selected date.'));
+        notify.error(t('reportPage.errors.fetchDateStats', '加载日期统计信息失败，请刷新页面重试。'));
         setDateStatistics(null);
       } finally {
         setLoadingDateStats(false);
       }
     };
+
     fetchStats();
-  }, [selectedDate, t]);
+  }, [selectedDate, t, authLoading]);
 
   // Fetch reports when selectedDate changes
   useEffect(() => {
-    if (!selectedDate) {
+    // 如果认证尚未完成或没有选择日期，不执行数据获取
+    if (authLoading || !selectedDate) {
       setReports([]);
       return;
     }
@@ -131,16 +187,34 @@ const ReportPageContent = () => {
       setView('list'); // Reset to list view when date changes
       setSelectedReport(null);
       setIssues([]);
+
       try {
-        // 获取报告数据 - 现在所有用户都可以看到所有报告，但只有 completed 或 archived 状态的报告可以查看详情
-        // RLS 策略已更新，允许所有用户查看所有报告
-        const { data, error: dbError } = await supabase
-          .from('audit_reports')
-          .select('*')
-          .eq('date_code', selectedDate)
-          .order('risk_score', { ascending: true }) // Sort by risk score ascending (lower scores first)
-          .order('user_name')
-          .order('repo_name');
+        // 使用增强的查询函数，带缓存、重试和超时机制
+        const { data, error: dbError } = await enhancedQuery(
+          () => supabase
+            .from('audit_reports')
+            .select('*')
+            .eq('date_code', selectedDate)
+            .order('risk_score', { ascending: true }) // Sort by risk score ascending (lower scores first)
+            .order('user_name')
+            .order('repo_name'),
+          {
+            withCacheOptions: {
+              cacheKey: `audit_reports_${selectedDate}`,
+              ttl: 5 * 60 * 1000 // 缓存5分钟
+            },
+            withRetryOptions: {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt) => {
+                console.log(`重试获取报告列表 (${attempt}/3)...`);
+              }
+            },
+            withTimeoutOptions: {
+              timeoutMs: 15000 // 15秒超时
+            }
+          }
+        );
 
         if (dbError) throw dbError;
 
@@ -154,17 +228,20 @@ const ReportPageContent = () => {
       } catch (err) {
         console.error(`Error fetching reports for date ${selectedDate}:`, err);
         setError(t('reportPage.errors.fetchReports', 'Failed to load reports for the selected date.'));
+        notify.error(t('reportPage.errors.fetchReports', '加载报告列表失败，请刷新页面重试。'));
         setReports([]);
       } finally {
         setLoadingReports(false);
       }
     };
+
     fetchReportsData();
-  }, [selectedDate, t]);
+  }, [selectedDate, t, authLoading]);
 
   // Fetch issues when selectedReport changes
   useEffect(() => {
-    if (!selectedReport) {
+    // 如果认证尚未完成或没有选择报告，不执行数据获取
+    if (authLoading || !selectedReport) {
       setIssues([]);
       return;
     }
@@ -172,14 +249,34 @@ const ReportPageContent = () => {
     const fetchIssuesData = async () => {
       setLoadingIssues(true);
       setError(null);
+
       try {
-        const { data, error: dbError } = await supabase
-          .from('audit_issues')
-          .select('*')
-          .eq('report_id', selectedReport.id)
-          .order('severity')
-          .order('file_path')
-          .order('line_number');
+        // 使用增强的查询函数，带缓存、重试和超时机制
+        const { data, error: dbError } = await enhancedQuery(
+          () => supabase
+            .from('audit_issues')
+            .select('*')
+            .eq('report_id', selectedReport.id)
+            .order('severity')
+            .order('file_path')
+            .order('line_number'),
+          {
+            withCacheOptions: {
+              cacheKey: `audit_issues_${selectedReport.id}`,
+              ttl: 5 * 60 * 1000 // 缓存5分钟
+            },
+            withRetryOptions: {
+              maxRetries: 3,
+              retryDelay: 1000,
+              onRetry: (attempt) => {
+                console.log(`重试获取问题列表 (${attempt}/3)...`);
+              }
+            },
+            withTimeoutOptions: {
+              timeoutMs: 15000 // 15秒超时
+            }
+          }
+        );
 
         if (dbError) throw dbError;
 
@@ -193,13 +290,15 @@ const ReportPageContent = () => {
       } catch (err) {
         console.error(`Error fetching issues for report ${selectedReport.id}:`, err);
         setError(t('reportPage.errors.fetchIssues', 'Failed to load issues for the selected report.'));
+        notify.error(t('reportPage.errors.fetchIssues', '加载问题列表失败，请刷新页面重试。'));
         setIssues([]);
       } finally {
         setLoadingIssues(false);
       }
     };
+
     fetchIssuesData();
-  }, [selectedReport, t]);
+  }, [selectedReport, t, authLoading]);
 
   // Memoized filtered reports based on searchTerm
   const filteredReports = useMemo(() => {
@@ -361,6 +460,20 @@ const ReportPageContent = () => {
       className="text-white p-4 md:p-8 pt-16 md:pt-24 min-h-screen"
     >
       <div className="max-w-7xl mx-auto">
+        {/* 全局加载指示器 */}
+        {isLoading && (
+          <>
+            <div className="loading-indicator"></div>
+            <div className="loading-text">
+              {loadingDates ? '加载日期列表...' :
+               loadingDateStats ? '加载日期统计...' :
+               loadingReports ? '加载报告列表...' :
+               loadingIssues ? '加载问题列表...' :
+               authLoading ? '验证身份...' : '加载中...'}
+            </div>
+          </>
+        )}
+
         <PageHeader
           view={view}
           onBackToList={handleBackToList}

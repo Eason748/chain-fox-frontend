@@ -1,0 +1,45 @@
+/* 加载动画样式 */
+@keyframes slideRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 2px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+}
+
+.loading-indicator::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 0 4px 4px 0;
+  animation: slideRight 2s infinite;
+}
+
+/* 加载状态文本样式 */
+.loading-text {
+  position: fixed;
+  top: 4px;
+  right: 10px;
+  font-size: 12px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2px 8px;
+  border-radius: 4px;
+  z-index: 51;
+}

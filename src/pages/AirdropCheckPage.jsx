@@ -6,6 +6,8 @@ import { notify } from '../components/ui/Notification';
 import { useWallet } from '../contexts/WalletContext';
 import { useAuth } from '../contexts/AuthContext';
 import AuthRequired from '../components/AuthRequired';
+import { enhancedQuery } from '../utils/requestUtils';
+import '../styles/loadingAnimation.css';
 
 /**
  * FaqItem - Component for displaying a single FAQ item with collapsible answer
@@ -64,7 +66,7 @@ const FaqItem = ({ question, answer }) => {
  */
 const AirdropCheckPage = () => {
   const { t } = useTranslation(['common', 'airdrop']);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const {
     isConnected: isWalletConnected,
     address: connectedWalletAddress,
@@ -80,8 +82,14 @@ const AirdropCheckPage = () => {
   const [claimSuccess, setClaimSuccess] = useState(false);
   const [signatureVerified, setSignatureVerified] = useState(false);
 
+  // 全局加载状态
+  const isPageLoading = authLoading || isLoading || isClaimLoading || isSignatureLoading;
+
   // 当钱包连接状态改变时，检查签名状态
   useEffect(() => {
+    // 如果认证尚未完成，不执行数据获取
+    if (authLoading) return;
+
     if (isWalletConnected && connectedWalletAddress) {
       // 检查钱包签名状态
       checkWalletSignature();
@@ -89,13 +97,33 @@ const AirdropCheckPage = () => {
       // 重置签名验证状态
       setSignatureVerified(false);
     }
-  }, [isWalletConnected, connectedWalletAddress]);
+  }, [isWalletConnected, connectedWalletAddress, authLoading]);
 
   // 检查钱包签名状态
   const checkWalletSignature = async () => {
     try {
       // 验证服务器上是否有该签名记录
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const { data: authData, error: authError } = await enhancedQuery(
+        () => supabase.auth.getUser(),
+        {
+          withRetryOptions: {
+            maxRetries: 3,
+            retryDelay: 1000,
+            onRetry: (attempt) => {
+              console.log(`重试获取用户信息 (${attempt}/3)...`);
+            }
+          },
+          withTimeoutOptions: {
+            timeoutMs: 10000 // 10秒超时
+          }
+        }
+      );
+
+      if (authError) {
+        throw authError;
+      }
+
+      const currentUser = authData?.user;
 
       if (!currentUser || !connectedWalletAddress) {
         setSignatureVerified(false);
@@ -103,14 +131,32 @@ const AirdropCheckPage = () => {
       }
 
       // 查询数据库中的签名记录
-      const { data: signatureData, error: signatureError } = await supabase
-        .from('wallet_signatures')
-        .select('signature, signed_message')
-        .eq('user_id', currentUser.id)
-        .eq('wallet_address', connectedWalletAddress)
-        .eq('is_active', true)
-        .or('expires_at.gte.now,expires_at.is.null')  // 过期时间大于当前时间或为空
-        .maybeSingle();
+      const { data: signatureData, error: signatureError } = await enhancedQuery(
+        () => supabase
+          .from('wallet_signatures')
+          .select('signature, signed_message')
+          .eq('user_id', currentUser.id)
+          .eq('wallet_address', connectedWalletAddress)
+          .eq('is_active', true)
+          .or('expires_at.gte.now,expires_at.is.null')  // 过期时间大于当前时间或为空
+          .maybeSingle(),
+        {
+          withCacheOptions: {
+            cacheKey: `wallet_signature_${currentUser.id}_${connectedWalletAddress}`,
+            ttl: 5 * 60 * 1000 // 缓存5分钟
+          },
+          withRetryOptions: {
+            maxRetries: 3,
+            retryDelay: 1000,
+            onRetry: (attempt) => {
+              console.log(`重试获取钱包签名 (${attempt}/3)...`);
+            }
+          },
+          withTimeoutOptions: {
+            timeoutMs: 10000 // 10秒超时
+          }
+        }
+      );
 
       if (signatureError) {
         console.error('Error fetching signature data:', signatureError);
@@ -144,6 +190,12 @@ const AirdropCheckPage = () => {
     setClaimError('');
     setClaimSuccess(false);
 
+    // 验证认证状态是否已完成
+    if (authLoading) {
+      notify.warning(t('errors.authLoading', { ns: 'airdrop', defaultValue: '正在验证身份，请稍候...' }));
+      return;
+    }
+
     // 验证钱包是否已连接
     if (!isWalletConnected || !connectedWalletAddress) {
       setError(t('errors.walletNotConnected', { ns: 'airdrop' }));
@@ -151,14 +203,31 @@ const AirdropCheckPage = () => {
     }
 
     // 直接使用连接的钱包地址
-
     setIsLoading(true);
 
     try {
-      // Call backend API to check airdrop eligibility
-      const { data, error: apiError } = await supabase.rpc('check_airdrop_eligibility', {
-        p_wallet_address: connectedWalletAddress
-      });
+      // 使用增强的查询函数，带缓存、重试和超时机制
+      const { data, error: apiError } = await enhancedQuery(
+        () => supabase.rpc('check_airdrop_eligibility', {
+          p_wallet_address: connectedWalletAddress
+        }),
+        {
+          withCacheOptions: {
+            cacheKey: `airdrop_eligibility_${connectedWalletAddress}`,
+            ttl: 5 * 60 * 1000 // 缓存5分钟
+          },
+          withRetryOptions: {
+            maxRetries: 3,
+            retryDelay: 1000,
+            onRetry: (attempt) => {
+              console.log(`重试检查空投资格 (${attempt}/3)...`);
+            }
+          },
+          withTimeoutOptions: {
+            timeoutMs: 15000 // 15秒超时
+          }
+        }
+      );
 
       if (apiError) {
         throw apiError;
@@ -172,7 +241,7 @@ const AirdropCheckPage = () => {
         ns: 'airdrop',
         error: err.message
       }));
-      notify.error(t('errors.checkFailed', { ns: 'airdrop' }));
+      notify.error(t('errors.checkFailed', { ns: 'airdrop', defaultValue: '检查空投资格失败，请稍后重试' }));
     } finally {
       setIsLoading(false);
     }
@@ -212,6 +281,12 @@ const AirdropCheckPage = () => {
     // Reset claim-related states
     setClaimError('');
     setClaimSuccess(false);
+
+    // 验证认证状态是否已完成
+    if (authLoading) {
+      notify.warning(t('errors.authLoading', { ns: 'airdrop', defaultValue: '正在验证身份，请稍候...' }));
+      return;
+    }
 
     // Validate user is logged in
     if (!user) {
@@ -257,11 +332,25 @@ const AirdropCheckPage = () => {
     setIsClaimLoading(true);
 
     try {
-      // Call backend API to claim airdrop credits
-      const { data, error: apiError } = await supabase.rpc('claim_airdrop_credits', {
-        p_wallet_address: connectedWalletAddress,
-        p_user_id: user.id
-      });
+      // 使用增强的查询函数，带重试和超时机制（不缓存写操作）
+      const { data, error: apiError } = await enhancedQuery(
+        () => supabase.rpc('claim_airdrop_credits', {
+          p_wallet_address: connectedWalletAddress,
+          p_user_id: user.id
+        }),
+        {
+          withRetryOptions: {
+            maxRetries: 3,
+            retryDelay: 1000,
+            onRetry: (attempt) => {
+              console.log(`重试领取空投积分 (${attempt}/3)...`);
+            }
+          },
+          withTimeoutOptions: {
+            timeoutMs: 20000 // 20秒超时
+          }
+        }
+      );
 
       if (apiError) {
         throw apiError;
@@ -292,9 +381,25 @@ const AirdropCheckPage = () => {
 
       // 重新查询用户的空投资格状态，确保显示最新的状态
       try {
-        const { data: refreshedData, error: refreshError } = await supabase.rpc('check_airdrop_eligibility', {
-          p_wallet_address: connectedWalletAddress
-        });
+        const { data: refreshedData, error: refreshError } = await enhancedQuery(
+          () => supabase.rpc('check_airdrop_eligibility', {
+            p_wallet_address: connectedWalletAddress
+          }),
+          {
+            // 强制刷新缓存
+            withCacheOptions: {
+              cacheKey: `airdrop_eligibility_${connectedWalletAddress}`,
+              forceRefresh: true
+            },
+            withRetryOptions: {
+              maxRetries: 2,
+              retryDelay: 1000
+            },
+            withTimeoutOptions: {
+              timeoutMs: 10000
+            }
+          }
+        );
 
         if (!refreshError && refreshedData) {
           // 更新结果，但保留成功领取的状态
@@ -311,7 +416,7 @@ const AirdropCheckPage = () => {
     } catch (err) {
       console.error('Error claiming airdrop credits:', err);
       setClaimError(err.message || t('claim.errors.claimFailed', { ns: 'airdrop' }));
-      notify.error(t('claim.errors.claimFailed', { ns: 'airdrop' }));
+      notify.error(t('claim.errors.claimFailed', { ns: 'airdrop', defaultValue: '领取积分失败，请稍后重试' }));
     } finally {
       setIsClaimLoading(false);
     }
@@ -418,6 +523,19 @@ const AirdropCheckPage = () => {
       className="text-white p-8 pt-16 md:pt-24"
     >
       <div className="max-w-3xl mx-auto">
+        {/* 全局加载指示器 */}
+        {isPageLoading && (
+          <>
+            <div className="loading-indicator"></div>
+            <div className="loading-text">
+              {authLoading ? '验证身份...' :
+               isLoading ? '检查空投资格...' :
+               isClaimLoading ? '处理积分领取...' :
+               isSignatureLoading ? '处理钱包签名...' : '加载中...'}
+            </div>
+          </>
+        )}
+
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
