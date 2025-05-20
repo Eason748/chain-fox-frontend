@@ -103,21 +103,29 @@
     "contractAddress": "合约地址",
     "clickToView": "点击在 DexScreener 上查看",
     "distribution": {
-      "public": {
-        "title": "公共分配",
-        "description": "90%分配给社区"
+      "openSourceIncentives": {
+        "title": "开源激励",
+        "description": "30%用于开源项目激励"
       },
-      "marketing": {
-        "title": "营销与上市",
-        "description": "3%用于营销工作和交易所上市"
+      "stakingRewards": {
+        "title": "质押奖励",
+        "description": "25%用于质押奖励"
       },
-      "team": {
-        "title": "团队分配",
-        "description": "2%分配给开发团队"
+      "teamAdvisors": {
+        "title": "团队与顾问",
+        "description": "15%分配给团队和顾问"
       },
-      "development": {
-        "title": "开发钱包",
-        "description": "5%用于持续平台开发"
+      "liquidityReserves": {
+        "title": "流动性储备",
+        "description": "15%用于流动性储备"
+      },
+      "communityTreasury": {
+        "title": "社区金库",
+        "description": "10%用于社区金库"
+      },
+      "initialInvestors": {
+        "title": "早期投资者",
+        "description": "5%分配给早期投资者"
       }
     }
   },

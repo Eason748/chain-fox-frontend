@@ -24,10 +24,12 @@ function TokenomicsSection() {
   };
 
   const tokenomicsData = [
-    { key: 'public', percentage: 90, color: 'from-blue-500 to-blue-600' },
-    { key: 'marketing', percentage: 3, color: 'from-purple-500 to-purple-600' },
-    { key: 'team', percentage: 2, color: 'from-teal-500 to-teal-600' }, // Changed pink to teal for legend
-    { key: 'development', percentage: 5, color: 'from-indigo-500 to-indigo-600' }
+    { key: 'openSourceIncentives', percentage: 30, color: 'from-blue-500 to-blue-600' },
+    { key: 'stakingRewards', percentage: 25, color: 'from-green-500 to-green-600' },
+    { key: 'teamAdvisors', percentage: 15, color: 'from-yellow-500 to-yellow-600' },
+    { key: 'liquidityReserves', percentage: 15, color: 'from-red-500 to-red-600' },
+    { key: 'communityTreasury', percentage: 10, color: 'from-teal-500 to-teal-600' },
+    { key: 'initialInvestors', percentage: 5, color: 'from-purple-500 to-purple-600' }
   ];
 
   return (
@@ -50,30 +52,34 @@ function TokenomicsSection() {
 
         <div className="max-w-4xl mx-auto">
           <div className="floating bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
-            <div className="flex flex-col md:flex-row items-center justify-center mb-10">
+            <div className="flex flex-col md:flex-row items-start justify-center mb-10">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="w-64 h-64 relative mb-10 md:mb-0 md:mr-10"
+                className="w-80 h-80 relative mb-10 md:mb-0 md:mr-10"
               >
-                {/* Pie chart visualization using stroke-dasharray */}
+                {/* Pie chart visualization */}
                 <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90"> {/* Rotate to start from top */}
                   {(() => {
                     const radius = 30;
                     const circumference = 2 * Math.PI * radius;
                     let accumulatedPercentage = 0;
+                    const segments = [];
 
                     // Tailwind color mapping (using the 'from' color)
                     const colorMap = {
-                      public: 'stroke-blue-500',
-                      marketing: 'stroke-purple-500',
-                      team: 'stroke-teal-500', // Changed pink to teal for SVG stroke
-                      development: 'stroke-indigo-500'
+                      openSourceIncentives: 'stroke-blue-500',
+                      stakingRewards: 'stroke-green-500',
+                      teamAdvisors: 'stroke-yellow-500',
+                      liquidityReserves: 'stroke-red-500',
+                      communityTreasury: 'stroke-teal-500',
+                      initialInvestors: 'stroke-purple-500'
                     };
 
-                    return tokenomicsData.map((item) => {
+                    // First pass: create the pie segments
+                    tokenomicsData.forEach((item) => {
                       const percentage = item.percentage / 100;
                       const offset = circumference * (1 - percentage);
                       const rotation = accumulatedPercentage * 360;
@@ -81,23 +87,49 @@ function TokenomicsSection() {
                       // Get stroke color class
                       const strokeClass = colorMap[item.key] || 'stroke-gray-500'; // Fallback color
 
-                      accumulatedPercentage += percentage;
+                      segments.push({
+                        key: item.key,
+                        percentage: item.percentage,
+                        startAngle: accumulatedPercentage * 2 * Math.PI,
+                        endAngle: (accumulatedPercentage + percentage) * 2 * Math.PI,
+                        strokeClass,
+                        offset,
+                        rotation
+                      });
 
-                      return (
+                      accumulatedPercentage += percentage;
+                    });
+
+                    // Render segments and labels
+                    return (
+                      <>
+                        {/* Center circle (black background for the donut hole) */}
                         <circle
-                          key={item.key}
                           cx="50"
                           cy="50"
-                          r={radius}
-                          fill="transparent"
-                          strokeWidth="20" // Adjust for donut thickness
-                          className={strokeClass} // Apply solid color stroke
-                          strokeDasharray={circumference}
-                          strokeDashoffset={offset}
-                          transform={`rotate(${rotation} 50 50)`}
+                          r="20"
+                          fill="#111"
+                          className="opacity-80"
                         />
-                      );
-                    });
+
+                        {segments.map((segment) => (
+                          <circle
+                            key={segment.key}
+                            cx="50"
+                            cy="50"
+                            r={radius}
+                            fill="transparent"
+                            strokeWidth="20" // Adjust for donut thickness
+                            className={segment.strokeClass} // Apply solid color stroke
+                            strokeDasharray={circumference}
+                            strokeDashoffset={segment.offset}
+                            transform={`rotate(${segment.rotation} 50 50)`}
+                          />
+                        ))}
+
+
+                      </>
+                    );
                   })()}
                 </svg>
               </motion.div>
@@ -145,7 +177,7 @@ function TokenomicsSection() {
                   <path fillRule="evenodd" clipRule="evenodd" d="M4 4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4ZM6 4H18V20H6V4Z" fill="currentColor" />
                 </svg>
                 <div className="flex flex-col items-start overflow-hidden">
-                  <span className="text-xs text-blue-300 w-full">{t('home:tokenomics.contractAddress')}</span>
+                  <span className="text-xs text-blue-300 w-full">{t('tokenomics.contractAddress')}</span>
                   <span className="text-sm font-mono text-white truncate max-w-[180px] sm:max-w-[250px] md:max-w-full">{contractAddress}</span>
                 </div>
                 <div className="ml-3 flex items-center flex-shrink-0">
@@ -155,7 +187,7 @@ function TokenomicsSection() {
                 </div>
               </div>
               <div className="mt-2 text-xs text-blue-400">
-                {t('home:tokenomics.clickToView')}
+                {t('tokenomics.clickToView')}
               </div>
             </motion.div>
           </div>

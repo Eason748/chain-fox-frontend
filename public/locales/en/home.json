@@ -103,21 +103,29 @@
     "contractAddress": "Contract Address",
     "clickToView": "Click to view on DexScreener",
     "distribution": {
-      "public": {
-        "title": "Public Distribution",
-        "description": "90% allocated to the community"
+      "openSourceIncentives": {
+        "title": "Open Source Incentives",
+        "description": "30% for open source project incentives"
       },
-      "marketing": {
-        "title": "Marketing & Listing",
-        "description": "3% for marketing efforts and exchange listings"
+      "stakingRewards": {
+        "title": "Staking Rewards",
+        "description": "25% for staking rewards"
       },
-      "team": {
-        "title": "Team Allocation",
-        "description": "2% allocated to the development team"
+      "teamAdvisors": {
+        "title": "Team & Advisors",
+        "description": "15% allocated to team and advisors"
       },
-      "development": {
-        "title": "Development Wallet",
-        "description": "5% for ongoing platform development"
+      "liquidityReserves": {
+        "title": "Liquidity Reserves",
+        "description": "15% for liquidity reserves"
+      },
+      "communityTreasury": {
+        "title": "Community Treasury",
+        "description": "10% for community treasury"
+      },
+      "initialInvestors": {
+        "title": "Initial Investors",
+        "description": "5% allocated to initial investors"
       }
     }
   },
