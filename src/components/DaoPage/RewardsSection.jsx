@@ -211,25 +211,25 @@ const RewardsSection = () => {
                 <tr className="border-b border-gray-700/30">
                   <td className="px-3 py-2 font-medium text-gray-300">{t('durationPeriod1', '1-30天')}</td>
                   <td className="px-3 py-2 text-blue-400">{t('basicAuditRight', '基础审计权')}</td>
-                  <td className="px-3 py-2 text-green-400">0-3%</td>
+                  <td className="px-3 py-2 text-green-400">?%</td>
                   <td className="px-3 py-2 text-gray-400 text-xs">{t('mainlyGovernance', '主要为治理权益')}</td>
                 </tr>
                 <tr className="border-b border-gray-700/30">
                   <td className="px-3 py-2 font-medium text-gray-300">{t('durationPeriod2', '31-90天')}</td>
                   <td className="px-3 py-2 text-blue-400">{t('standardAuditRight', '标准审计权')}</td>
-                  <td className="px-3 py-2 text-green-400">2-5%</td>
+                  <td className="px-3 py-2 text-green-400">?%</td>
                   <td className="px-3 py-2 text-gray-400 text-xs">{t('dependsOnTeam', '取决于团队注入')}</td>
                 </tr>
                 <tr className="border-b border-gray-700/30">
                   <td className="px-3 py-2 font-medium text-gray-300">{t('durationPeriod3', '91-180天')}</td>
                   <td className="px-3 py-2 text-blue-400">{t('advancedAuditRight', '高级审计权')}</td>
-                  <td className="px-3 py-2 text-green-400">4-7%</td>
+                  <td className="px-3 py-2 text-green-400">?%</td>
                   <td className="px-3 py-2 text-gray-400 text-xs">{t('includesAirdrop', '包含生态空投')}</td>
                 </tr>
                 <tr>
                   <td className="px-3 py-2 font-medium text-gray-300">{t('durationPeriod4', '&gt;180天')}</td>
                   <td className="px-3 py-2 text-blue-400">{t('coreMemberRight', '核心成员权')}</td>
-                  <td className="px-3 py-2 text-green-400">6-10%</td>
+                  <td className="px-3 py-2 text-green-400">?%</td>
                   <td className="px-3 py-2 text-gray-400 text-xs">{t('priorityAccess', '优先参与新项目')}</td>
                 </tr>
               </tbody>
