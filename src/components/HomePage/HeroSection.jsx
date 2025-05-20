@@ -40,13 +40,12 @@ function HeroSection() {
           >
             {t('buttons.uploadProject')}
           </Link>
-{/* 
           <Link
-            to="/countdown"
-            className="px-8 py-4 border-2 border-purple-400/50 rounded-full text-lg font-semibold hover:bg-purple-500/10 hover:border-purple-400/80 transition-colors text-center"
+            to="/dao"
+            className="px-8 py-4 border-2 border-purple-400/50 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-lg font-semibold hover:shadow-lg hover:shadow-purple-500/30 transition-all text-center"
           >
-            {t('buttons.learnMore')}
-          </Link> */}
+            Chain-Fox {t('navigation.dao', 'DAO')}
+          </Link>
         </motion.div>
       </div>
     </section>
