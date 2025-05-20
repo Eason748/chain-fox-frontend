@@ -109,14 +109,14 @@ function NavMenu() {
         </AnimatePresence>
       </div>
 
-      {/* DAO Link - Temporarily disabled */}
-      {/* <Link
+      {/* DAO Link */}
+      <Link
         to="/dao"
         className={location.pathname === '/dao' ? activeMenuItemClasses : menuItemClasses}
         onClick={closeDropdowns}
       >
         <span>{t('navigation.dao', 'DAO')}</span>
-      </Link> */}
+      </Link>
 
       {/* Airdrop Check Link */}
       <Link

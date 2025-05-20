@@ -13,7 +13,7 @@ import AuditReportDetailPage from './pages/AuditReportDetailPage';
 import RepositoryStatusPage from './pages/RepositoryStatusPage';
 import RepositoryResultPage from './pages/RepositoryResultPage';
 import ExplorationPage from './pages/ExplorationPage';
-// import DaoPage from './pages/DaoPage';
+import DaoPage from './pages/DaoPage';
 import AirdropCheckPage from './pages/AirdropCheckPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import NotificationContainer from './components/ui/Notification';
@@ -76,8 +76,8 @@ const AppContent = React.memo(() => {
         {/* Exploration Page */}
         <Route path="/exploration" element={<ExplorationPage />} />
 
-        {/* DAO Page - Temporarily disabled */}
-        {/* <Route path="/dao" element={<DaoPage />} /> */}
+        {/* DAO Page */}
+        <Route path="/dao" element={<DaoPage />} />
 
         {/* Airdrop Check Page */}
         <Route path="/airdrop-check" element={<AirdropCheckPage />} />

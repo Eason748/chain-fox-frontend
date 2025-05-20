@@ -147,14 +147,14 @@ function MobileNavMenu({ isOpen, onClose }) {
               </AnimatePresence>
             </div>
 
-            {/* DAO Link - Temporarily disabled */}
-            {/* <Link
+            {/* DAO Link */}
+            <Link
               to="/dao"
               className={location.pathname === '/dao' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
               {t('navigation.dao', 'DAO')}
-            </Link> */}
+            </Link>
 
             {/* Airdrop Check Link */}
             <Link

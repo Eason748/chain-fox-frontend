@@ -126,8 +126,6 @@ function TokenomicsSection() {
                             transform={`rotate(${segment.rotation} 50 50)`}
                           />
                         ))}
-
-
                       </>
                     );
                   })()}
