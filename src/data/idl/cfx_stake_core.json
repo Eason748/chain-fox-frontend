@@ -1,0 +1,859 @@
+{
+  "version": "0.1.0",
+  "name": "cfx_stake_core",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenVault",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "stakePoolBump",
+          "type": "u8"
+        },
+        {
+          "name": "lockDurationSlots",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "initializeMultisig",
+      "accounts": [
+        {
+          "name": "multisigConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "signers",
+          "type": {
+            "array": [
+              "publicKey",
+              3
+            ]
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        },
+        {
+          "name": "multisigBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "createProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisigConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "proposer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "proposalType",
+          "type": {
+            "defined": "ProposalType"
+          }
+        },
+        {
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "name": "proposalBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "signProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisigConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "executeProposal",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisigConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "executor",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "createUserStake",
+      "accounts": [
+        {
+          "name": "userStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "userStakeBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "stake",
+      "accounts": [
+        {
+          "name": "userStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePoolAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "requestWithdrawal",
+      "accounts": [
+        {
+          "name": "userStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "togglePause",
+      "accounts": [
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "pause",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "accounts": [
+        {
+          "name": "userStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePoolAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "executeAdminWithdraw",
+      "accounts": [
+        {
+          "name": "proposal",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "multisigConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakePool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakePoolAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "recipientTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "executor",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "StakePool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "lockDurationSlots",
+            "type": "u64"
+          },
+          {
+            "name": "totalStaked",
+            "type": "u64"
+          },
+          {
+            "name": "emergencyMode",
+            "type": "bool"
+          },
+          {
+            "name": "reentrancyGuard",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserStake",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "stakePool",
+            "type": "publicKey"
+          },
+          {
+            "name": "stakedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "lastStakeSlot",
+            "type": "u64"
+          },
+          {
+            "name": "unlockSlot",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalRequested",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MultisigConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "signers",
+            "type": {
+              "array": [
+                "publicKey",
+                3
+              ]
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "stakePool",
+            "type": "publicKey"
+          },
+          {
+            "name": "proposalCount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MultisigProposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "proposalType",
+            "type": {
+              "defined": "ProposalType"
+            }
+          },
+          {
+            "name": "proposer",
+            "type": "publicKey"
+          },
+          {
+            "name": "multisigConfig",
+            "type": "publicKey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "ProposalStatus"
+            }
+          },
+          {
+            "name": "signatures",
+            "type": {
+              "array": [
+                "bool",
+                3
+              ]
+            }
+          },
+          {
+            "name": "signatureCount",
+            "type": "u8"
+          },
+          {
+            "name": "createdAt",
+            "type": "u64"
+          },
+          {
+            "name": "executedAt",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "ProposalType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TogglePause"
+          },
+          {
+            "name": "UpdateAuthority"
+          },
+          {
+            "name": "UpdateTeamWallet"
+          },
+          {
+            "name": "AdminWithdraw"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Executed"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "StakeEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amountStaked",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "totalStaked",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "WithdrawEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amountWithdrawn",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "WithdrawalRequestEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "unlockSlot",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "emergencyMode",
+          "type": "bool",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PauseEvent",
+      "fields": [
+        {
+          "name": "paused",
+          "type": "bool",
+          "index": false
+        },
+        {
+          "name": "authority",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "AdminWithdrawEvent",
+      "fields": [
+        {
+          "name": "recipient",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amountWithdrawn",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "AmountMustBeGreaterThanZero",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "BelowMinimumStakeAmount",
+      "msg": "Below minimum stake amount"
+    },
+    {
+      "code": 6002,
+      "name": "ContractPaused",
+      "msg": "Contract is paused"
+    },
+    {
+      "code": 6003,
+      "name": "NoStakedTokens",
+      "msg": "No staked tokens"
+    },
+    {
+      "code": 6004,
+      "name": "WithdrawalAlreadyRequested",
+      "msg": "Withdrawal already requested"
+    },
+    {
+      "code": 6005,
+      "name": "WithdrawalNotRequested",
+      "msg": "Withdrawal not requested"
+    },
+    {
+      "code": 6006,
+      "name": "TokensStillLocked",
+      "msg": "Tokens still locked"
+    },
+    {
+      "code": 6007,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidTokenMint",
+      "msg": "Invalid token mint"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidTeamWallet",
+      "msg": "Invalid team wallet"
+    },
+    {
+      "code": 6010,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds in stake pool vault"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidUser",
+      "msg": "Invalid user"
+    },
+    {
+      "code": 6012,
+      "name": "ReentrancyDetected",
+      "msg": "Reentrancy attack detected"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidMultisigSigner",
+      "msg": "Invalid multisig signer"
+    },
+    {
+      "code": 6014,
+      "name": "InsufficientSignatures",
+      "msg": "Insufficient signatures"
+    },
+    {
+      "code": 6015,
+      "name": "ProposalAlreadyExecuted",
+      "msg": "Proposal already executed"
+    },
+    {
+      "code": 6016,
+      "name": "ProposalNotApproved",
+      "msg": "Proposal not approved"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidProposalType",
+      "msg": "Invalid proposal type"
+    },
+    {
+      "code": 6018,
+      "name": "InvalidThreshold",
+      "msg": "Invalid threshold"
+    },
+    {
+      "code": 6019,
+      "name": "AlreadySigned",
+      "msg": "Already signed"
+    },
+    {
+      "code": 6020,
+      "name": "ExceedsMaximumStakeAmount",
+      "msg": "Exceeds maximum stake amount"
+    },
+    {
+      "code": 6021,
+      "name": "ExceedsMaximumPoolSize",
+      "msg": "Exceeds maximum pool size"
+    },
+    {
+      "code": 6022,
+      "name": "ExcessiveLockDuration",
+      "msg": "Excessive lock duration"
+    }
+  ],
+  "metadata": {
+    "address": "7Fbkoma4qtT6qF4r8ifWYnCa1oz3RGpnosjBmH6HvdTj"
+  }
+}

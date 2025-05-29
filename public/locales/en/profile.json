@@ -86,6 +86,27 @@
       "medium": "Medium Priority",
       "high": "High Priority"
     },
+    "readyToStake": "Ready to Stake",
+    "accountCreationInfo": "Your stake account will be created automatically when you make your first stake.",
+    "stakingInformation": "Staking Information",
+    "stakingInfoDescription": "Stake your CFX tokens to participate in the Chain-Fox ecosystem and earn rewards.",
+    "lockDuration": "Lock Duration",
+    "approximatelyMinutes": "Approximately {{minutes}} minutes",
+    "startStaking": "Start Staking",
+    "requestWithdrawal": "Request Withdrawal",
+    "withdrawTokens": "Withdraw Tokens",
+    "stakeCfxTokens": "Stake CFX Tokens",
+    "staking": "Staking...",
+    "insufficientBalance": "Insufficient Balance",
+    "insufficientCfxBalance": "⚠️ Insufficient CFX balance. Please add CFX tokens to your wallet first.",
+    "minimumStake": "Minimum stake: 10,000 CFX",
+    "withdrawal": {
+      "requested": "Withdrawal Requested",
+      "pending": "Your withdrawal request is pending. Tokens will be available after the lock period.",
+      "timeRemaining": "Time Remaining:",
+      "available": "Withdrawal is now available!",
+      "availableNow": "Available now"
+    },
     "points": {
       "title": "Credits Rewards",
       "description": "Earn Credits by staking CFX. Credits can be used to boost audit priority",

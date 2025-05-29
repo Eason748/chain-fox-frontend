@@ -4,13 +4,58 @@
  */
 
 import { Connection, PublicKey } from '@solana/web3.js';
+import programIds from '../data/program-ids.json';
 
-// Helius API 配置
+// ==================== 网络配置 ====================
+// 网络类型枚举
+const NETWORK_TYPES = {
+  MAINNET: 'mainnet',
+  DEVNET: 'devnet',
+  LOCALNET: 'localnet'
+};
+
+// 当前网络设置 - 在这里手动切换网络
+const CURRENT_NETWORK = NETWORK_TYPES.MAINNET; // 👈 修改这里来切换网络
+
+// 网络配置
+const NETWORK_CONFIGS = {
+  [NETWORK_TYPES.MAINNET]: {
+    name: 'Mainnet',
+    rpcUrl: `https://mainnet.helius-rpc.com/?api-key=${import.meta.env.VITE_HELIUS_API_KEY}`,
+    cfxToken: import.meta.env.VITE_CFX_TOKEN,
+    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID,
+    requiresApiKey: true
+  },
+  [NETWORK_TYPES.DEVNET]: {
+    name: 'Devnet',
+    rpcUrl: `https://devnet.helius-rpc.com/?api-key=${import.meta.env.VITE_HELIUS_API_KEY}`,
+    cfxToken: import.meta.env.VITE_CFX_TOKEN_DEVNET || import.meta.env.VITE_CFX_TOKEN,
+    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID_DEVNET || import.meta.env.VITE_STAKE_PROGRAM_ID,
+    requiresApiKey: true
+  },
+  [NETWORK_TYPES.LOCALNET]: {
+    name: 'Localnet',
+    rpcUrl: 'http://127.0.0.1:8899', // 明确使用 IPv4 地址
+    cfxToken: programIds.tokens.CFX_TOKEN_MINT, // 从 program-ids.json 读取
+    stakeProgramId: programIds.programs.CFX_STAKE_CORE, // 从 program-ids.json 读取
+    requiresApiKey: false
+  }
+};
+
+// 获取当前网络配置
+const getCurrentNetworkConfig = () => NETWORK_CONFIGS[CURRENT_NETWORK];
+
+// 获取当前网络信息
+const getCurrentNetwork = () => ({
+  type: CURRENT_NETWORK,
+  config: getCurrentNetworkConfig()
+});
+
+// Helius API 配置（仅主网和测试网需要）
 const HELIUS_API_KEY = import.meta.env.VITE_HELIUS_API_KEY;
-const HELIUS_RPC_URL = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
 
-// CFX Token 地址
-const CFX_TOKEN_ADDRESS = import.meta.env.VITE_CFX_TOKEN;
+// CFX Token 地址（根据网络动态获取）
+const CFX_TOKEN_ADDRESS = getCurrentNetworkConfig().cfxToken;
 
 // SPL Token 程序 ID - 直接使用常量而不是导入
 const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
@@ -27,20 +72,23 @@ async function initialize() {
   try {
     if (isInitialized) return true;
 
-    if (!HELIUS_API_KEY) {
-      console.error("未配置 Helius API 密钥。请在 .env 文件中添加 VITE_HELIUS_API_KEY");
+    const config = getCurrentNetworkConfig();
+
+    // 检查是否需要API密钥
+    if (config.requiresApiKey && !HELIUS_API_KEY) {
+      console.error(`${config.name} 需要 Helius API 密钥。请在 .env 文件中添加 VITE_HELIUS_API_KEY`);
       return false;
     }
 
     // 创建连接
-    connection = new Connection(HELIUS_RPC_URL, 'confirmed');
+    connection = new Connection(config.rpcUrl, 'confirmed');
 
     // 测试连接
     try {
       await connection.getVersion();
-      // 移除日志输出
+      console.log(`✅ 已连接到 Solana ${config.name} (${config.rpcUrl})`);
     } catch (error) {
-      console.error("Solana RPC 连接测试失败", error);
+      console.error(`❌ Solana ${config.name} 连接测试失败:`, error);
       return false;
     }
 
@@ -73,14 +121,18 @@ async function getConnection() {
  * @returns {Promise<any>} - RPC 响应
  */
 async function callJsonRpc(method, params = []) {
-  if (!HELIUS_API_KEY) {
-    throw new Error("未配置 Helius API 密钥。请在 .env 文件中添加 VITE_HELIUS_API_KEY");
+  const config = getCurrentNetworkConfig();
+
+  // 检查是否需要API密钥
+  if (config.requiresApiKey && !HELIUS_API_KEY) {
+    throw new Error(`${config.name} 需要 Helius API 密钥。请在 .env 文件中添加 VITE_HELIUS_API_KEY`);
   }
 
   // 移除详细调试日志
 
   try {
-    const response = await fetch(HELIUS_RPC_URL, {
+    // 为本地网络添加特殊的 fetch 配置
+    const fetchOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,10 +143,27 @@ async function callJsonRpc(method, params = []) {
         method,
         params,
       }),
-    });
+    };
+
+    // 如果是本地网络，添加额外的配置
+    if (CURRENT_NETWORK === NETWORK_TYPES.LOCALNET) {
+      fetchOptions.mode = 'cors';
+      fetchOptions.credentials = 'omit';
+    }
+
+    const response = await fetch(config.rpcUrl, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
+
+      // 如果是本地网络连接失败，提供更友好的错误信息
+      if (CURRENT_NETWORK === NETWORK_TYPES.LOCALNET && response.status === 0) {
+        throw new Error(`无法连接到本地 Solana RPC (${config.rpcUrl})。请确保：
+1. Solana 测试验证器正在运行 (solana-test-validator)
+2. RPC 端口 8899 未被占用
+3. 防火墙允许本地连接`);
+      }
+
       throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
     }
 
@@ -389,6 +458,51 @@ async function getCfxTokenBalance(ownerAddress) {
   }
 }
 
+/**
+ * 获取网络状态信息
+ * @returns {Promise<{success: boolean, networkInfo?: Object, error?: Error}>}
+ */
+async function getNetworkInfo() {
+  try {
+    const config = getCurrentNetworkConfig();
+    const connection = await getConnection();
+
+    if (!connection) {
+      return {
+        success: false,
+        error: new Error('连接未初始化')
+      };
+    }
+
+    const version = await connection.getVersion();
+    const slot = await connection.getSlot();
+
+    return {
+      success: true,
+      networkInfo: {
+        network: config.name,
+        networkType: CURRENT_NETWORK,
+        rpcUrl: config.rpcUrl,
+        version,
+        currentSlot: slot,
+        cfxTokenAddress: CFX_TOKEN_ADDRESS,
+        stakeProgramId: config.stakeProgramId,
+        requiresApiKey: config.requiresApiKey,
+        // 如果是本地网络，包含 program-ids.json 中的额外信息
+        ...(CURRENT_NETWORK === NETWORK_TYPES.LOCALNET && {
+          deployedAccounts: programIds.deployed_accounts,
+          metadata: programIds.metadata
+        })
+      }
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error
+    };
+  }
+}
+
 // 导出所有函数
 const solanaRpcService = {
   initialize,
@@ -396,8 +510,18 @@ const solanaRpcService = {
   getBalance,
   getAccountInfo,
   getTransaction,
-  getCfxTokenBalance
+  getCfxTokenBalance,
+  getNetworkInfo,
+  getCurrentNetwork
 };
 
-export { getBalance, getAccountInfo, getTransaction, getCfxTokenBalance };
+export {
+  getBalance,
+  getAccountInfo,
+  getTransaction,
+  getCfxTokenBalance,
+  getNetworkInfo,
+  getCurrentNetwork,
+  NETWORK_TYPES
+};
 export default solanaRpcService;

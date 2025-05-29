@@ -3,7 +3,7 @@
   X-Content-Type-Options: nosniff
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://api.deepseek.com https://*.supabase.co https://*.solana.com https://*.solflare.com https://*.phantom.app https://*.helius-rpc.com; frame-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:; child-src 'self' blob:; upgrade-insecure-requests;
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' http://127.0.0.1:8899 http://localhost:8899 https://api.deepseek.com https://*.supabase.co https://*.solana.com https://*.solflare.com https://*.phantom.app https://*.helius-rpc.com; frame-src 'none'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:; child-src 'self' blob:; upgrade-insecure-requests;
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Cache-Control: public, max-age=3600

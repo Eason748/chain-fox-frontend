@@ -257,6 +257,7 @@ const ReportPageContent = () => {
             .from('audit_issues')
             .select('*')
             .eq('report_id', selectedReport.id)
+            .eq('false_positive', false) // 排除被标记为误报的问题
             .order('severity')
             .order('file_path')
             .order('line_number'),

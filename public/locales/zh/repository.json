@@ -27,8 +27,7 @@
       "invalidUrls": "一个或多个仓库 URL 无效。请确保它们的格式为：https://github.com/owner/repo",
       "notAuthenticated": "您需要登录才能提交仓库。",
       "submissionFailed": "提交仓库失败。请稍后再试。",
-      "repositoryExists": "该仓库已存在于系统中。请提交其他仓库。",
-      "maxRepositoriesReached": "您已达到最多提交5个仓库的限制。请等待您现有的提交处理完成。"
+      "repositoryExists": "该仓库已存在于系统中。请提交其他仓库。"
     }
   },
   "repositoryStatus": {
