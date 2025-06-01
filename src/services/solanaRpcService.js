@@ -59,8 +59,8 @@ const HELIUS_API_KEY = import.meta.env.VITE_HELIUS_API_KEY;
 // CFX Token 地址（根据网络动态获取）
 const CFX_TOKEN_ADDRESS = getCurrentNetworkConfig().cfxToken;
 
-// SPL Token 程序 ID - 直接使用常量而不是导入
-const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+// SPL Token 程序 ID - 从环境变量读取
+const TOKEN_PROGRAM_ID = import.meta.env.VITE_TOKEN_PROGRAM_ID;
 
 // 创建连接实例
 let connection = null;

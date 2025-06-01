@@ -11,7 +11,7 @@ import { stringToUint8Array } from './stakingService/common.js';
 
 // 程序 ID
 const PROGRAM_ID = new PublicKey(programIds.programs.CFX_STAKE_CORE);
-const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const TOKEN_PROGRAM_ID = new PublicKey(import.meta.env.VITE_TOKEN_PROGRAM_ID);
 
 /**
  * 创建指令数据

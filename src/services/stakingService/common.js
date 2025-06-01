@@ -9,8 +9,8 @@ import programIds from '../../data/program-ids.json';
 import { getCurrentNetwork } from '../solanaRpcService.js';
 import idlData from '../../data/idl/cfx_stake_core.json';
 
-// Define TOKEN_PROGRAM_ID manually since import might be problematic
-export const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+// Define TOKEN_PROGRAM_ID from environment variable
+export const TOKEN_PROGRAM_ID = new PublicKey(import.meta.env.VITE_TOKEN_PROGRAM_ID);
 
 // Helper function to convert string to Uint8Array (same as Buffer.from)
 export function stringToUint8Array(str) {
@@ -23,7 +23,7 @@ export function stringToUint8Array(str) {
  * Calculate associated token account address manually
  */
 export async function getAssociatedTokenAddress(mint, owner) {
-  const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+  const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(import.meta.env.VITE_ASSOCIATED_TOKEN_PROGRAM_ID);
 
   const [address] = await PublicKey.findProgramAddress(
     [
