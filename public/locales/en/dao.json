@@ -350,5 +350,12 @@
   },
 
   "durationFactorFormula": "Duration Factor Calculation:",
-  "liquidityAdjustmentFormula": "Dynamic Liquidity Adjustment Formula:"
+  "liquidityAdjustmentFormula": "Dynamic Liquidity Adjustment Formula:",
+
+  "readyToStake": "Ready to Start Staking?",
+  "stakingCallToAction": "Visit our dedicated staking page to connect your wallet and start staking CFX tokens.",
+  "goToStaking": "Go to Staking Page",
+
+  "conclusionTitle": "Join Chain-Fox DAO",
+  "conclusion": "By staking CFX tokens, become a member of Chain-Fox DAO, participate in project governance and earn corresponding benefits. We welcome every community member to actively participate and build Chain-Fox's decentralized future together."
 }

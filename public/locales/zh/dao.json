@@ -350,5 +350,12 @@
   },
 
   "durationFactorFormula": "时长系数计算：",
-  "liquidityAdjustmentFormula": "动态流动性调整公式："
+  "liquidityAdjustmentFormula": "动态流动性调整公式：",
+
+  "readyToStake": "准备开始质押？",
+  "stakingCallToAction": "访问我们的专用质押页面，连接您的钱包并开始质押 CFX 代币。",
+  "goToStaking": "前往质押页面",
+
+  "conclusionTitle": "加入Chain-Fox DAO",
+  "conclusion": "通过质押CFX代币，成为Chain-Fox DAO的一员，参与项目治理并获得相应权益。我们欢迎每一位社区成员积极参与，共同建设Chain-Fox的去中心化未来。"
 }

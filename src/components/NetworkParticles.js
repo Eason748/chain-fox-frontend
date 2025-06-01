@@ -14,7 +14,7 @@ export function initNetworkParticles() {
 
   // 根据性能级别设置质量
   const qualityLevel = isLowPerformance ? 'low' : (isMediumPerformance ? 'medium' : 'high');
-  console.log(`NetworkParticles: Running in ${qualityLevel} quality mode`);
+  // 移除生产环境日志 - 网络粒子质量模式
 
   // Create container
   const container = document.createElement('div');
@@ -548,8 +548,7 @@ export function initNetworkParticles() {
     // 启动动画循环
     animate(0);
 
-    // 记录性能指标
-    console.log(`NetworkParticles: Initialized with ${particles.length} particles in ${qualityLevel} quality mode`);
+    // 移除生产环境日志 - 网络粒子性能指标
   };
 
   // 使用 requestIdleCallback 或 setTimeout 作为降级方案

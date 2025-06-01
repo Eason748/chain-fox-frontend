@@ -5,17 +5,17 @@ function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
 
   const changeLanguage = (lng) => {
-    console.log('HomePage/LanguageSwitcher: Changing language to:', lng);
+    // 移除生产环境日志 - 首页语言切换
     // Save language preference to localStorage first
     localStorage.setItem('i18nextLng', lng);
 
     // Change language and force reload resources
     i18n.changeLanguage(lng).then(() => {
-      console.log('HomePage/LanguageSwitcher: Language changed to:', i18n.language);
+      // 移除生产环境日志 - 首页语言已更改
 
       // Force reload all namespaces after language change
       i18n.loadNamespaces(['profile', 'common']).then(() => {
-        console.log('HomePage/LanguageSwitcher: Namespaces reloaded');
+        // 移除生产环境日志 - 首页命名空间已重新加载
       });
     });
   };

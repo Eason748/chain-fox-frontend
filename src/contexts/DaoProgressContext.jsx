@@ -8,7 +8,7 @@ const PROGRESS_STATES = {
   NOT_STARTED: 0,
   PLANNING: 10,
   DESIGN: 20,
-  DEVELOPMENT: 40,
+  DEVELOPMENT: 70,
   TESTING: 60,
   REVIEW: 80,
   COMPLETED: 100
@@ -23,14 +23,14 @@ const STAGE_KEY = 'dao_stage';
  */
 export const DaoProgressProvider = ({ children }) => {
   // Single progress state
-  const [progress, setProgress] = useState(10);
+  const [progress, setProgress] = useState(60);
   const [stage, setStage] = useState('PLANNING');
 
   // 设置固定进度值，不再从localStorage读取
   useEffect(() => {
-    // 设置固定进度为40%和DEVELOPMENT阶段
-    const fixedProgress = 10;
-    const fixedStage = 'DEVELOPMENT';
+    // 设置进度
+    const fixedProgress = 60;
+    const fixedStage = 'TESTING';
 
     // 更新状态
     setProgress(fixedProgress);

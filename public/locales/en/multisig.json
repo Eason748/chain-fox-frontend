@@ -1,0 +1,140 @@
+{
+  "pageTitle": "Multisig Management",
+  "pageDescription": "Manage multisig proposals and fund withdrawals from the staking pool",
+  
+  "tabs": {
+    "overview": "Overview",
+    "proposals": "Proposal Management",
+    "create": "Create Proposal"
+  },
+  
+  "auth": {
+    "loginRequired": "Please log in to access the multisig management page",
+    "walletRequired": "Wallet Connection Required",
+    "walletRequiredDesc": "Please connect your Solana wallet to access multisig management features",
+    "walletRequiredNote": "Only authorized multisig members can access this page",
+    "accessDenied": "Access Denied",
+    "accessDeniedDesc": "Your wallet address is not in the authorized multisig member list",
+    "currentWallet": "Current wallet",
+    "authorizedMembers": "Authorized multisig members"
+  },
+  
+  "config": {
+    "title": "Multisig Configuration",
+    "refresh": "Refresh",
+    "signatureThreshold": "Signature Threshold",
+    "thresholdDesc": "Requires {{threshold}} signatures to execute proposals",
+    "totalProposals": "Total Proposals",
+    "associatedStakePool": "Associated Stake Pool",
+    "configStatus": "Configuration Status",
+    "configured": "✅ Configured",
+    "notConfigured": "❌ Not Configured",
+    "tokenVault": "Token Vault",
+    "multisigMembers": "Multisig Members",
+    "adminWallet": "Admin Wallet",
+    "teamWallet": "Team Wallet",
+    "multisigMember": "Multisig Member",
+    "pending": "Pending",
+    "multisigInfo": "ℹ️ Multisig Information",
+    "multisigInfoDesc": [
+      "• Any multisig member can create proposals",
+      "• Requires at least {{threshold}} member signatures to execute proposals",
+      "• Only AdminWithdraw type proposals can withdraw funds",
+      "• All operations are recorded on the blockchain, completely transparent"
+    ]
+  },
+  
+  "quickActions": {
+    "title": "Quick Actions",
+    "createWithdraw": "Create Withdrawal Proposal",
+    "createWithdrawDesc": "Withdraw funds from staking pool",
+    "viewPending": "View Pending Proposals",
+    "viewPendingDesc": "Process pending proposals",
+    "manageConfig": "Manage Configuration",
+    "manageConfigDesc": "Update multisig settings"
+  },
+  
+  "proposals": {
+    "title": "Proposal Management",
+    "refresh": "Refresh",
+    "noProposals": "No Proposals",
+    "noProposalsDesc": "No proposals have been created yet, click the \"Create Proposal\" tab to get started",
+    "proposalId": "Proposal #{{id}}",
+    "proposer": "Proposer",
+    "createdAt": "Created",
+    "executedAt": "Executed",
+    "signatureProgress": "Signature Progress",
+    "proposalType": "Proposal Type: Admin Withdrawal",
+    "withdrawAmount": "Withdrawal Amount",
+    "recipient": "Recipient",
+    "signatureStatus": "Signature Status",
+    "signProposal": "Sign Proposal",
+    "signing": "Signing...",
+    "executeProposal": "Execute Proposal",
+    "executing": "Executing...",
+    "enterRecipientAccount": "Please enter recipient token account address:",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "executed": "Executed",
+      "rejected": "Rejected"
+    }
+  },
+  
+  "createProposal": {
+    "title": "Create Admin Withdrawal Proposal",
+    "proposalInfo": "ℹ️ Proposal Information",
+    "proposalInfoDesc": [
+      "• After creating a proposal, at least {{threshold}} multisig members need to sign",
+      "• The proposal creator will automatically sign, other members need to sign",
+      "• Once the signature threshold is reached, any multisig member can execute the proposal",
+      "• Withdrawn funds will be transferred from the staking pool token vault to the specified address"
+    ],
+    "withdrawAmount": "Withdrawal Amount (CFX)",
+    "withdrawAmountPlaceholder": "Please enter withdrawal amount",
+    "withdrawAmountNote": "Minimum amount: 0.000001 CFX, Maximum amount: 1,000,000 CFX",
+    "recipientAddress": "Recipient Address",
+    "recipientAddressPlaceholder": "Please enter Solana wallet address",
+    "recipientAddressNote": "Please ensure the address is correct, funds will be transferred to this address",
+    "proposalDescription": "Proposal Description (Optional)",
+    "proposalDescriptionPlaceholder": "Please describe the purpose and use of this withdrawal",
+    "proposalDescriptionNote": "Description is for record keeping only, not stored on blockchain",
+    "proposalPreview": "Proposal Preview",
+    "withdrawAmountLabel": "Withdrawal Amount",
+    "recipientLabel": "Recipient",
+    "proposerLabel": "Proposer",
+    "requiredSignatures": "Required Signatures",
+    "createProposal": "Create Proposal",
+    "creating": "Creating...",
+    "reset": "Reset",
+    "riskWarning": "⚠️ Risk Warning",
+    "riskWarningDesc": [
+      "• Please carefully verify the recipient address, transfers cannot be reversed",
+      "• Ensure withdrawal amount is reasonable to avoid affecting normal staking pool operations",
+      "• All proposals are recorded on the blockchain, completely transparent and public",
+      "• Malicious or inappropriate proposals may be rejected by other multisig members"
+    ]
+  },
+  
+  "errors": {
+    "error": "Error",
+    "retry": "Retry",
+    "loadConfigFailed": "Failed to load multisig configuration",
+    "loadProposalsFailed": "Failed to load proposals",
+    "signProposalFailed": "Failed to sign proposal",
+    "executeProposalFailed": "Failed to execute proposal",
+    "createProposalFailed": "Failed to create proposal",
+    "invalidAmount": "Please enter a valid withdrawal amount",
+    "invalidRecipient": "Please enter recipient address",
+    "invalidRecipientFormat": "Invalid recipient address format",
+    "amountTooLarge": "Single withdrawal amount cannot exceed 1,000,000 CFX",
+    "onlyMultisigMembers": "Only multisig members can create proposals",
+    "multisigConfigNotFound": "Multisig configuration does not exist"
+  },
+  
+  "success": {
+    "proposalCreated": "Proposal created successfully!",
+    "proposalSigned": "Proposal signed successfully!",
+    "proposalExecuted": "Proposal executed successfully!"
+  }
+}

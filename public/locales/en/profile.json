@@ -73,8 +73,9 @@
     "description": "Stake CFX to gain code audit privileges. The more you stake, the higher your priority",
     "yourStake": "Your Stake",
     "totalStaked": "Total Staked",
+    "vaultBalance": "Vault Balance",
     "totalStakers": "Total Stakers",
-    "stakeMore": "Stake More",
+    "stakeMore": "Stake",
     "unstake": "Unstake",
     "amount": "Amount",
     "confirm": "Confirm",
@@ -93,20 +94,26 @@
     "lockDuration": "Lock Duration",
     "approximatelyMinutes": "Approximately {{minutes}} minutes",
     "startStaking": "Start Staking",
-    "requestWithdrawal": "Request Withdrawal",
+    "requestWithdrawal": "UnStake",
     "withdrawTokens": "Withdraw Tokens",
     "stakeCfxTokens": "Stake CFX Tokens",
     "staking": "Staking...",
+    "processing": "Processing...",
     "insufficientBalance": "Insufficient Balance",
     "insufficientCfxBalance": "⚠️ Insufficient CFX balance. Please add CFX tokens to your wallet first.",
     "minimumStake": "Minimum stake: 10,000 CFX",
     "withdrawal": {
-      "requested": "Withdrawal Requested",
+      "requested": "UnStaked",
       "pending": "Your withdrawal request is pending. Tokens will be available after the lock period.",
       "timeRemaining": "Time Remaining:",
       "available": "Withdrawal is now available!",
-      "availableNow": "Available now"
+      "availableNow": "Available now",
+      "conditionsNotMet": "Withdrawal conditions not met, please check account status",
+      "alreadyRequested": "Withdrawal already requested, please wait for lock period to end"
     },
+    "withdrawing": "Withdrawing...",
+    "withdrawAmount": "Withdraw {{amount}} CFX",
+    "lockPeriodRemaining": "Lock period remaining: {{time}}",
     "points": {
       "title": "Credits Rewards",
       "description": "Earn Credits by staking CFX. Credits can be used to boost audit priority",
@@ -214,5 +221,20 @@
       "transfer_in": "Credits Received",
       "transfer_out": "Credits Sent"
     }
-  }
+  },
+  "time": {
+    "immediate": "Available now",
+    "daysHours": "{{days}} days {{hours}} hours",
+    "days": "{{days}} days",
+    "hoursMinutes": "{{hours}} hours {{minutes}} minutes",
+    "hours": "{{hours}} hours",
+    "minutes": "{{minutes}} minutes",
+    "seconds": "{{seconds}} seconds",
+    "minutesSeconds": "{{minutes}} minutes {{seconds}} seconds",
+    "hoursMinutesSeconds": "{{hours}} hours {{minutes}} minutes {{seconds}} seconds",
+    "daysMinutesSeconds": "{{days}} days {{minutes}} minutes {{seconds}} seconds",
+    "daysHoursMinutesSeconds": "{{days}} days {{hours}} hours {{minutes}} minutes {{seconds}} seconds",
+    "lessThanMinute": "Less than 1 minute"
+  },
+  "backToProfile": "Back to Profile"
 }

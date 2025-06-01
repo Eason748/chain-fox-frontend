@@ -73,6 +73,7 @@
     "description": "质押CFX以获得代码审计权限，质押数量越多，优先级越高",
     "yourStake": "您已质押",
     "totalStaked": "总质押量",
+    "vaultBalance": "金库余额",
     "totalStakers": "质押人数",
     "stakeMore": "增加质押",
     "unstake": "解除质押",
@@ -97,6 +98,7 @@
     "withdrawTokens": "提取代币",
     "stakeCfxTokens": "质押 CFX 代币",
     "staking": "质押中...",
+    "processing": "处理中...",
     "insufficientBalance": "余额不足",
     "insufficientCfxBalance": "⚠️ CFX 余额不足。请先向您的钱包添加 CFX 代币。",
     "minimumStake": "最低质押：10,000 CFX",
@@ -105,8 +107,13 @@
       "pending": "您的提取申请正在处理中。代币将在锁定期后可用。",
       "timeRemaining": "剩余时间：",
       "available": "提取现已可用！",
-      "availableNow": "立即可用"
+      "availableNow": "立即可用",
+      "conditionsNotMet": "提取条件不满足，请检查账户状态",
+      "alreadyRequested": "已申请提取，请等待锁定期结束"
     },
+    "withdrawing": "提取中...",
+    "withdrawAmount": "提取 {{amount}} CFX",
+    "lockPeriodRemaining": "锁定期剩余: {{time}}",
     "points": {
       "title": "积分奖励",
       "description": "质押CFX可以获得积分奖励，积分可用于提升审计优先级",
@@ -214,5 +221,20 @@
       "transfer_in": "收到积分",
       "transfer_out": "发送积分"
     }
-  }
+  },
+  "time": {
+    "immediate": "立即可用",
+    "daysHours": "{{days}}天 {{hours}}小时",
+    "days": "{{days}}天",
+    "hoursMinutes": "{{hours}}小时 {{minutes}}分钟",
+    "hours": "{{hours}}小时",
+    "minutes": "{{minutes}}分钟",
+    "seconds": "{{seconds}}秒",
+    "minutesSeconds": "{{minutes}}分钟 {{seconds}}秒",
+    "hoursMinutesSeconds": "{{hours}}小时 {{minutes}}分钟 {{seconds}}秒",
+    "daysMinutesSeconds": "{{days}}天 {{minutes}}分钟 {{seconds}}秒",
+    "daysHoursMinutesSeconds": "{{days}}天 {{hours}}小时 {{minutes}}分钟 {{seconds}}秒",
+    "lessThanMinute": "不到1分钟"
+  },
+  "backToProfile": "返回个人中心"
 }

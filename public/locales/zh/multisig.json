@@ -1,0 +1,140 @@
+{
+  "pageTitle": "多签管理",
+  "pageDescription": "管理质押池的多签提案和资金提取",
+  
+  "tabs": {
+    "overview": "概览",
+    "proposals": "提案管理",
+    "create": "创建提案"
+  },
+  
+  "auth": {
+    "loginRequired": "请先登录以访问多签管理页面",
+    "walletRequired": "需要连接钱包",
+    "walletRequiredDesc": "请连接您的 Solana 钱包以访问多签管理功能",
+    "walletRequiredNote": "只有授权的多签成员才能访问此页面",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDesc": "您的钱包地址不在授权的多签成员列表中",
+    "currentWallet": "当前钱包",
+    "authorizedMembers": "授权多签成员"
+  },
+  
+  "config": {
+    "title": "多签配置",
+    "refresh": "刷新",
+    "signatureThreshold": "签名阈值",
+    "thresholdDesc": "需要 {{threshold}} 个签名才能执行提案",
+    "totalProposals": "提案总数",
+    "associatedStakePool": "关联质押池",
+    "configStatus": "配置状态",
+    "configured": "✅ 已配置",
+    "notConfigured": "❌ 未配置",
+    "tokenVault": "代币金库",
+    "multisigMembers": "多签成员",
+    "adminWallet": "管理员钱包",
+    "teamWallet": "团队钱包",
+    "multisigMember": "多签成员",
+    "pending": "待配置",
+    "multisigInfo": "ℹ️ 多签说明",
+    "multisigInfoDesc": [
+      "• 任何多签成员都可以创建提案",
+      "• 需要至少 {{threshold}} 个成员签名才能执行提案",
+      "• 只有 AdminWithdraw 类型的提案可以提取资金",
+      "• 所有操作都会记录在区块链上，完全透明"
+    ]
+  },
+  
+  "quickActions": {
+    "title": "快速操作",
+    "createWithdraw": "创建提取提案",
+    "createWithdrawDesc": "从质押池提取资金",
+    "viewPending": "查看待签名提案",
+    "viewPendingDesc": "处理待处理的提案",
+    "manageConfig": "管理配置",
+    "manageConfigDesc": "更新多签设置"
+  },
+  
+  "proposals": {
+    "title": "提案管理",
+    "refresh": "刷新",
+    "noProposals": "暂无提案",
+    "noProposalsDesc": "还没有创建任何提案，点击"创建提案"标签页开始创建",
+    "proposalId": "提案 #{{id}}",
+    "proposer": "提案者",
+    "createdAt": "创建时间",
+    "executedAt": "执行时间",
+    "signatureProgress": "签名进度",
+    "proposalType": "提案类型: 管理员提取",
+    "withdrawAmount": "提取金额",
+    "recipient": "接收者",
+    "signatureStatus": "签名状态",
+    "signProposal": "签名提案",
+    "signing": "签名中...",
+    "executeProposal": "执行提案",
+    "executing": "执行中...",
+    "enterRecipientAccount": "请输入接收者代币账户地址:",
+    "status": {
+      "pending": "待签名",
+      "approved": "已批准",
+      "executed": "已执行",
+      "rejected": "已拒绝"
+    }
+  },
+  
+  "createProposal": {
+    "title": "创建管理员提取提案",
+    "proposalInfo": "ℹ️ 提案说明",
+    "proposalInfoDesc": [
+      "• 创建提案后，需要至少 {{threshold}} 个多签成员签名",
+      "• 提案创建者会自动签名，还需要其他成员签名",
+      "• 达到签名阈值后，任何多签成员都可以执行提案",
+      "• 提取的资金将从质押池代币金库转移到指定地址"
+    ],
+    "withdrawAmount": "提取金额 (CFX)",
+    "withdrawAmountPlaceholder": "请输入提取金额",
+    "withdrawAmountNote": "最小金额: 0.000001 CFX，最大金额: 1,000,000 CFX",
+    "recipientAddress": "接收者地址",
+    "recipientAddressPlaceholder": "请输入 Solana 钱包地址",
+    "recipientAddressNote": "请确保地址正确，资金将转移到此地址",
+    "proposalDescription": "提案描述 (可选)",
+    "proposalDescriptionPlaceholder": "请描述此次提取的目的和用途",
+    "proposalDescriptionNote": "描述信息仅用于记录，不会存储在区块链上",
+    "proposalPreview": "提案预览",
+    "withdrawAmountLabel": "提取金额",
+    "recipientLabel": "接收者",
+    "proposerLabel": "提案者",
+    "requiredSignatures": "需要签名",
+    "createProposal": "创建提案",
+    "creating": "创建中...",
+    "reset": "重置",
+    "riskWarning": "⚠️ 风险提示",
+    "riskWarningDesc": [
+      "• 请仔细核对接收者地址，转账无法撤销",
+      "• 确保提取金额合理，避免影响质押池正常运营",
+      "• 所有提案都会记录在区块链上，完全透明公开",
+      "• 恶意或不当的提案可能会被其他多签成员拒绝"
+    ]
+  },
+  
+  "errors": {
+    "error": "错误",
+    "retry": "重试",
+    "loadConfigFailed": "加载多签配置失败",
+    "loadProposalsFailed": "加载提案失败",
+    "signProposalFailed": "签名提案失败",
+    "executeProposalFailed": "执行提案失败",
+    "createProposalFailed": "创建提案失败",
+    "invalidAmount": "请输入有效的提取金额",
+    "invalidRecipient": "请输入接收者地址",
+    "invalidRecipientFormat": "接收者地址格式无效",
+    "amountTooLarge": "单次提取金额不能超过 1,000,000 CFX",
+    "onlyMultisigMembers": "只有多签成员才能创建提案",
+    "multisigConfigNotFound": "多签配置不存在"
+  },
+  
+  "success": {
+    "proposalCreated": "提案创建成功！",
+    "proposalSigned": "提案签名成功！",
+    "proposalExecuted": "提案执行成功！"
+  }
+}

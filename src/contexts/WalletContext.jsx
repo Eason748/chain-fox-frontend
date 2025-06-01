@@ -42,7 +42,7 @@ export const WalletProvider = ({ children }) => {
         setWalletServiceInitialized(true);
 
         // Check for stored connection and signature
-        const storedConnection = solanaWalletService.checkStoredConnection();
+        const storedConnection = await solanaWalletService.checkStoredConnection();
 
         // Update state if wallet is already connected
         if (solanaWalletService.isWalletConnected()) {
@@ -59,6 +59,8 @@ export const WalletProvider = ({ children }) => {
             signedMessage: storedConnection?.signedMessage || null,
             signatureWarning: null
           }));
+
+          // 移除生产环境日志 - 钱包状态已恢复
 
           // 使用缓存机制获取余额，而不是直接请求
           // 设置一个较短的延迟，避免阻塞UI渲染
@@ -85,6 +87,19 @@ export const WalletProvider = ({ children }) => {
               }
             }
           }, 500);
+        } else if (storedConnection?.address) {
+          // 有存储的连接信息但钱包未自动连接，显示为未连接状态但保留地址信息
+          // 移除生产环境日志 - 检测到存储的钱包信息
+          setWalletState(prev => ({
+            ...prev,
+            isConnected: false,
+            address: null,
+            loading: false,
+            error: null,
+            signature: null,
+            signedMessage: null,
+            signatureWarning: '钱包连接已断开，请重新连接'
+          }));
         }
       } catch (error) {
         // 只在开发环境中输出详细错误
@@ -332,6 +347,13 @@ export const WalletProvider = ({ children }) => {
       const result = await solanaWalletService.disconnect();
 
       if (result.success) {
+        // 清除余额缓存
+        setBalanceCache({
+          timestamp: 0,
+          address: null,
+          balance: null
+        });
+
         setWalletState({
           isConnected: false,
           address: null,
@@ -347,6 +369,8 @@ export const WalletProvider = ({ children }) => {
           cfxBalanceLoading: false,
           cfxBalanceError: null
         });
+
+        console.log('钱包已断开连接，缓存已清除');
         return result;
       } else {
         setWalletState(prev => ({
@@ -570,7 +594,14 @@ export const WalletProvider = ({ children }) => {
     formatWalletAddress,
     refreshBalance,
     refreshCfxBalance,
-    walletService: solanaWalletService
+    walletService: solanaWalletService,
+    // 提供 wallet 对象以便组件使用 - 按照 StakingPanel 的模式
+    wallet: walletState.isConnected && solanaWalletService.adapter ? {
+      publicKey: solanaWalletService.adapter.publicKey,
+      signTransaction: solanaWalletService.adapter.signTransaction?.bind(solanaWalletService.adapter),
+      signAllTransactions: solanaWalletService.adapter.signAllTransactions?.bind(solanaWalletService.adapter),
+      signMessage: solanaWalletService.adapter.signMessage?.bind(solanaWalletService.adapter)
+    } : null
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

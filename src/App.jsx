@@ -15,6 +15,8 @@ import RepositoryResultPage from './pages/RepositoryResultPage';
 import ExplorationPage from './pages/ExplorationPage';
 import DaoPage from './pages/DaoPage';
 import AirdropCheckPage from './pages/AirdropCheckPage';
+import StakePage from './pages/StakePage';
+import MultisigPage from './pages/MultisigPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import NotificationContainer from './components/ui/Notification';
 
@@ -81,6 +83,12 @@ const AppContent = React.memo(() => {
 
         {/* Airdrop Check Page */}
         <Route path="/airdrop-check" element={<AirdropCheckPage />} />
+
+        {/* Stake Page */}
+        <Route path="/stake" element={<StakePage />} />
+
+        {/* Multisig Page */}
+        <Route path="/multisig" element={<MultisigPage />} />
 
         {/* 404 page */}
         <Route

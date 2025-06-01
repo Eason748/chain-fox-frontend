@@ -15,22 +15,24 @@ const NETWORK_TYPES = {
 };
 
 // 当前网络设置 - 在这里手动切换网络
-const CURRENT_NETWORK = NETWORK_TYPES.MAINNET; // 👈 修改这里来切换网络
+const CURRENT_NETWORK = NETWORK_TYPES.DEVNET; // 👈 修改这里来切换网络
 
 // 网络配置
 const NETWORK_CONFIGS = {
   [NETWORK_TYPES.MAINNET]: {
     name: 'Mainnet',
     rpcUrl: `https://mainnet.helius-rpc.com/?api-key=${import.meta.env.VITE_HELIUS_API_KEY}`,
-    cfxToken: import.meta.env.VITE_CFX_TOKEN,
-    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID,
+    // 主网也从 program-ids.json 读取，如果有环境变量则优先使用环境变量
+    cfxToken: programIds.tokens.CFX_TOKEN_MINT,
+    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID || programIds.programs.CFX_STAKE_CORE,
     requiresApiKey: true
   },
   [NETWORK_TYPES.DEVNET]: {
     name: 'Devnet',
     rpcUrl: `https://devnet.helius-rpc.com/?api-key=${import.meta.env.VITE_HELIUS_API_KEY}`,
-    cfxToken: import.meta.env.VITE_CFX_TOKEN_DEVNET || import.meta.env.VITE_CFX_TOKEN,
-    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID_DEVNET || import.meta.env.VITE_STAKE_PROGRAM_ID,
+    // 测试网也从 program-ids.json 读取，如果有环境变量则优先使用环境变量
+    cfxToken: programIds.tokens.CFX_TOKEN_MINT,
+    stakeProgramId: import.meta.env.VITE_STAKE_PROGRAM_ID_DEVNET || import.meta.env.VITE_STAKE_PROGRAM_ID || programIds.programs.CFX_STAKE_CORE,
     requiresApiKey: true
   },
   [NETWORK_TYPES.LOCALNET]: {
@@ -86,7 +88,7 @@ async function initialize() {
     // 测试连接
     try {
       await connection.getVersion();
-      console.log(`✅ 已连接到 Solana ${config.name} (${config.rpcUrl})`);
+      // 移除生产环境日志 - 连接成功信息
     } catch (error) {
       console.error(`❌ Solana ${config.name} 连接测试失败:`, error);
       return false;
@@ -109,8 +111,16 @@ async function initialize() {
  */
 async function getConnection() {
   if (!isInitialized) {
-    await initialize();
+    const success = await initialize();
+    if (!success) {
+      throw new Error('Solana 连接初始化失败');
+    }
   }
+
+  if (!connection) {
+    throw new Error('Solana 连接未建立');
+  }
+
   return connection;
 }
 

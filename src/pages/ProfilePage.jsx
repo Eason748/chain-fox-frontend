@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useWallet } from '../contexts/WalletContext';
 import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
 import { notify } from '../components/ui/Notification';
 import CreditsTransfer from '../components/CreditsTransfer';
-// import StakingPanel from '../components/StakingPanel'; // 临时注释掉，等 stake 功能开发完成后再启用
 
 /**
  * ProfilePage component - Displays user profile information and account linking options
  */
 const ProfilePage = () => {
   const { t, i18n } = useTranslation(['profile', 'common']);
+  const navigate = useNavigate();
   const [forceUpdate, setForceUpdate] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const userIdRef = useRef(null);
@@ -300,17 +301,13 @@ const ProfilePage = () => {
                       </div>
                     </div>
 
-                    {/* Stake CFX Button - 临时注释掉，等 stake 功能开发完成后再启用 */}
-                    {/* <button
-                      onClick={() => setActiveFeature('staking')}
-                      className={`w-full px-3 py-2 ${
-                        activeFeature === 'staking'
-                          ? 'bg-purple-500/30 text-purple-200'
-                          : 'bg-purple-500/20 hover:bg-purple-500/30 text-purple-300'
-                      } rounded-md text-sm font-medium transition-colors`}
+                    {/* Stake CFX Button */}
+                    <button
+                      onClick={() => navigate('/stake')}
+                      className="w-full px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-md text-sm font-medium transition-colors"
                     >
                       {t('stakeCfx', { ns: 'profile' })}
-                    </button> */}
+                    </button>
 
                     <button
                       onClick={async () => {
@@ -407,22 +404,6 @@ const ProfilePage = () => {
             {activeFeature === 'transfer' && (
               <CreditsTransfer onClose={() => setActiveFeature(null)} />
             )}
-
-            {/* CFX Staking - 临时注释掉，等 stake 功能开发完成后再启用 */}
-            {/* {activeFeature === 'staking' && (
-              <div className="relative">
-                <button
-                  onClick={() => setActiveFeature(null)}
-                  className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white transition-colors"
-                  title="Close"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-                <StakingPanel cfxBalance={walletCfxBalance || 0} />
-              </div>
-            )} */}
 
             {/* Welcome message when no feature is selected */}
             {!activeFeature && (

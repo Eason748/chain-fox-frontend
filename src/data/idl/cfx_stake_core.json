@@ -851,9 +851,16 @@
       "code": 6022,
       "name": "ExcessiveLockDuration",
       "msg": "Excessive lock duration"
+    },
+    {
+      "code": 6023,
+      "name": "BelowMinimumUnstakeAmount",
+      "msg": "Below minimum unstake amount"
+    },
+    {
+      "code": 6024,
+      "name": "ExceedsMaximumUnstakeAmount",
+      "msg": "Exceeds maximum unstake amount"
     }
-  ],
-  "metadata": {
-    "address": "7Fbkoma4qtT6qF4r8ifWYnCa1oz3RGpnosjBmH6HvdTj"
-  }
+  ]
 }

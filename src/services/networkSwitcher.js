@@ -49,15 +49,18 @@ export async function showCurrentNetwork() {
     }
 
     if (networkInfo.networkInfo.metadata) {
-      console.log('ℹ️ 代币信息:');
+      // 移除生产环境日志 - 代币信息
       const cfxInfo = networkInfo.networkInfo.metadata.cfx_token_info;
-      console.log(`  名称: ${cfxInfo.name}`);
-      console.log(`  符号: ${cfxInfo.symbol}`);
-      console.log(`  小数位: ${cfxInfo.decimals}`);
-      console.log(`  总供应量: ${cfxInfo.total_supply}`);
+      // 保留变量用于可能的调试需求
+      const tokenInfo = {
+        name: cfxInfo.name,
+        symbol: cfxInfo.symbol,
+        decimals: cfxInfo.decimals,
+        totalSupply: cfxInfo.total_supply
+      };
     }
   } else {
-    console.log('❌ 无法获取网络状态:', networkInfo.error?.message);
+    // 移除生产环境日志 - 网络状态错误
   }
 }
 
@@ -65,18 +68,18 @@ export async function showCurrentNetwork() {
  * 测试网络连接
  */
 export async function testNetworkConnection() {
-  console.log('🔄 测试网络连接...');
+  // 移除生产环境日志 - 测试网络连接
 
   try {
     const initialized = await solanaRpcService.initialize();
     if (initialized) {
-      console.log('✅ 网络连接成功');
+      // 移除生产环境日志 - 网络连接成功
       await showCurrentNetwork();
     } else {
-      console.log('❌ 网络连接失败');
+      // 移除生产环境日志 - 网络连接失败
     }
   } catch (error) {
-    console.log('❌ 网络连接错误:', error.message);
+    // 移除生产环境日志 - 网络连接错误
   }
 }
 

@@ -1,6 +1,7 @@
 // No longer need direct web3.js imports as we use solanaRpcService
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
+import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack';
 import { supabase } from './supabase';
 import solanaRpcService, { getCfxTokenBalance } from './solanaRpcService';
 
@@ -37,7 +38,8 @@ class SolanaWalletService {
     this.connectionListeners = [];
     this.availableAdapters = [
       new PhantomWalletAdapter(),
-      new SolflareWalletAdapter()
+      new SolflareWalletAdapter(),
+      new BackpackWalletAdapter()
     ];
   }
 
@@ -87,15 +89,55 @@ class SolanaWalletService {
         const connectionData = JSON.parse(storedConnection);
         const { connected, address, adapter, timestamp } = connectionData;
 
-        // Check if the connection is recent (within the last day)
-        const isRecent = Date.now() - timestamp < 24 * 60 * 60 * 1000;
+        // Check if the connection is recent (within 30 days instead of 1 day)
+        const isRecent = Date.now() - timestamp < 30 * 24 * 60 * 60 * 1000;
 
         if (connected && address && isRecent) {
-          this.walletAddress = address;
-          this.isConnected = true;
+          // 检查钱包适配器是否可用
+          const availableAdapter = this.availableAdapters.find(a => a.name === adapter);
 
-          // Try to auto-connect to the wallet in the background
-          this.tryAutoConnect(adapter);
+          if (availableAdapter) {
+            // 检查钱包适配器状态
+            if (availableAdapter.readyState === 'Installed') {
+              // 尝试自动重连钱包
+              try {
+                await availableAdapter.connect();
+
+                // 验证连接后的地址是否匹配
+                if (availableAdapter.publicKey && availableAdapter.publicKey.toString() === address) {
+                  this.walletAddress = address;
+                  this.isConnected = true;
+                  this.adapter = availableAdapter;
+
+                  // 添加钱包事件监听器
+                  this.setupWalletEventListeners();
+
+                  // 移除生产环境日志 - 钱包自动重连成功
+                } else {
+                  // 地址不匹配，但不立即清除存储状态，可能是临时问题
+                  // 移除生产环境日志 - 钱包地址不匹配
+                  return { address }; // 返回基本信息，保留存储状态
+                }
+              } catch (connectError) {
+                // 自动连接失败，但不立即清除存储状态
+                // 可能是用户拒绝了自动连接或网络问题
+                // 移除生产环境日志 - 钱包自动重连失败
+                return { address }; // 返回基本信息，保留存储状态
+              }
+            } else if (availableAdapter.readyState === 'NotDetected') {
+              // 钱包未安装，但保留存储状态，用户可能稍后安装
+              // 移除生产环境日志 - 钱包未检测到
+              return { address };
+            } else {
+              // 其他状态（如 Loading），保留存储状态
+              // 移除生产环境日志 - 钱包状态
+              return { address };
+            }
+          } else {
+            // 找不到对应的钱包适配器，但保留存储状态
+            // 移除生产环境日志 - 未找到对应的钱包适配器
+            return { address };
+          }
 
           // 尝试从服务器获取签名信息
           try {
@@ -145,6 +187,82 @@ class SolanaWalletService {
       }
       return null;
     }
+  }
+
+  /**
+   * Setup wallet event listeners to handle disconnection
+   */
+  setupWalletEventListeners() {
+    if (!this.adapter) return;
+
+    // 移除之前的监听器（如果存在）
+    this.removeWalletEventListeners();
+
+    // 监听钱包断开连接事件
+    this.adapter.on('disconnect', () => {
+      // 移除生产环境日志 - 钱包主动断开连接
+      this.handleWalletDisconnect();
+    });
+
+    // 监听账户变化事件
+    this.adapter.on('accountChanged', (publicKey) => {
+      if (!publicKey) {
+        // 移除生产环境日志 - 钱包账户已清空
+        this.handleWalletDisconnect();
+      } else if (this.walletAddress && publicKey.toString() !== this.walletAddress) {
+        // 移除生产环境日志 - 钱包账户已切换
+        this.handleAccountChange(publicKey.toString());
+      }
+    });
+  }
+
+  /**
+   * Remove wallet event listeners
+   */
+  removeWalletEventListeners() {
+    if (!this.adapter) return;
+
+    try {
+      this.adapter.removeAllListeners('disconnect');
+      this.adapter.removeAllListeners('accountChanged');
+    } catch (error) {
+      // 某些钱包可能不支持 removeAllListeners
+      // 移除生产环境日志 - 移除钱包事件监听器时出错
+    }
+  }
+
+  /**
+   * Handle wallet disconnect event
+   */
+  handleWalletDisconnect() {
+    this.adapter = null;
+    this.walletAddress = null;
+    this.isConnected = false;
+
+    // 清除本地存储
+    localStorage.removeItem(WALLET_CONNECTION_KEY);
+
+    // 通知监听器
+    this.notifyConnectionListeners();
+  }
+
+  /**
+   * Handle account change event
+   */
+  handleAccountChange(newAddress) {
+    this.walletAddress = newAddress;
+
+    // 更新本地存储
+    const connectionData = {
+      connected: true,
+      address: newAddress,
+      adapter: this.adapter.name,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(WALLET_CONNECTION_KEY, JSON.stringify(connectionData));
+
+    // 通知监听器
+    this.notifyConnectionListeners();
   }
 
   /**
@@ -308,6 +426,210 @@ class SolanaWalletService {
   }
 
   /**
+   * Get a wallet wrapper with standardized transaction signing interface
+   * @returns {Object|null} Wallet wrapper with unified API
+   */
+  getWalletWrapper() {
+    if (!this.isConnected || !this.adapter || !this.walletAddress) {
+      return null;
+    }
+
+    return {
+      publicKey: this.adapter.publicKey,
+      
+      /**
+       * Sign a single transaction
+       * @param {Transaction} transaction - Transaction to sign
+       * @returns {Promise<Transaction>} Signed transaction
+       */
+      signTransaction: async (transaction) => {
+        if (!this.adapter.signTransaction) {
+          throw new Error(`${this.adapter.name} does not support transaction signing`);
+        }
+        
+        try {
+          return await this.adapter.signTransaction(transaction);
+        } catch (error) {
+          // Handle common error scenarios
+          if (error.message?.includes('User rejected')) {
+            throw new Error('Transaction signing was rejected by user');
+          }
+          throw error;
+        }
+      },
+
+      /**
+       * Sign multiple transactions with fallback support
+       * @param {Transaction[]} transactions - Array of transactions to sign
+       * @returns {Promise<Transaction[]>} Array of signed transactions
+       */
+      signAllTransactions: async (transactions) => {
+        if (!Array.isArray(transactions) || transactions.length === 0) {
+          throw new Error('Invalid transactions array');
+        }
+
+        try {
+          // Try batch signing first (if wallet supports it)
+          if (this.adapter.signAllTransactions) {
+            if (import.meta.env.DEV) {
+              console.log(`${this.adapter.name}: Using batch transaction signing`);
+            }
+            return await this.adapter.signAllTransactions(transactions);
+          }
+
+          // Fallback: Sign transactions one by one
+          if (import.meta.env.DEV) {
+            console.log(`${this.adapter.name}: Using individual transaction signing (fallback)`);
+          }
+
+          if (!this.adapter.signTransaction) {
+            throw new Error(`${this.adapter.name} does not support transaction signing`);
+          }
+
+          const signedTransactions = [];
+          for (let i = 0; i < transactions.length; i++) {
+            try {
+              const signedTx = await this.adapter.signTransaction(transactions[i]);
+              signedTransactions.push(signedTx);
+              
+              // Optional: Add a small delay between signatures to improve UX
+              if (i < transactions.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+            } catch (error) {
+              // If any individual transaction fails, throw with context
+              throw new Error(`Failed to sign transaction ${i + 1}/${transactions.length}: ${error.message}`);
+            }
+          }
+
+          return signedTransactions;
+        } catch (error) {
+          // Enhanced error handling
+          if (error.message?.includes('User rejected')) {
+            throw new Error('Transaction signing was rejected by user');
+          }
+          if (error.message?.includes('Insufficient funds')) {
+            throw new Error('Insufficient funds for transaction');
+          }
+          throw error;
+        }
+      }
+    };
+  }
+
+  /**
+   * Check if the connected wallet supports specific features
+   * @returns {Object} Feature support information
+   */
+  getWalletCapabilities() {
+    if (!this.adapter) {
+      return {
+        signMessage: false,
+        signTransaction: false,
+        signAllTransactions: false
+      };
+    }
+
+    return {
+      walletName: this.adapter.name,
+      signMessage: typeof this.adapter.signMessage === 'function',
+      signTransaction: typeof this.adapter.signTransaction === 'function',
+      signAllTransactions: typeof this.adapter.signAllTransactions === 'function'
+    };
+  }
+
+  /**
+   * Enhanced transaction signing with automatic retry and better error handling
+   * @param {Transaction|Transaction[]} transactions - Single transaction or array of transactions
+   * @param {Object} options - Signing options
+   * @returns {Promise<{success: boolean, signedTransactions?: Transaction[], error?: Error}>}
+   */
+  async signTransactions(transactions, options = {}) {
+    const {
+      maxRetries = 1,
+      retryDelay = 1000,
+      showProgress = false
+    } = options;
+
+    try {
+      if (!this.isConnected || !this.adapter) {
+        return {
+          success: false,
+          message: "Wallet not connected"
+        };
+      }
+
+      const wrapper = this.getWalletWrapper();
+      if (!wrapper) {
+        return {
+          success: false,
+          message: "Failed to create wallet wrapper"
+        };
+      }
+
+      // Normalize input to array
+      const txArray = Array.isArray(transactions) ? transactions : [transactions];
+      const isSingleTransaction = !Array.isArray(transactions);
+
+      if (showProgress && import.meta.env.DEV) {
+        console.log(`Signing ${txArray.length} transaction(s) with ${this.adapter.name}`);
+      }
+
+      let lastError;
+      
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          let signedTransactions;
+
+          if (isSingleTransaction) {
+            // Single transaction
+            signedTransactions = [await wrapper.signTransaction(txArray[0])];
+          } else {
+            // Multiple transactions
+            signedTransactions = await wrapper.signAllTransactions(txArray);
+          }
+
+          return {
+            success: true,
+            signedTransactions: isSingleTransaction ? signedTransactions[0] : signedTransactions
+          };
+        } catch (error) {
+          lastError = error;
+          
+          // Don't retry if user rejected
+          if (error.message?.includes('rejected')) {
+            break;
+          }
+
+          // Retry logic
+          if (attempt < maxRetries) {
+            if (import.meta.env.DEV) {
+              console.log(`Transaction signing attempt ${attempt + 1} failed, retrying in ${retryDelay}ms...`);
+            }
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+          }
+        }
+      }
+
+      return {
+        success: false,
+        error: lastError,
+        message: lastError?.message || "Transaction signing failed"
+      };
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("SolanaWalletService: Failed to sign transactions", error);
+      }
+      
+      return {
+        success: false,
+        error,
+        message: "Failed to sign transactions"
+      };
+    }
+  }
+
+  /**
    * Connect to wallet and request a signature to verify ownership
    * @param {string} adapterName - Name of the wallet adapter to use (optional)
    * @returns {Promise<{success: boolean, address?: string, signature?: string, error?: Error}>} Connection result
@@ -396,7 +718,7 @@ class SolanaWalletService {
       if (availableWallets.length === 0) {
         return {
           success: false,
-          message: "No compatible wallet found. Please install Phantom or Solflare wallet."
+          message: "No compatible wallet found. Please install Phantom, Solflare, or Backpack wallet."
         };
       }
 
@@ -421,6 +743,9 @@ class SolanaWalletService {
       // Get wallet address
       this.walletAddress = this.adapter.publicKey.toString();
       this.isConnected = true;
+
+      // 添加钱包事件监听器
+      this.setupWalletEventListeners();
 
       // 移除日志输出
 
@@ -555,6 +880,9 @@ class SolanaWalletService {
 
       // 保存钱包地址，以便在断开连接后仍能使用
       const walletAddressToDisconnect = this.walletAddress;
+
+      // 移除钱包事件监听器
+      this.removeWalletEventListeners();
 
       await this.adapter.disconnect();
 

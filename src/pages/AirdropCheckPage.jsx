@@ -110,7 +110,7 @@ const AirdropCheckPage = () => {
             maxRetries: 3,
             retryDelay: 1000,
             onRetry: (attempt) => {
-              console.log(`重试获取用户信息 (${attempt}/3)...`);
+              // 移除生产环境日志 - 重试获取用户信息
             }
           },
           withTimeoutOptions: {
@@ -149,7 +149,7 @@ const AirdropCheckPage = () => {
             maxRetries: 3,
             retryDelay: 1000,
             onRetry: (attempt) => {
-              console.log(`重试获取钱包签名 (${attempt}/3)...`);
+              // 移除生产环境日志 - 重试获取钱包签名
             }
           },
           withTimeoutOptions: {
@@ -343,7 +343,7 @@ const AirdropCheckPage = () => {
             maxRetries: 3,
             retryDelay: 1000,
             onRetry: (attempt) => {
-              console.log(`重试领取空投积分 (${attempt}/3)...`);
+              // 移除生产环境日志 - 重试领取空投积分
             }
           },
           withTimeoutOptions: {
