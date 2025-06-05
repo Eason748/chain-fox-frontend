@@ -378,19 +378,19 @@ export async function createAdminWithdrawProposal({ walletAddress, amount, recip
     if (!isMultisigSigner(walletAddress)) {
       throw new Error('只有多签成员才能创建提案');
     }
-    
+
     const proposer = new PublicKey(walletAddress);
     const recipient = new PublicKey(recipientAddress);
-    
+
     // 获取多签配置
     const multisigConfig = await getMultisigConfig();
     if (!multisigConfig) {
       throw new Error('多签配置不存在');
     }
-    
+
     const { address: multisigConfigAddress } = await getMultisigConfigPDA();
     const { address: proposalAddress, bump: proposalBump } = await getProposalPDA(multisigConfig.proposalCount);
-    
+
     // 构建提案数据: [amount: 8 bytes][recipient: 32 bytes]
     const proposalData = new Uint8Array(40);
     const dataView = new DataView(proposalData.buffer);
@@ -403,7 +403,7 @@ export async function createAdminWithdrawProposal({ walletAddress, amount, recip
       data: Array.from(proposalData),
       proposalBump
     });
-    
+
     return new TransactionInstruction({
       programId: PROGRAM_ID,
       keys: [
@@ -417,6 +417,81 @@ export async function createAdminWithdrawProposal({ walletAddress, amount, recip
     });
   } catch (error) {
     console.error('创建管理员提取提案失败:', error);
+    throw error;
+  }
+}
+
+/**
+ * 创建更新多签配置提案
+ * @param {Object} params - 参数
+ * @param {string} params.walletAddress - 提案者钱包地址
+ * @param {string[]} params.newSigners - 新的签名者地址数组 (3个)
+ * @param {number} params.newThreshold - 新的签名阈值
+ * @returns {Promise<Object>} 交易指令
+ */
+export async function createUpdateMultisigConfigProposal({ walletAddress, newSigners, newThreshold }) {
+  try {
+    if (!isMultisigSigner(walletAddress)) {
+      throw new Error('只有多签成员才能创建提案');
+    }
+
+    if (!newSigners || newSigners.length !== 3) {
+      throw new Error('必须提供3个签名者地址');
+    }
+
+    if (newThreshold < 1 || newThreshold > 3) {
+      throw new Error('签名阈值必须在1-3之间');
+    }
+
+    const proposer = new PublicKey(walletAddress);
+    const signerPubkeys = newSigners.map(addr => new PublicKey(addr));
+
+    // 获取多签配置
+    const multisigConfig = await getMultisigConfig();
+    if (!multisigConfig) {
+      throw new Error('多签配置不存在');
+    }
+
+    const { address: multisigConfigAddress } = await getMultisigConfigPDA();
+    const { address: proposalAddress, bump: proposalBump } = await getProposalPDA(multisigConfig.proposalCount);
+
+    // 构建提案数据: [signer1: 32 bytes][signer2: 32 bytes][signer3: 32 bytes][threshold: 1 byte]
+    const proposalData = new Uint8Array(97); // 32*3 + 1 = 97 bytes
+
+    // 写入签名者公钥
+    signerPubkeys[0].toBytes().forEach((byte, index) => {
+      proposalData[index] = byte;
+    });
+    signerPubkeys[1].toBytes().forEach((byte, index) => {
+      proposalData[32 + index] = byte;
+    });
+    signerPubkeys[2].toBytes().forEach((byte, index) => {
+      proposalData[64 + index] = byte;
+    });
+
+    // 写入阈值
+    proposalData[96] = newThreshold;
+
+    // 创建指令数据
+    const instructionData = await createInstructionData('createProposal', {
+      proposalType: 'UpdateTeamWallet',
+      data: Array.from(proposalData),
+      proposalBump
+    });
+
+    return new TransactionInstruction({
+      programId: PROGRAM_ID,
+      keys: [
+        { pubkey: proposalAddress, isSigner: false, isWritable: true },
+        { pubkey: multisigConfigAddress, isSigner: false, isWritable: true },
+        { pubkey: proposer, isSigner: true, isWritable: true },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
+      ],
+      data: instructionData
+    });
+  } catch (error) {
+    console.error('创建更新多签配置提案失败:', error);
     throw error;
   }
 }
@@ -504,6 +579,7 @@ export default {
   getProposal,
   getAllProposals,
   createAdminWithdrawProposal,
+  createUpdateMultisigConfigProposal,
   signProposal,
   executeAdminWithdraw,
   MULTISIG_SIGNERS,
