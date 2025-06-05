@@ -305,6 +305,27 @@ export const transferPoints = async (targetUserId, amount, description = 'Points
 // Export default points configuration
 export const POINTS_CONFIG = DEFAULT_POINTS;
 
+/**
+ * Get total credits in the system
+ * @returns {Promise<{totalCredits: number, error: Error}>} Total credits information
+ */
+export const getTotalCredits = async () => {
+  try {
+    // Call database function to get total credits
+    const { data, error } = await supabase.rpc('calculate_total_credits');
+
+    if (error) {
+      console.error('Error getting total credits:', error);
+      return { totalCredits: null, error };
+    }
+
+    return { totalCredits: data, error: null };
+  } catch (error) {
+    console.error('Error getting total credits:', error);
+    return { totalCredits: null, error };
+  }
+};
+
 // Export default object
 export default {
   getUserPoints,
@@ -313,5 +334,6 @@ export default {
   deductPoints,
   isReportSubmitter,
   transferPoints,
+  getTotalCredits,
   POINTS_CONFIG
 };

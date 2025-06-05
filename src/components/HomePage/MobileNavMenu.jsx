@@ -156,13 +156,13 @@ function MobileNavMenu({ isOpen, onClose }) {
               {t('navigation.dao', 'DAO')}
             </Link>
 
-            {/* Airdrop Check Link */}
+            {/* stake Link */}
             <Link
-              to="/airdrop-check"
-              className={location.pathname === '/airdrop-check' ? activeMenuItemClasses : menuItemClasses}
+              to="/stake"
+              className={location.pathname === '/stake' ? activeMenuItemClasses : menuItemClasses}
               onClick={handleMenuItemClick}
             >
-              <span>Airdrop</span>
+              <span>Stake</span>
             </Link>
 
             {/* White Paper Link - 使用安全链接组件 */}

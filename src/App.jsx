@@ -14,7 +14,7 @@ import RepositoryStatusPage from './pages/RepositoryStatusPage';
 import RepositoryResultPage from './pages/RepositoryResultPage';
 import ExplorationPage from './pages/ExplorationPage';
 import DaoPage from './pages/DaoPage';
-import AirdropCheckPage from './pages/AirdropCheckPage';
+// import AirdropCheckPage from './pages/AirdropCheckPage';
 import StakePage from './pages/StakePage';
 import MultisigPage from './pages/MultisigPage';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -82,7 +82,7 @@ const AppContent = React.memo(() => {
         <Route path="/dao" element={<DaoPage />} />
 
         {/* Airdrop Check Page */}
-        <Route path="/airdrop-check" element={<AirdropCheckPage />} />
+        {/* <Route path="/airdrop-check" element={<AirdropCheckPage />} /> */}
 
         {/* Stake Page */}
         <Route path="/stake" element={<StakePage />} />

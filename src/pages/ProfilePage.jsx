@@ -8,6 +8,7 @@ import AuthRequired from '../components/AuthRequired';
 import CustomSelect from '../components/ui/CustomSelect';
 import { notify } from '../components/ui/Notification';
 import CreditsTransfer from '../components/CreditsTransfer';
+import CreditsBurn from '../components/CreditsBurn';
 
 /**
  * ProfilePage component - Displays user profile information and account linking options
@@ -202,6 +203,17 @@ const ProfilePage = () => {
                     } rounded-md text-sm font-medium transition-colors`}
                   >
                     {t('credits.transfer.show', { defaultValue: 'Transfer Credits', ns: 'profile' })}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveFeature(activeFeature === 'burn' ? null : 'burn')}
+                    className={`w-full px-3 py-2 ${
+                      activeFeature === 'burn'
+                        ? 'bg-orange-500/40 text-orange-200'
+                        : 'bg-orange-500/20 hover:bg-orange-500/30 text-orange-300'
+                    } rounded-md text-sm font-medium transition-colors`}
+                  >
+                    {t('credits.burn.show', { defaultValue: 'Burn Credits', ns: 'profile' })}
                   </button>
 
                   {/* Additional feature buttons can be added here */}
@@ -403,6 +415,11 @@ const ProfilePage = () => {
             {/* Credits Transfer */}
             {activeFeature === 'transfer' && (
               <CreditsTransfer onClose={() => setActiveFeature(null)} />
+            )}
+
+            {/* Credits Burn */}
+            {activeFeature === 'burn' && (
+              <CreditsBurn onClose={() => setActiveFeature(null)} />
             )}
 
             {/* Welcome message when no feature is selected */}

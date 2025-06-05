@@ -1,109 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useWallet } from '../contexts/WalletContext';
-import StakingService, { MIN_STAKE_AMOUNT, MAX_TOTAL_POOL_SIZE } from '../services/stakingService/index.js';
+import { useAuth } from '../contexts/AuthContext';
+import StakingService from '../services/stakingService/index.js';
+import StakingRewardsService from '../services/stakingRewardsService.js';
 import { notify } from './ui/Notification';
 import solanaRpcService from '../services/solanaRpcService';
 import programIds from '../data/program-ids.json';
 
-// Helper function: Format time display
-const formatTimeDisplay = (timeFormat) => {
-  if (!timeFormat) return '';
+// Import sub-components
+import PoolStatistics from './StakingPanel/PoolStatistics';
+import UserStaking from './StakingPanel/UserStaking';
+import RewardsStatistics from './StakingPanel/RewardsStatistics';
+import UserRewards from './StakingPanel/UserRewards';
+import WithdrawalStatus from './StakingPanel/WithdrawalStatus';
+import StakingActions from './StakingPanel/StakingActions';
 
-  switch (timeFormat.type) {
-    case 'immediate':
-      return 'Available now';
-    case 'daysHours':
-      // If seconds are available, show more precise time
-      if (timeFormat.seconds !== undefined) {
-        return `${timeFormat.days}d ${timeFormat.hours}h ${timeFormat.minutes}m ${timeFormat.seconds}s`;
-      }
-      return `${timeFormat.days} days ${timeFormat.hours} hours`;
-    case 'days':
-      if (timeFormat.seconds !== undefined) {
-        return `${timeFormat.days}d ${timeFormat.minutes}m ${timeFormat.seconds}s`;
-      }
-      return `${timeFormat.days} days`;
-    case 'hoursMinutes':
-      if (timeFormat.seconds !== undefined) {
-        return `${timeFormat.hours}h ${timeFormat.minutes}m ${timeFormat.seconds}s`;
-      }
-      return `${timeFormat.hours} hours ${timeFormat.minutes} minutes`;
-    case 'hours':
-      if (timeFormat.seconds !== undefined) {
-        return `${timeFormat.hours}h ${timeFormat.minutes}m ${timeFormat.seconds}s`;
-      }
-      return `${timeFormat.hours} hours`;
-    case 'minutes':
-      if (timeFormat.seconds !== undefined) {
-        return `${timeFormat.minutes}m ${timeFormat.seconds}s`;
-      }
-      return `${timeFormat.minutes} minutes`;
-    case 'seconds':
-      return `${timeFormat.seconds} seconds`;
-    case 'lessThanMinute':
-      return 'Less than a minute';
-    default:
-      return '';
-  }
-};
+// Import utilities
+import {
+  calculateTimeRemainingFromTimestamp,
+  calculateStakingDuration
+} from './StakingPanel/utils';
 
-// 辅助函数：基于时间戳计算剩余时间
-const calculateTimeRemainingFromTimestamp = (endTimestamp) => {
-  if (!endTimestamp) return null;
 
-  const now = Date.now();
-  const timeRemaining = Math.max(0, endTimestamp - now);
-
-  if (timeRemaining === 0) {
-    return { canWithdraw: true, type: 'immediate' };
-  }
-
-  const secondsRemaining = Math.ceil(timeRemaining / 1000);
-  const days = Math.floor(secondsRemaining / (24 * 60 * 60));
-  const hours = Math.floor((secondsRemaining % (24 * 60 * 60)) / (60 * 60));
-  const minutes = Math.floor((secondsRemaining % (60 * 60)) / 60);
-  const seconds = secondsRemaining % 60;
-
-  if (days > 0) {
-    if (hours > 0) {
-      return { canWithdraw: false, type: 'daysHours', days, hours, minutes, seconds };
-    } else {
-      return { canWithdraw: false, type: 'days', days, minutes, seconds };
-    }
-  } else if (hours > 0) {
-    if (minutes > 0) {
-      return { canWithdraw: false, type: 'hoursMinutes', hours, minutes, seconds };
-    } else {
-      return { canWithdraw: false, type: 'hours', hours, minutes, seconds };
-    }
-  } else if (minutes > 0) {
-    return { canWithdraw: false, type: 'minutes', minutes, seconds };
-  } else if (seconds > 0) {
-    return { canWithdraw: false, type: 'seconds', seconds };
-  } else {
-    return { canWithdraw: true, type: 'immediate' };
-  }
-};
-
-// 辅助函数：计算质押时长
-const calculateStakingDuration = async (userStakeInfo, stakingService) => {
-  if (!userStakeInfo?.lastStakeSlot || !stakingService) return null;
-
-  try {
-    const connection = await solanaRpcService.getConnection();
-    const currentSlot = await connection.getSlot();
-    const lastStakeSlot = parseInt(userStakeInfo.lastStakeSlot);
-
-    // 计算已质押的 slots
-    const stakedSlots = Math.max(0, currentSlot - lastStakeSlot);
-
-    // 使用 StakingService 的时间格式化方法
-    return StakingService.formatTimeFromSlots(stakedSlots);
-  } catch (error) {
-    return null;
-  }
-};
 
 /**
  * StakingPanel component - Displays CFX staking information and controls
@@ -114,6 +32,7 @@ const calculateStakingDuration = async (userStakeInfo, stakingService) => {
  */
 const StakingPanel = ({ cfxBalance }) => {
   const { isConnected, address, walletService } = useWallet();
+  const { user } = useAuth();
 
   // UI state
   const [isStaking, setIsStaking] = useState(false);
@@ -138,6 +57,14 @@ const StakingPanel = ({ cfxBalance }) => {
 
   // 质押时长状态
   const [stakingDuration, setStakingDuration] = useState(null);
+
+  // 积分奖励状态
+  const [rewardsInfo, setRewardsInfo] = useState(null);
+  const [rewardsLoading, setRewardsLoading] = useState(false);
+  const [claimingRewards, setClaimingRewards] = useState(false);
+
+  // 积分释放系统统计状态
+  const [rewardsStatistics, setRewardsStatistics] = useState(null);
 
   // Initialize staking service when wallet changes
   useEffect(() => {
@@ -213,6 +140,15 @@ const StakingPanel = ({ cfxBalance }) => {
 
       // Load token vault balance
       await loadTokenVaultBalance();
+
+      // Load rewards info if user has staking, otherwise just load system statistics
+      if (hasAccount && userResult.data) {
+        await loadRewardsInfo();
+      } else {
+        setRewardsInfo(null);
+        // 即使没有用户质押，也加载系统统计信息
+        await loadSystemStatistics();
+      }
     } catch (error) {
       notify.error('Failed to load staking data');
     } finally {
@@ -243,6 +179,51 @@ const StakingPanel = ({ cfxBalance }) => {
     } catch (error) {
       // 移除生产环境日志
       setTokenVaultBalance(0);
+    }
+  };
+
+  // Load rewards info
+  const loadRewardsInfo = async () => {
+    if (!address) return;
+
+    setRewardsLoading(true);
+    try {
+      const result = await StakingRewardsService.calculateStakingRewards(address);
+      if (result.success) {
+        setRewardsInfo(result.data);
+        // 同时保存积分释放系统统计信息
+        if (result.data.rewards_statistics) {
+          setRewardsStatistics(result.data.rewards_statistics);
+        }
+      } else {
+        // 如果是没有质押账户或其他正常情况，不显示错误
+        if (result.error !== 'NO_STAKING_ACCOUNT' && result.error !== 'WITHDRAWAL_REQUESTED') {
+          console.error('Failed to load rewards info:', result.message);
+        }
+        setRewardsInfo(null);
+        setRewardsStatistics(null);
+      }
+    } catch (error) {
+      console.error('Load rewards info error:', error);
+      setRewardsInfo(null);
+      setRewardsStatistics(null);
+    } finally {
+      setRewardsLoading(false);
+    }
+  };
+
+  // Load system statistics only (without user-specific rewards)
+  const loadSystemStatistics = async () => {
+    if (!address) return;
+
+    try {
+      // 使用一个虚拟地址来获取系统统计信息
+      const result = await StakingRewardsService.calculateStakingRewards(address);
+      if (result.success && result.data.rewards_statistics) {
+        setRewardsStatistics(result.data.rewards_statistics);
+      }
+    } catch (error) {
+      console.error('Load system statistics error:', error);
     }
   };
 
@@ -313,176 +294,21 @@ const StakingPanel = ({ cfxBalance }) => {
     return () => clearInterval(interval);
   }, [countdownEndTime, canWithdraw]);
 
-  // Handle stake form submission
-  const handleStake = async (e) => {
-    e.preventDefault();
-    if (!stakingService || !stakeAmount) return;
-
-    setLoading(true);
-    try {
-      // Convert to smallest unit using StakingService helper
-      const amount = StakingService.parseCfxAmount(stakeAmount);
-
-      // Check CFX balance first
-      if (!cfxBalance || cfxBalance <= 0) {
-        notify.error('Insufficient CFX balance. Please ensure you have CFX tokens in your wallet.');
-        return;
-      }
-
-      // Validate minimum amount
-      if (parseInt(amount) < MIN_STAKE_AMOUNT) {
-        notify.error('Minimum stake amount is 10,000 CFX');
-        return;
-      }
-
-      // Check if user has enough balance
-      const stakeAmountNum = parseFloat(stakeAmount);
-      if (stakeAmountNum > cfxBalance) {
-        notify.error(`Insufficient balance. You have ${cfxBalance.toFixed(4)} CFX but trying to stake ${stakeAmount} CFX.`);
-        return;
-      }
-
-      const result = await stakingService.stake(amount);
-      if (result.success) {
-        if (result.accountCreated) {
-          notify.success('Stake account created and tokens staked successfully!');
-        } else {
-          notify.success(`Successfully staked ${stakeAmount} CFX!`);
-        }
-        setIsStaking(false);
-        setStakeAmount('');
-        await loadData(); // Reload data
-      } else {
-        const errorMessage = result.error || result.message || 'Failed to stake tokens';
-
-        // 检查是否是用户取消交易
-        if (errorMessage.includes('用户取消了交易') ||
-            errorMessage.includes('User rejected') ||
-            errorMessage.includes('User denied') ||
-            errorMessage.includes('User cancelled')) {
-          // 用户取消交易时不显示错误消息，只是静默恢复按钮状态
-          // 用户取消交易，静默处理
-        } else {
-          // 其他错误才显示错误消息
-          notify.error(errorMessage);
-        }
-      }
-    } catch (error) {
-      // 检查是否是用户取消相关的错误
-      const errorMessage = error.message || error.toString();
-      if (errorMessage.includes('User rejected') ||
-          errorMessage.includes('User denied') ||
-          errorMessage.includes('User cancelled') ||
-          errorMessage.includes('用户取消')) {
-        // 用户取消交易时不显示错误消息
-        // 用户取消交易，静默处理
-      } else {
-        notify.error('Failed to stake tokens');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle withdrawal request
-  const handleRequestWithdrawal = async () => {
-    if (!stakingService) {
-      notify.error('Staking service not available');
+  // 定期刷新积分奖励信息
+  useEffect(() => {
+    if (!userStakeInfo || !address || userStakeInfo.withdrawalRequested) {
       return;
     }
 
-    setLoading(true);
-    try {
-      const result = await stakingService.requestWithdrawal();
-      if (result.success) {
-        notify.success('Withdrawal requested successfully!');
-        await loadData(); // Reload data
-      } else {
-        const errorMessage = result.error || result.message || 'Failed to request withdrawal';
+    // 每30秒刷新一次积分奖励信息
+    const rewardsInterval = setInterval(() => {
+      loadRewardsInfo();
+    }, 30000); // 30秒
 
-        // 检查是否是用户取消交易
-        if (errorMessage.includes('用户取消了交易') ||
-            errorMessage.includes('User rejected') ||
-            errorMessage.includes('User denied') ||
-            errorMessage.includes('User cancelled')) {
-          // 用户取消交易时不显示错误消息，只是静默恢复按钮状态
-          // 用户取消交易，静默处理
-        } else {
-          // 其他错误才显示错误消息
-          notify.error(errorMessage);
-        }
-      }
-    } catch (error) {
-      // 检查是否是用户取消相关的错误
-      const errorMessage = error.message || error.toString();
-      if (errorMessage.includes('User rejected') ||
-          errorMessage.includes('User denied') ||
-          errorMessage.includes('User cancelled') ||
-          errorMessage.includes('用户取消')) {
-        // 用户取消交易时不显示错误消息
-        // 用户取消交易，静默处理
-      } else {
-        notify.error('Failed to request withdrawal');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => clearInterval(rewardsInterval);
+  }, [userStakeInfo, address]);
 
-  // Handle withdrawal
-  const handleWithdraw = async () => {
-    if (!stakingService) {
-      notify.error('Staking service not available');
-      return;
-    }
 
-    // 立即设置按钮为已点击状态，防止重复点击
-    setWithdrawalClicked(true);
-    setLoading(true);
-
-    try {
-      const result = await stakingService.withdraw();
-      if (result.success) {
-        notify.success('Withdrawal completed successfully!');
-        // 提取成功后立即刷新数据
-        await loadData();
-      } else {
-        const errorMessage = result.error || result.message || 'Failed to withdraw tokens';
-
-        // 检查是否是用户取消交易
-        if (errorMessage.includes('用户取消了交易') ||
-            errorMessage.includes('User rejected') ||
-            errorMessage.includes('User denied') ||
-            errorMessage.includes('User cancelled')) {
-          // 用户取消交易时不显示错误消息，只是静默恢复按钮状态
-          // 用户取消交易，静默处理
-        } else {
-          // 其他错误才显示错误消息
-          notify.error(errorMessage);
-        }
-
-        // 如果提取失败，也要刷新数据以获取最新状态
-        await loadData();
-      }
-    } catch (error) {
-      // 检查是否是用户取消相关的错误
-      const errorMessage = error.message || error.toString();
-      if (errorMessage.includes('User rejected') ||
-          errorMessage.includes('User denied') ||
-          errorMessage.includes('User cancelled') ||
-          errorMessage.includes('用户取消')) {
-        // 用户取消交易时不显示错误消息
-        // 用户取消交易，静默处理
-      } else {
-        notify.error('Failed to withdraw tokens');
-      }
-
-      // 发生错误时也要刷新数据
-      await loadData();
-    } finally {
-      setLoading(false);
-    }
-  };
 
 
 
@@ -504,9 +330,6 @@ const StakingPanel = ({ cfxBalance }) => {
 
   return (
     <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/10 backdrop-blur-md rounded-xl border border-white/10 p-6">
-      <h2 className="text-2xl font-bold text-white mb-4">
-        CFX Staking
-      </h2>
 
       {/* Info about automatic account creation */}
       {!hasStakeAccount && (
@@ -520,262 +343,62 @@ const StakingPanel = ({ cfxBalance }) => {
         </div>
       )}
 
-      {/* Pool Statistics - Public Information */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center">
-          <span className="mr-2">🏛️</span>
-          Pool Statistics
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/20">
-            <p className="text-sm text-purple-300 mb-1">Total Staked</p>
-            <p className="text-xl font-bold text-white">
-              {stakePoolInfo ? StakingService.formatCfxAmount(stakePoolInfo.totalStaked.toString()) : '--'} CFX
-            </p>
-          </div>
+      {/* Pool Statistics */}
+      <PoolStatistics
+        stakePoolInfo={stakePoolInfo}
+        tokenVaultBalance={tokenVaultBalance}
+      />
 
-          <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/20">
-            <p className="text-sm text-purple-300 mb-1">Vault Balance</p>
-            <p className="text-xl font-bold text-white">
-              {tokenVaultBalance !== null ? tokenVaultBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '--'} CFX
-            </p>
-          </div>
+      {/* User Staking */}
+      <UserStaking
+        userStakeInfo={userStakeInfo}
+        stakingDuration={stakingDuration}
+        canWithdraw={canWithdraw}
+      />
 
-          <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/20">
-            <p className="text-sm text-purple-300 mb-1">Lock Duration</p>
-            <p className="text-xl font-bold text-white">
-              {stakePoolInfo ? formatTimeDisplay(StakingService.formatTimeFromSlots(parseInt(stakePoolInfo.lockDurationSlots))) : '--'}
-            </p>
-          </div>
 
-          <div className="bg-purple-900/20 rounded-lg p-4 border border-purple-500/20">
-            <p className="text-sm text-purple-300 mb-1">Pool Utilization</p>
-            <p className="text-xl font-bold text-white">
-              {stakePoolInfo ? (
-                (() => {
-                  const totalStaked = parseInt(stakePoolInfo.totalStaked);
-                  const maxCapacity = MAX_TOTAL_POOL_SIZE;
-                  const utilization = ((totalStaked / maxCapacity) * 100).toFixed(1);
-                  return `${utilization}%`;
-                })()
-              ) : '--'}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Rewards Statistics */}
+      <RewardsStatistics rewardsStatistics={rewardsStatistics} />
 
-      {/* Your Staking - Personal Information */}
-      {userStakeInfo && (
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center">
-            <span className="mr-2">👤</span>
-            Your Staking
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-500/20">
-              <p className="text-sm text-blue-300 mb-1">Your Stake</p>
-              <p className="text-xl font-bold text-white">
-                {StakingService.formatCfxAmount(userStakeInfo.stakedAmount.toString())} CFX
-              </p>
-            </div>
+      {/* User Rewards */}
+      <UserRewards
+        userStakeInfo={userStakeInfo}
+        stakePoolInfo={stakePoolInfo}
+        rewardsInfo={rewardsInfo}
+        rewardsStatistics={rewardsStatistics}
+      />
 
-            <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-500/20">
-              <p className="text-sm text-blue-300 mb-1">Staking Duration</p>
-              <p className="text-xl font-bold text-white">
-                {stakingDuration ? formatTimeDisplay(stakingDuration) : '--'}
-              </p>
-            </div>
-
-            <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-500/20">
-              <p className="text-sm text-blue-300 mb-1">Status</p>
-              <p className="text-xl font-bold text-white flex items-center">
-                {userStakeInfo.withdrawalRequested ? (
-                  canWithdraw ? (
-                    <>
-                      <span className="text-green-400 mr-2">✅</span>
-                      <span className="text-green-400 text-sm">Ready</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-orange-400 mr-2">⏳</span>
-                      <span className="text-orange-400 text-sm">Pending</span>
-                    </>
-                  )
-                ) : (
-                  <>
-                    <span className="text-blue-400 mr-2">🔒</span>
-                    <span className="text-blue-400 text-sm">Staked</span>
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Withdrawal Status - Compact */}
-      {userStakeInfo?.withdrawalRequested && (
-        <div className="bg-orange-900/20 rounded-lg p-3 border border-orange-500/20 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="text-orange-400 font-medium mr-2">🔓</span>
-              <span className="text-orange-400 font-medium">
-                Withdrawal Requested
-              </span>
-            </div>
-
-            {(dynamicTimeRemaining || withdrawalTimeInfo) && (
-              <div className="text-right">
-                <div className={`text-sm font-medium ${
-                  (dynamicTimeRemaining?.canWithdraw || withdrawalTimeInfo?.canWithdraw) ? 'text-green-400' : 'text-orange-400'
-                }`}>
-                  {(dynamicTimeRemaining?.canWithdraw || withdrawalTimeInfo?.canWithdraw) ? (
-                    <span className="flex items-center">
-                      <span className="mr-1">✅</span>
-                      Available Now
-                    </span>
-                  ) : (
-                    formatTimeDisplay(dynamicTimeRemaining || withdrawalTimeInfo?.timeFormat)
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Staking Information */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold text-white mb-4">
-          Staking Information
-        </h3>
-
-        <p className="text-gray-300 mb-4">
-          Stake your CFX tokens to participate in the Chain-Fox ecosystem and earn rewards.
-        </p>
-      </div>
+      {/* Withdrawal Status */}
+      <WithdrawalStatus
+        userStakeInfo={userStakeInfo}
+        canWithdraw={canWithdraw}
+        dynamicTimeRemaining={dynamicTimeRemaining}
+        withdrawalTimeInfo={withdrawalTimeInfo}
+      />
 
       {/* Staking Actions */}
-      <div className="flex flex-wrap gap-4">
-        {!isStaking && (
-          <>
-            <motion.button
-              whileHover={!loading ? { scale: 1.05 } : {}}
-              whileTap={!loading ? { scale: 0.95 } : {}}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
-              onClick={() => setIsStaking(true)}
-              disabled={loading}
-            >
-              {hasStakeAccount ? 'Stake More' : 'Start Staking'}
-            </motion.button>
-
-            {userStakeInfo && parseInt(userStakeInfo.stakedAmount.toString()) > 0 && (
-              <motion.button
-                whileHover={!userStakeInfo.withdrawalRequested && !loading ? { scale: 1.05 } : {}}
-                whileTap={!userStakeInfo.withdrawalRequested && !loading ? { scale: 0.95 } : {}}
-                className={`px-4 py-2 text-white rounded-lg transition-colors ${
-                  userStakeInfo.withdrawalRequested
-                    ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                    : 'bg-orange-600 hover:bg-orange-500'
-                } disabled:opacity-50`}
-                onClick={userStakeInfo.withdrawalRequested ? undefined : handleRequestWithdrawal}
-                disabled={loading || userStakeInfo.withdrawalRequested}
-                title={userStakeInfo.withdrawalRequested ? 'Withdrawal already requested' : ''}
-              >
-                {loading && !userStakeInfo.withdrawalRequested
-                  ? 'Processing...'
-                  : userStakeInfo.withdrawalRequested
-                  ? 'Withdrawal Requested'
-                  : 'Request Withdrawal'
-                }
-              </motion.button>
-            )}
-
-            {userStakeInfo?.withdrawalRequested && canWithdraw && (
-              <motion.button
-                whileHover={!loading && !withdrawalClicked ? { scale: 1.05 } : {}}
-                whileTap={!loading && !withdrawalClicked ? { scale: 0.95 } : {}}
-                className={`px-4 py-2 text-white rounded-lg transition-colors ${
-                  withdrawalClicked
-                    ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                    : 'bg-green-600 hover:bg-green-500'
-                } disabled:opacity-50`}
-                onClick={withdrawalClicked ? undefined : handleWithdraw}
-                disabled={loading || withdrawalClicked}
-                title={withdrawalClicked ? 'Withdrawal button has been clicked, please refresh page to try again' : ''}
-              >
-                {loading ? 'Withdrawing...' :
-                 withdrawalClicked ? 'Withdrawal Clicked' :
-                 `Withdraw ${StakingService.formatCfxAmount(userStakeInfo.stakedAmount.toString())} CFX`}
-              </motion.button>
-            )}
-          </>
-        )}
-
-        {/* Stake Form */}
-        {isStaking && (
-          <div className="w-full">
-            <form onSubmit={handleStake} className="bg-blue-900/30 rounded-lg p-4 border border-white/10">
-
-              <div className="mb-4">
-                <label className="block text-sm text-gray-300 mb-1">Amount</label>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    value={stakeAmount}
-                    onChange={(e) => setStakeAmount(e.target.value)}
-                    min="10000"
-                    max={cfxBalance && cfxBalance > 0 ? cfxBalance : undefined}
-                    step="0.01"
-                    className="w-full bg-blue-950/50 border border-white/10 rounded-lg px-3 py-2 text-white"
-                    placeholder="10000.00"
-                    required
-                    disabled={loading}
-                  />
-                  <span className="ml-2 text-gray-300">CFX</span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  Balance: {cfxBalance?.toFixed(4) || '0.0000'} CFX
-                </p>
-                {(!cfxBalance || cfxBalance <= 0) ? (
-                  <p className="text-xs text-red-400 mt-1">
-                    Insufficient CFX balance
-                  </p>
-                ) : (
-                  <p className="text-xs text-yellow-400 mt-1">
-                    Minimum stake: 10,000 CFX
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={!loading && cfxBalance > 0 ? { scale: 1.05 } : {}}
-                  whileTap={!loading && cfxBalance > 0 ? { scale: 0.95 } : {}}
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors disabled:opacity-50"
-                  disabled={loading || !cfxBalance || cfxBalance <= 0}
-                >
-                  {loading ? 'Staking...' :
-                   (!cfxBalance || cfxBalance <= 0) ? 'Insufficient Balance' :
-                   'Confirm Stake'}
-                </motion.button>
-
-                <motion.button
-                  whileHover={!loading ? { scale: 1.05 } : {}}
-                  whileTap={!loading ? { scale: 0.95 } : {}}
-                  type="button"
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                  onClick={() => setIsStaking(false)}
-                  disabled={loading}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </form>
-          </div>
-        )}
-      </div>
+      <StakingActions
+        isStaking={isStaking}
+        setIsStaking={setIsStaking}
+        stakeAmount={stakeAmount}
+        setStakeAmount={setStakeAmount}
+        loading={loading}
+        setLoading={setLoading}
+        cfxBalance={cfxBalance}
+        hasStakeAccount={hasStakeAccount}
+        userStakeInfo={userStakeInfo}
+        canWithdraw={canWithdraw}
+        withdrawalClicked={withdrawalClicked}
+        setWithdrawalClicked={setWithdrawalClicked}
+        rewardsInfo={rewardsInfo}
+        claimingRewards={claimingRewards}
+        setClaimingRewards={setClaimingRewards}
+        user={user}
+        address={address}
+        stakingService={stakingService}
+        loadData={loadData}
+        loadRewardsInfo={loadRewardsInfo}
+      />
 
     </div>
   );

@@ -34,7 +34,7 @@ const DaoWelcome = ({ onEnterDao }) => {
         {/* Progress Bars */}
         <DaoProgressBars />
 
-        <motion.button
+        {/* <motion.button
           onClick={onEnterDao}
           whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(168, 85, 247, 0.5)' }}
           whileTap={{ scale: 0.98 }}
@@ -42,7 +42,7 @@ const DaoWelcome = ({ onEnterDao }) => {
           className="px-10 py-5 text-xl font-medium rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
         >
           {t('enterDao', '了解 DAO')}
-        </motion.button>
+        </motion.button> */}
       </motion.div>
 
       {/* Background decorative elements */}
