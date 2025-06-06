@@ -2,12 +2,7 @@
 // 质押积分奖励服务
 // ===============================
 
-import { createClient } from '@supabase/supabase-js';
-
-// 创建 Supabase 客户端
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from './supabase';
 
 /**
  * 积分奖励服务类
@@ -72,14 +67,45 @@ class StakingRewardsService {
         };
       }
 
-      // 临时跳过认证检查，因为边缘函数已经处理了认证
-      console.log('StakingRewardsService - Calling claim function for wallet:', walletAddress);
+      // 检查用户是否已登录
+      console.log('StakingRewardsService - 开始获取 session...');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      console.log('StakingRewardsService - Session 检查结果:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        userId: session?.user?.id,
+        hasAccessToken: !!session?.access_token,
+        sessionError: sessionError
+      });
+
+      if (sessionError || !session || !session.user) {
+        console.error('用户未登录或 session 无效:', {
+          sessionError,
+          session,
+          hasSession: !!session,
+          hasUser: !!session?.user
+        });
+        return {
+          success: false,
+          error: 'AUTHENTICATION_REQUIRED',
+          message: 'Please log in to claim staking rewards'
+        };
+      }
+
+      console.log('StakingRewardsService - 用户已登录，用户ID:', session.user.id);
+      console.log('StakingRewardsService - 调用 claim 函数，钱包地址:', walletAddress);
+      console.log('StakingRewardsService - Session access_token 长度:', session.access_token?.length || 0);
 
       // 调用统一的边缘函数，使用 action: 'claim' 参数
+      // 明确传递 JWT token
       const { data, error } = await supabase.functions.invoke('calculate-staking-rewards', {
         body: {
           action: 'claim',
           wallet_address: walletAddress
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
         }
       });
 
