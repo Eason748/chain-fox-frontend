@@ -3,7 +3,7 @@
  * Provides functionality related to wallet credits operations
  */
 
-import supabase from './supabase';
+import { supabase } from './supabase';
 
 /**
  * Get credits by wallet address

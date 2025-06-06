@@ -1,4 +1,4 @@
-import supabase from '../services/supabase';
+import { supabase } from '../services/supabase';
 
 /**
  * 检查用户是否在白名单中

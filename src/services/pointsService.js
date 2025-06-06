@@ -3,7 +3,7 @@
  * Provides functionality related to user points
  */
 
-import supabase from './supabase';
+import { supabase } from './supabase';
 
 // Default points configuration
 const DEFAULT_POINTS = {

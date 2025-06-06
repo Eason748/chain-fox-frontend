@@ -3,7 +3,7 @@
  * Provides functionality related to user credits
  */
 
-import supabase from './supabase';
+import { supabase } from './supabase';
 
 // Default credits configuration
 const DEFAULT_CREDITS = {

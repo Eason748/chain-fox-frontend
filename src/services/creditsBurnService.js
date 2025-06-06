@@ -3,7 +3,7 @@
  * Provides functionality for burning credits to receive CFX tokens
  */
 
-import supabase from './supabase';
+import { supabase } from './supabase';
 
 /**
  * Check if user can submit a new burn request

@@ -3,7 +3,7 @@
  * Provides functionality related to wallet points operations
  */
 
-import supabase from './supabase';
+import { supabase } from './supabase';
 
 /**
  * Get points by wallet address
