@@ -50,7 +50,7 @@ export async function testInstructionCreation() {
     
     // 测试 createUserStake 指令（有参数）
     console.log('测试 createUserStake 指令...');
-    const createData = await createInstructionData('createUserStake', { bump: 255 });
+    const createData = await createInstructionData('createUserStake', { userStakeBump: 255 });
     console.log('✅ createUserStake 指令数据:', Array.from(createData).map(b => b.toString(16).padStart(2, '0')).join(' '));
     
     return { 

@@ -60,7 +60,7 @@ export async function createUserStakeIfNeeded(connection, wallet) {
       { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
     ];
 
-    const instruction = await createStakingInstruction('createUserStake', accounts, { bump: userStakeBump });
+    const instruction = await createStakingInstruction('createUserStake', accounts, { userStakeBump: userStakeBump });
 
     const transaction = new Transaction().add(instruction);
     transaction.feePayer = wallet.publicKey;
